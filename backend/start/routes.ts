@@ -1,4 +1,5 @@
 import router from '@adonisjs/core/services/router'
+import app from '@adonisjs/core/services/app'
 import { middleware } from './kernel.js'
 
 // Health check (для Railway)
@@ -39,3 +40,8 @@ router
   })
   .prefix('/api/projects')
   .use(middleware.auth())
+
+// SPA fallback — отдаём index.html для всех не-API маршрутов
+router.get('*', async ({ response }) => {
+  return response.download(app.publicPath('index.html'))
+})
