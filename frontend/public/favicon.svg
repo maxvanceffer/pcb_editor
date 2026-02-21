@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 256 256"
+     xmlns="http://www.w3.org/2000/svg">
+
+  <style>
+    :root { --c: #000000; }
+    @media (prefers-color-scheme: dark) {
+      :root { --c: #ffffff; }
+    }
+    .icon { stroke: var(--c); fill: none; }
+    .dot  { fill: var(--c); }
+  </style>
+
+  <rect x="8" y="8" width="240" height="240" rx="32"
+        class="icon" stroke-width="20"/>
+
+  <rect x="88" y="88" width="80" height="80"
+        class="icon" stroke-width="18"/>
+
+  <circle cx="128" cy="128" r="22" class="dot"/>
+
+</svg>

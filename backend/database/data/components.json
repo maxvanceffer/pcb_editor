@@ -1,0 +1,233 @@
+{
+  "components": [
+    {
+      "id": "esp32s3",
+      "name": "ESP32-S3 (44-pin Dual USB)",
+      "description": "Dual-core Xtensa LX7, WiFi + BLE 5.0, 44 GPIO pins, Dual USB",
+      "category": "microcontroller",
+      "widthInHoles": 10,
+      "heightInHoles": 22,
+      "color": "#4a90d9",
+      "pins": [
+        { "id": "L3V3_1", "label": "3.3V", "offsetX": 0, "offsetY": 0  },
+        { "id": "L3V3_2", "label": "3.3V", "offsetX": 0, "offsetY": 1  },
+        { "id": "RST",    "label": "RST",  "offsetX": 0, "offsetY": 2  },
+        { "id": "IO4",    "label": "IO4",  "offsetX": 0, "offsetY": 3  },
+        { "id": "IO5",    "label": "IO5",  "offsetX": 0, "offsetY": 4  },
+        { "id": "IO6",    "label": "IO6",  "offsetX": 0, "offsetY": 5  },
+        { "id": "IO7",    "label": "IO7",  "offsetX": 0, "offsetY": 6  },
+        { "id": "IO15",   "label": "IO15", "offsetX": 0, "offsetY": 7  },
+        { "id": "IO16",   "label": "IO16", "offsetX": 0, "offsetY": 8  },
+        { "id": "IO17",   "label": "IO17", "offsetX": 0, "offsetY": 9  },
+        { "id": "IO18",   "label": "IO18", "offsetX": 0, "offsetY": 10 },
+        { "id": "IO8",    "label": "IO8",  "offsetX": 0, "offsetY": 11 },
+        { "id": "IO3",    "label": "IO3",  "offsetX": 0, "offsetY": 12 },
+        { "id": "IO46",   "label": "IO46", "offsetX": 0, "offsetY": 13 },
+        { "id": "IO9",    "label": "IO9",  "offsetX": 0, "offsetY": 14 },
+        { "id": "IO10",   "label": "IO10", "offsetX": 0, "offsetY": 15 },
+        { "id": "IO11",   "label": "IO11", "offsetX": 0, "offsetY": 16 },
+        { "id": "IO12",   "label": "IO12", "offsetX": 0, "offsetY": 17 },
+        { "id": "IO13",   "label": "IO13", "offsetX": 0, "offsetY": 18 },
+        { "id": "IO14",   "label": "IO14", "offsetX": 0, "offsetY": 19 },
+        { "id": "L5V",    "label": "5V",   "offsetX": 0, "offsetY": 20 },
+        { "id": "LGND",   "label": "GND",  "offsetX": 0, "offsetY": 21 },
+
+        { "id": "RGND1",  "label": "GND",  "offsetX": 9, "offsetY": 0  },
+        { "id": "TX",     "label": "TX",   "offsetX": 9, "offsetY": 1  },
+        { "id": "RX",     "label": "RX",   "offsetX": 9, "offsetY": 2  },
+        { "id": "IO1",    "label": "IO1",  "offsetX": 9, "offsetY": 3  },
+        { "id": "IO2",    "label": "IO2",  "offsetX": 9, "offsetY": 4  },
+        { "id": "IO42",   "label": "IO42", "offsetX": 9, "offsetY": 5  },
+        { "id": "IO41",   "label": "IO41", "offsetX": 9, "offsetY": 6  },
+        { "id": "IO40",   "label": "IO40", "offsetX": 9, "offsetY": 7  },
+        { "id": "IO39",   "label": "IO39", "offsetX": 9, "offsetY": 8  },
+        { "id": "IO38",   "label": "IO38", "offsetX": 9, "offsetY": 9  },
+        { "id": "IO37",   "label": "IO37", "offsetX": 9, "offsetY": 10 },
+        { "id": "IO36",   "label": "IO36", "offsetX": 9, "offsetY": 11 },
+        { "id": "IO35",   "label": "IO35", "offsetX": 9, "offsetY": 12 },
+        { "id": "IO0",    "label": "IO0",  "offsetX": 9, "offsetY": 13 },
+        { "id": "IO45",   "label": "IO45", "offsetX": 9, "offsetY": 14 },
+        { "id": "IO48",   "label": "IO48", "offsetX": 9, "offsetY": 15 },
+        { "id": "IO47",   "label": "IO47", "offsetX": 9, "offsetY": 16 },
+        { "id": "IO21",   "label": "IO21", "offsetX": 9, "offsetY": 17 },
+        { "id": "IO20",   "label": "IO20", "offsetX": 9, "offsetY": 18 },
+        { "id": "IO19",   "label": "IO19", "offsetX": 9, "offsetY": 19 },
+        { "id": "RGND2",  "label": "GND",  "offsetX": 9, "offsetY": 20 },
+        { "id": "RGND3",  "label": "GND",  "offsetX": 9, "offsetY": 21 }
+      ]
+    },
+    {
+      "id": "ams1117-3.3",
+      "name": "AMS1117-3.3 LDO регулятор",
+      "description": "LDO voltage regulator 3.3V 800mA, вход 4.75-12V, выход 3.3V",
+      "category": "power",
+      "widthInHoles": 1,
+      "heightInHoles": 3,
+      "color": "#1a6b3a",
+      "specs": {
+        "Выход": "3.3V",
+        "Ток": "800mA",
+        "Вход": "4.75–12V",
+        "Чип": "AMS1117-3.3"
+      },
+      "pins": [
+        { "id": "gnd", "label": "GND", "offsetX": 0, "offsetY": 0 },
+        { "id": "out", "label": "OUT", "offsetX": 0, "offsetY": 1 },
+        { "id": "in",  "label": "IN",  "offsetX": 0, "offsetY": 2 }
+      ]
+    },
+    {
+      "id": "ams1117-5.0",
+      "name": "AMS1117-5.0 LDO регулятор",
+      "description": "LDO voltage regulator 5.0V 800mA, вход 4.75-12V, выход 5.0V",
+      "category": "power",
+      "widthInHoles": 1,
+      "heightInHoles": 3,
+      "color": "#1a5b8a",
+      "specs": {
+        "Выход": "5.0V",
+        "Ток": "800mA",
+        "Вход": "4.75–12V",
+        "Чип": "AMS1117-5.0"
+      },
+      "pins": [
+        { "id": "gnd", "label": "GND", "offsetX": 0, "offsetY": 0 },
+        { "id": "out", "label": "OUT", "offsetX": 0, "offsetY": 1 },
+        { "id": "in",  "label": "IN",  "offsetX": 0, "offsetY": 2 }
+      ]
+    },
+    {
+      "id": "battery-18650",
+      "name": "Холдер 18650 (3.7V Li-Ion)",
+      "description": "Battery holder for 18650 Li-Ion cell",
+      "category": "power",
+      "widthInHoles": 3,
+      "heightInHoles": 2,
+      "color": "#8b5cf6",
+      "specs": {
+        "Тип": "Li-Ion 18650",
+        "Напряжение": "3.7V (4.2V заряж.)",
+        "Ёмкость": "1800–3500 mAh",
+        "Пины": "+ (левый верх), − (правый низ)"
+      },
+      "pins": [
+        { "id": "plus",  "label": "+", "offsetX": 0, "offsetY": 0 },
+        { "id": "minus", "label": "-", "offsetX": 2, "offsetY": 1 }
+      ]
+    },
+    {
+      "id": "battery-aa",
+      "name": "Холдер AA (1.5V)",
+      "description": "Battery holder for AA (LR6) cell",
+      "category": "power",
+      "widthInHoles": 2,
+      "heightInHoles": 2,
+      "color": "#8b5cf6",
+      "specs": {
+        "Тип": "AA / LR6",
+        "Напряжение": "1.5V (алкалин)",
+        "Ёмкость": "~2700 mAh",
+        "Пины": "+ (левый верх), − (правый низ)"
+      },
+      "pins": [
+        { "id": "plus",  "label": "+", "offsetX": 0, "offsetY": 0 },
+        { "id": "minus", "label": "-", "offsetX": 1, "offsetY": 1 }
+      ]
+    },
+    {
+      "id": "battery-aaa",
+      "name": "Холдер AAA (1.5V)",
+      "description": "Battery holder for AAA (LR03) cell",
+      "category": "power",
+      "widthInHoles": 2,
+      "heightInHoles": 2,
+      "color": "#8b5cf6",
+      "specs": {
+        "Тип": "AAA / LR03",
+        "Напряжение": "1.5V (алкалин)",
+        "Ёмкость": "~1200 mAh",
+        "Пины": "+ (левый верх), − (правый низ)"
+      },
+      "pins": [
+        { "id": "plus",  "label": "+", "offsetX": 0, "offsetY": 0 },
+        { "id": "minus", "label": "-", "offsetX": 1, "offsetY": 1 }
+      ]
+    },
+    {
+      "id": "ir-receiver",
+      "name": "IR Receiver Module",
+      "description": "Infrared receiving module, 38KHz carrier, 5V, digital output, ~10m range",
+      "category": "sensor",
+      "widthInHoles": 3,
+      "heightInHoles": 2,
+      "color": "#1a1a2e",
+      "specs": {
+        "Питание": "5V",
+        "Частота": "38KHz",
+        "Дальность": "~10м",
+        "Выход": "Digital",
+        "Пины": "OUT, VCC, GND"
+      },
+      "pins": [
+        { "id": "out", "label": "OUT", "offsetX": 0, "offsetY": 0 },
+        { "id": "vcc", "label": "VCC", "offsetX": 1, "offsetY": 0 },
+        { "id": "gnd", "label": "GND", "offsetX": 2, "offsetY": 0 }
+      ]
+    },
+    {
+      "id": "jst-2pin",
+      "name": "JST XH 2-pin (2.5mm)",
+      "description": "JST XH connector, 2.5mm pitch, 2 pins",
+      "category": "connector",
+      "widthInHoles": 1,
+      "heightInHoles": 2,
+      "color": "#e8a838",
+      "pins": [
+        { "id": "plus",  "label": "+", "offsetX": 0, "offsetY": 0 },
+        { "id": "minus", "label": "-", "offsetX": 0, "offsetY": 1 }
+      ]
+    },
+    {
+      "id": "jst-3pin",
+      "name": "JST XH 3-pin (2.5mm)",
+      "description": "JST XH connector, 2.5mm pitch, 3 pins",
+      "category": "connector",
+      "widthInHoles": 1,
+      "heightInHoles": 3,
+      "color": "#e8a838",
+      "pins": [
+        { "id": "pin1", "label": "1", "offsetX": 0, "offsetY": 0 },
+        { "id": "pin2", "label": "2", "offsetX": 0, "offsetY": 1 },
+        { "id": "pin3", "label": "3", "offsetX": 0, "offsetY": 2 }
+      ]
+    },
+    {
+      "id": "jst-4pin",
+      "name": "JST XH 4-pin (2.5mm)",
+      "description": "JST XH connector, 2.5mm pitch, 4 pins",
+      "category": "connector",
+      "widthInHoles": 1,
+      "heightInHoles": 4,
+      "color": "#e8a838",
+      "pins": [
+        { "id": "pin1", "label": "1", "offsetX": 0, "offsetY": 0 },
+        { "id": "pin2", "label": "2", "offsetX": 0, "offsetY": 1 },
+        { "id": "pin3", "label": "3", "offsetX": 0, "offsetY": 2 },
+        { "id": "pin4", "label": "4", "offsetX": 0, "offsetY": 3 }
+      ]
+    },
+    {
+      "id": "led",
+      "name": "LED",
+      "description": "Светодиод, 2 вывода: анод (VCC) и катод (GND)",
+      "category": "passive",
+      "widthInHoles": 1,
+      "heightInHoles": 2,
+      "color": "#e63946",
+      "pins": [
+        { "id": "vcc", "label": "VCC", "offsetX": 0, "offsetY": 0 },
+        { "id": "gnd", "label": "GND", "offsetX": 0, "offsetY": 1 }
+      ]
+    }
+  ]
+}

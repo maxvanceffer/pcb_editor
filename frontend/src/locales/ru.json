@@ -1,0 +1,166 @@
+{
+  "auth": {
+    "login": {
+      "title": "Вход",
+      "subtitle": "Tracify — войдите в аккаунт",
+      "email": "Email",
+      "password": "Пароль",
+      "submit": "Войти",
+      "submitting": "Вход...",
+      "noAccount": "Нет аккаунта?",
+      "register": "Зарегистрироваться",
+      "error": "Ошибка входа",
+      "orContinueWith": "или войти через",
+      "oauthError": "Ошибка OAuth входа. Попробуйте ещё раз."
+    },
+    "register": {
+      "title": "Регистрация",
+      "subtitle": "Создайте аккаунт Tracify",
+      "name": "Имя",
+      "optional": "(необязательно)",
+      "email": "Email",
+      "password": "Пароль",
+      "passwordPlaceholder": "минимум 8 символов",
+      "submit": "Создать аккаунт",
+      "submitting": "Создание...",
+      "hasAccount": "Уже есть аккаунт?",
+      "login": "Войти",
+      "errorRequired": "Email и пароль обязательны",
+      "error": "Ошибка регистрации"
+    },
+    "logout": "Выйти",
+    "link": {
+      "title": "Объединение аккаунтов",
+      "description": "Адрес {email} уже зарегистрирован. Мы отправили код подтверждения на этот email. Введите его для объединения с {provider}.",
+      "confirm": "Подтвердить",
+      "confirming": "Проверка...",
+      "cancel": "Отмена",
+      "error": "Неверный или просроченный код"
+    }
+  },
+  "home": {
+    "myProjects": "Мои проекты",
+    "newProject": "+ Новый проект",
+    "loading": "Загрузка...",
+    "empty": "Проектов пока нет",
+    "createFirst": "Создать первый проект",
+    "modified": "Изменён: {date}"
+  },
+  "wizard": {
+    "title": "Новый проект",
+    "step": "Шаг {current} из {total}",
+    "back": "Назад",
+    "next": "Далее",
+    "create": "Создать проект",
+    "creating": "Создание...",
+    "step1": {
+      "nameLabel": "Название проекта *",
+      "namePlaceholder": "Мой PCB проект",
+      "descLabel": "Описание",
+      "descPlaceholder": "Для чего эта плата?"
+    },
+    "step2": {
+      "mm": "В миллиметрах",
+      "holes": "В отверстиях",
+      "widthMm": "Ширина (мм)",
+      "heightMm": "Высота (мм)",
+      "cols": "Колонки (A→{last})",
+      "rows": "Ряды (1→{rows})",
+      "pitch": "Шаг отверстий",
+      "pitch254": "2.54 мм — стандартный perfboard (0.1″)",
+      "pitch200": "2.00 мм — JST PH pitch",
+      "pitch250": "2.50 мм — JST XH pitch",
+      "boardType": "Тип платы",
+      "perfboard": "Perfboard",
+      "perfboardDesc": "Изолированные отверстия, соединения проводами",
+      "stripboard": "Stripboard (Veroboard)",
+      "stripboardDesc": "Горизонтальные медные полосы",
+      "holes_count": "отверстий"
+    }
+  },
+  "account": {
+    "menuItem": "Аккаунт",
+    "title": "Аккаунт",
+    "email": "Email",
+    "name": "Имя",
+    "linkedVia": "Вход через",
+    "dangerZone": "Опасная зона",
+    "deleteWarning": "Удаление аккаунта необратимо. Все проекты будут удалены.",
+    "deleteBtn": "Удалить аккаунт",
+    "deleteConfirmPrompt": "Вы уверены? Это действие нельзя отменить.",
+    "deleteConfirm": "Да, удалить",
+    "deleting": "Удаление...",
+    "cancel": "Отмена",
+    "deleteError": "Ошибка при удалении аккаунта"
+  },
+  "editor": {
+    "saving": "Сохранение...",
+    "saved": "Сохранено {time}",
+    "save": "Сохранить",
+    "logout": "Выйти",
+    "language": "Язык",
+    "langRu": "Русский",
+    "langEn": "English",
+    "theme": "Тема",
+    "themeLight": "Светлая",
+    "themeDark": "Тёмная",
+    "themeAuto": "Системная",
+    "loading": "Загрузка проекта...",
+    "tabs": {
+      "elements": "Элементы",
+      "history": "История"
+    },
+    "tools": {
+      "title": "Инструмент",
+      "select": "Выбор",
+      "hand": "Рука",
+      "wire": "Провод",
+      "zoom": "Масштаб: {value}%",
+      "shortcuts": "Горячие клавиши",
+      "rotate": "Повернуть",
+      "delete": "Удалить",
+      "undo": "Отмена",
+      "redo": "Повтор"
+    },
+    "elements": {
+      "recent": "Последние использованные",
+      "recentEmpty": "Пока нет",
+      "loading": "Загрузка..."
+    },
+    "history": {
+      "undo": "↩ Отмена",
+      "redo": "↪ Повтор",
+      "empty": "История пуста",
+      "actionAdd": "Добавить {type}",
+      "actionRemove": "Удалить {type}",
+      "actionMove": "Переместить элемент",
+      "actionRotate": "Повернуть элемент"
+    },
+    "toolbar": {
+      "placed": "Элементы на плате",
+      "noElements": "Нет элементов",
+      "show": "Показать",
+      "hide": "Скрыть",
+      "hidePinLabels": "Скрыть метки пинов",
+      "showPinLabels": "Показать метки пинов",
+      "elementsList": "Список элементов",
+      "center": "Центрировать",
+      "zoomOut": "Уменьшить",
+      "zoomReset": "Сбросить масштаб",
+      "zoomIn": "Увеличить"
+    },
+    "board": {
+      "rotate90cw": "Повернуть +90°",
+      "rotate90ccw": "Повернуть −90°",
+      "configurePins": "Настроить пины…",
+      "delete": "Удалить",
+      "chess": "Chess",
+      "solid": "Solid",
+      "wireConflict": "Конфликт: {start} → {end}"
+    },
+    "pins": {
+      "title": "Метки пинов — {type}",
+      "conflicts": "Конфликты соединений:"
+    }
+  }
+}

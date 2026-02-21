@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Rounded border -->
+  <rect x="8" y="8" width="240" height="240" rx="32"
+        stroke="currentColor" stroke-width="16" fill="none"/>
+
+  <!-- Center square -->
+  <rect x="88" y="88" width="80" height="80"
+        stroke="currentColor" stroke-width="14" fill="none"/>
+
+  <!-- Center circle -->
+  <circle cx="128" cy="128" r="18"
+          stroke="currentColor" stroke-width="12" fill="none"/>
+
+  <!-- Lines -->
+  <line x1="128" y1="88" x2="128" y2="48"
+        stroke="currentColor" stroke-width="12" stroke-linecap="round"/>
+  <line x1="128" y1="168" x2="128" y2="208"
+        stroke="currentColor" stroke-width="12" stroke-linecap="round"/>
+
+  <line x1="88" y1="128" x2="48" y2="128"
+        stroke="currentColor" stroke-width="12" stroke-linecap="round"/>
+  <line x1="168" y1="128" x2="208" y2="128"
+        stroke="currentColor" stroke-width="12" stroke-linecap="round"/>
+
+  <line x1="88" y1="88" x2="48" y2="48"
+        stroke="currentColor" stroke-width="12" stroke-linecap="round"/>
+  <line x1="168" y1="88" x2="208" y2="48"
+        stroke="currentColor" stroke-width="12" stroke-linecap="round"/>
+
+  <line x1="88" y1="168" x2="48" y2="208"
+        stroke="currentColor" stroke-width="12" stroke-linecap="round"/>
+  <line x1="168" y1="168" x2="208" y2="208"
+        stroke="currentColor" stroke-width="12" stroke-linecap="round"/>
+
+  <!-- End dots -->
+  <circle cx="128" cy="40" r="10" fill="currentColor"/>
+  <circle cx="128" cy="216" r="10" fill="currentColor"/>
+
+  <circle cx="40" cy="128" r="10" fill="currentColor"/>
+  <circle cx="216" cy="128" r="10" fill="currentColor"/>
+
+  <circle cx="40" cy="40" r="10" fill="currentColor"/>
+  <circle cx="216" cy="40" r="10" fill="currentColor"/>
+
+  <circle cx="40" cy="216" r="10" fill="currentColor"/>
+  <circle cx="216" cy="216" r="10" fill="currentColor"/>
+
+</svg>

@@ -1,0 +1,166 @@
+{
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Tracify — sign in to your account",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign In",
+      "submitting": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "register": "Sign Up",
+      "error": "Login error",
+      "orContinueWith": "or continue with",
+      "oauthError": "OAuth login failed. Please try again."
+    },
+    "register": {
+      "title": "Sign Up",
+      "subtitle": "Create your Tracify account",
+      "name": "Name",
+      "optional": "(optional)",
+      "email": "Email",
+      "password": "Password",
+      "passwordPlaceholder": "at least 8 characters",
+      "submit": "Create Account",
+      "submitting": "Creating...",
+      "hasAccount": "Already have an account?",
+      "login": "Sign In",
+      "errorRequired": "Email and password are required",
+      "error": "Registration error"
+    },
+    "logout": "Sign Out",
+    "link": {
+      "title": "Link accounts",
+      "description": "The email {email} is already registered. We sent a confirmation code to it. Enter the code to link with {provider}.",
+      "confirm": "Confirm",
+      "confirming": "Verifying...",
+      "cancel": "Cancel",
+      "error": "Invalid or expired code"
+    }
+  },
+  "home": {
+    "myProjects": "My Projects",
+    "newProject": "+ New Project",
+    "loading": "Loading...",
+    "empty": "No projects yet",
+    "createFirst": "Create your first project",
+    "modified": "Modified: {date}"
+  },
+  "wizard": {
+    "title": "New Project",
+    "step": "Step {current} of {total}",
+    "back": "Back",
+    "next": "Next",
+    "create": "Create Project",
+    "creating": "Creating...",
+    "step1": {
+      "nameLabel": "Project name *",
+      "namePlaceholder": "My PCB project",
+      "descLabel": "Description",
+      "descPlaceholder": "What is this board for?"
+    },
+    "step2": {
+      "mm": "In millimeters",
+      "holes": "In holes",
+      "widthMm": "Width (mm)",
+      "heightMm": "Height (mm)",
+      "cols": "Columns (A→{last})",
+      "rows": "Rows (1→{rows})",
+      "pitch": "Hole pitch",
+      "pitch254": "2.54 mm — standard perfboard (0.1″)",
+      "pitch200": "2.00 mm — JST PH pitch",
+      "pitch250": "2.50 mm — JST XH pitch",
+      "boardType": "Board type",
+      "perfboard": "Perfboard",
+      "perfboardDesc": "Isolated holes, connections by wires",
+      "stripboard": "Stripboard (Veroboard)",
+      "stripboardDesc": "Horizontal copper strips",
+      "holes_count": "holes"
+    }
+  },
+  "account": {
+    "menuItem": "Account",
+    "title": "Account",
+    "email": "Email",
+    "name": "Name",
+    "linkedVia": "Linked via",
+    "dangerZone": "Danger Zone",
+    "deleteWarning": "Deleting your account is irreversible. All projects will be deleted.",
+    "deleteBtn": "Delete account",
+    "deleteConfirmPrompt": "Are you sure? This action cannot be undone.",
+    "deleteConfirm": "Yes, delete",
+    "deleting": "Deleting...",
+    "cancel": "Cancel",
+    "deleteError": "Failed to delete account"
+  },
+  "editor": {
+    "saving": "Saving...",
+    "saved": "Saved {time}",
+    "save": "Save",
+    "logout": "Log out",
+    "language": "Language",
+    "langRu": "Русский",
+    "langEn": "English",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeAuto": "System",
+    "loading": "Loading project...",
+    "tabs": {
+      "elements": "Elements",
+      "history": "History"
+    },
+    "tools": {
+      "title": "Tool",
+      "select": "Select",
+      "hand": "Hand",
+      "wire": "Wire",
+      "zoom": "Zoom: {value}%",
+      "shortcuts": "Keyboard shortcuts",
+      "rotate": "Rotate",
+      "delete": "Delete",
+      "undo": "Undo",
+      "redo": "Redo"
+    },
+    "elements": {
+      "recent": "Recently used",
+      "recentEmpty": "None yet",
+      "loading": "Loading..."
+    },
+    "history": {
+      "undo": "↩ Undo",
+      "redo": "↪ Redo",
+      "empty": "History is empty",
+      "actionAdd": "Add {type}",
+      "actionRemove": "Remove {type}",
+      "actionMove": "Move element",
+      "actionRotate": "Rotate element"
+    },
+    "toolbar": {
+      "placed": "Placed components",
+      "noElements": "No elements",
+      "show": "Show",
+      "hide": "Hide",
+      "hidePinLabels": "Hide pin labels",
+      "showPinLabels": "Show pin labels",
+      "elementsList": "Elements list",
+      "center": "Center",
+      "zoomOut": "Zoom out",
+      "zoomReset": "Reset zoom",
+      "zoomIn": "Zoom in"
+    },
+    "board": {
+      "rotate90cw": "Rotate +90°",
+      "rotate90ccw": "Rotate −90°",
+      "configurePins": "Configure pins…",
+      "delete": "Delete",
+      "chess": "Chess",
+      "solid": "Solid",
+      "wireConflict": "Conflict: {start} → {end}"
+    },
+    "pins": {
+      "title": "Pin labels — {type}",
+      "conflicts": "Connection conflicts:"
+    }
+  }
+}

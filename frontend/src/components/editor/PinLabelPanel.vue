@@ -1,0 +1,123 @@
+<template>
+  <div
+    class="absolute z-30 bg-background border rounded-lg shadow-xl w-72"
+    :style="{ left: x + 'px', top: y + 'px' }"
+    @mousedown.stop
+    @click.stop
+  >
+    <!-- Header -->
+    <div class="flex items-center justify-between px-3 py-2 border-b">
+      <span class="text-sm font-medium">{{ t('editor.pins.title', { type: comp.type }) }}</span>
+      <button class="text-muted-foreground hover:text-foreground text-lg leading-none" @click="$emit('close')">×</button>
+    </div>
+
+    <!-- Список пинов -->
+    <div class="max-h-80 overflow-y-auto">
+      <div
+        v-for="pin in pins"
+        :key="pin.id"
+        class="flex items-center gap-2 px-3 py-1.5 border-b last:border-0"
+      >
+        <!-- Встроенная метка -->
+        <span class="text-xs text-muted-foreground w-8 shrink-0 font-mono">{{ pin.label }}</span>
+
+        <!-- Поле ввода / выбор -->
+        <div class="flex-1 relative">
+          <input
+            type="text"
+            :list="`presets-${pin.id}`"
+            :value="editorStore.getPinLabel(comp.id, pin.id)"
+            @change="editorStore.setPinLabel(comp.id, pin.id, ($event.target as HTMLInputElement).value)"
+            @input="editorStore.setPinLabel(comp.id, pin.id, ($event.target as HTMLInputElement).value)"
+            :placeholder="pin.label || 'Не задано'"
+            class="w-full h-7 text-xs border rounded px-2 bg-background focus:outline-none focus:ring-1 focus:ring-ring"
+          />
+          <datalist :id="`presets-${pin.id}`">
+            <option v-for="p in editorStore.SIGNAL_PRESETS" :key="p" :value="p" />
+          </datalist>
+        </div>
+
+        <!-- Быстрые пресеты -->
+        <div class="flex gap-0.5 shrink-0">
+          <button
+            v-for="preset in quickPresets"
+            :key="preset"
+            class="text-[9px] px-1 py-0.5 rounded border hover:bg-accent transition-colors"
+            :class="editorStore.getPinLabel(comp.id, pin.id) === preset ? 'bg-primary text-primary-foreground border-primary' : 'text-muted-foreground'"
+            @click="togglePreset(comp.id, pin.id, preset)"
+          >{{ preset }}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Предупреждения о несовместимых соединениях -->
+    <div v-if="conflicts.length > 0" class="px-3 py-2 border-t bg-destructive/10">
+      <p class="text-xs font-medium text-destructive mb-1">{{ t('editor.pins.conflicts') }}</p>
+      <div v-for="c in conflicts" :key="c" class="text-xs text-destructive">{{ c }}</div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useEditorStore } from '@/stores/editorStore'
+import { useProjectStore } from '@/stores/projectStore'
+import { WireTrace } from '@/lib/components/WireTrace'
+import { BaseComponent } from '@/lib/components/BaseComponent'
+
+const { t } = useI18n()
+
+const props = defineProps<{
+  comp: BaseComponent
+  x: number
+  y: number
+}>()
+
+defineEmits<{ close: [] }>()
+
+const editorStore = useEditorStore()
+const projectStore = useProjectStore()
+
+const pins = computed(() => props.comp.getAbsolutePinPositions())
+const quickPresets = ['GND', 'VCC', '3V3', '5V', 'SDA', 'SCL']
+
+function togglePreset(compId: string, pinId: string, preset: string) {
+  const current = editorStore.getPinLabel(compId, pinId)
+  editorStore.setPinLabel(compId, pinId, current === preset ? '' : preset)
+}
+
+// Проверяем конфликты: wire соединяет пин с меткой GND с пином VCC/5V/3V3 и наоборот
+const POWER_POSITIVE = new Set(['VCC', '5V', '3V3', 'PWR'])
+const POWER_NEGATIVE = new Set(['GND'])
+
+const conflicts = computed(() => {
+  const result: string[] = []
+  for (const wire of projectStore.wires) {
+    if (!(wire instanceof WireTrace)) continue
+    const startPin = findPinAtPos(wire.startPosition.x, wire.startPosition.y)
+    const endPin = findPinAtPos(wire.endPosition.x, wire.endPosition.y)
+    if (!startPin || !endPin) continue
+    const startLabel = (editorStore.getPinLabel(startPin.compId, startPin.pinId) || startPin.builtinLabel).toUpperCase()
+    const endLabel = (editorStore.getPinLabel(endPin.compId, endPin.pinId) || endPin.builtinLabel).toUpperCase()
+    if (
+      (POWER_NEGATIVE.has(startLabel) && POWER_POSITIVE.has(endLabel)) ||
+      (POWER_POSITIVE.has(startLabel) && POWER_NEGATIVE.has(endLabel))
+    ) {
+      result.push(`${startPin.compId.slice(0, 6)}… ${startLabel} → ${endPin.compId.slice(0, 6)}… ${endLabel}`)
+    }
+  }
+  return result
+})
+
+function findPinAtPos(x: number, y: number) {
+  for (const comp of projectStore.placedComponents) {
+    for (const pin of comp.getAbsolutePinPositions()) {
+      if (pin.x === x && pin.y === y) {
+        return { compId: comp.id, pinId: pin.id, builtinLabel: pin.label }
+      }
+    }
+  }
+  return null
+}
+</script>
