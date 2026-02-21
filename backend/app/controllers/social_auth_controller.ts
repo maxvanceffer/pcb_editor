@@ -25,20 +25,33 @@ export default class SocialAuthController {
     return ally.use('google').redirect()
   }
 
-  async googleCallback({ ally, response }: HttpContext) {
+  async googleCallback({ ally, response, logger }: HttpContext) {
     const google = ally.use('google')
 
-    if (google.accessDenied() || google.stateMisMatch() || google.hasError()) {
+    const accessDenied = google.accessDenied()
+    const stateMisMatch = google.stateMisMatch()
+    const hasError = google.hasError()
+
+    logger.info('Google callback: accessDenied=%s stateMisMatch=%s hasError=%s', accessDenied, stateMisMatch, hasError)
+
+    if (hasError) {
+      logger.error('Google OAuth error: %s', google.getError())
+    }
+
+    if (accessDenied || stateMisMatch || hasError) {
+      logger.warn('Google OAuth failed, redirecting to error page')
       return response.redirect(`${FRONTEND_URL()}/login?error=oauth_failed`)
     }
 
     const googleUser = await google.user()
+    logger.info('Google user fetched: email=%s id=%s', googleUser.email, googleUser.id)
 
     if (!googleUser.email) {
+      logger.warn('Google user has no email')
       return response.redirect(`${FRONTEND_URL()}/login?error=no_email`)
     }
 
-    return this.handleOAuthCallback(response, {
+    return this.handleOAuthCallback(response, logger, {
       provider: 'google',
       providerId: googleUser.id,
       email: googleUser.email,
@@ -53,14 +66,26 @@ export default class SocialAuthController {
     return ally.use('github').redirect()
   }
 
-  async githubCallback({ ally, response }: HttpContext) {
+  async githubCallback({ ally, response, logger }: HttpContext) {
     const github = ally.use('github')
 
-    if (github.accessDenied() || github.stateMisMatch() || github.hasError()) {
+    const accessDenied = github.accessDenied()
+    const stateMisMatch = github.stateMisMatch()
+    const hasError = github.hasError()
+
+    logger.info('GitHub callback: accessDenied=%s stateMisMatch=%s hasError=%s', accessDenied, stateMisMatch, hasError)
+
+    if (hasError) {
+      logger.error('GitHub OAuth error: %s', github.getError())
+    }
+
+    if (accessDenied || stateMisMatch || hasError) {
+      logger.warn('GitHub OAuth failed, redirecting to error page')
       return response.redirect(`${FRONTEND_URL()}/login?error=oauth_failed`)
     }
 
     const githubUser = await github.user()
+    logger.info('GitHub user fetched: email=%s id=%s', githubUser.email, githubUser.id)
 
     let email = githubUser.email
     if (!email) {
@@ -71,13 +96,15 @@ export default class SocialAuthController {
       const emails = (await emailsRes.json()) as { email: string; verified: boolean; primary: boolean }[]
       const primary = emails.find((e) => e.verified && e.primary)
       email = primary?.email ?? null
+      logger.info('GitHub fallback email fetch: found=%s', email)
     }
 
     if (!email) {
+      logger.warn('GitHub user has no email')
       return response.redirect(`${FRONTEND_URL()}/login?error=no_email`)
     }
 
-    return this.handleOAuthCallback(response, {
+    return this.handleOAuthCallback(response, logger, {
       provider: 'github',
       providerId: String(githubUser.id),
       email,
@@ -137,9 +164,11 @@ export default class SocialAuthController {
 
   private async handleOAuthCallback(
     response: HttpContext['response'],
+    logger: HttpContext['logger'],
     params: PendingOAuthData,
   ) {
     const { provider, providerId, email, fullName, avatarUrl } = params
+    logger.info('handleOAuthCallback: provider=%s email=%s FRONTEND_URL=%s', provider, email, FRONTEND_URL())
 
     // 1. Найти по provider ID — возвращающийся пользователь
     const existingByProvider = await User.query()
@@ -148,18 +177,22 @@ export default class SocialAuthController {
       .first()
 
     if (existingByProvider) {
+      logger.info('Found existing user by provider: id=%s', existingByProvider.id)
       if (avatarUrl && !existingByProvider.avatarUrl) {
         existingByProvider.avatarUrl = avatarUrl
         await existingByProvider.save()
       }
       const token = await User.accessTokens.create(existingByProvider)
-      return response.redirect(`${FRONTEND_URL()}/login?token=${token.value!.release()}`)
+      const redirectUrl = `${FRONTEND_URL()}/login?token=${token.value!.release()}`
+      logger.info('Redirecting existing user to: %s', redirectUrl.split('?')[0])
+      return response.redirect(redirectUrl)
     }
 
     // 2. Найти по email — пользователь с паролем хочет войти через OAuth
     const existingByEmail = await User.findBy('email', email)
 
     if (existingByEmail) {
+      logger.info('Found existing user by email, sending link code')
       // Отправляем код подтверждения для объединения аккаунтов
       const code = generateCode()
       existingByEmail.linkCode = code
@@ -191,6 +224,7 @@ export default class SocialAuthController {
     }
 
     // 3. Новый пользователь
+    logger.info('Creating new user for email=%s', email)
     const newUser = new User()
     newUser.email = email
     newUser.fullName = fullName
@@ -201,6 +235,8 @@ export default class SocialAuthController {
     await newUser.save()
 
     const token = await User.accessTokens.create(newUser)
-    return response.redirect(`${FRONTEND_URL()}/login?token=${token.value!.release()}`)
+    const redirectUrl = `${FRONTEND_URL()}/login?token=${token.value!.release()}`
+    logger.info('Redirecting new user to: %s', redirectUrl.split('?')[0])
+    return response.redirect(redirectUrl)
   }
 }
