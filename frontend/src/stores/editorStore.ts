@@ -37,6 +37,16 @@ export const useEditorStore = defineStore('editor', () => {
   // Недавно использованные (ids)
   const recentlyUsed = ref<string[]>([])
 
+  // Закреплённые компоненты в сайдбаре (ids)
+  const pinnedComponents = ref<string[]>(
+    JSON.parse(localStorage.getItem('pinnedComponents') ?? '[]'),
+  )
+
+  function setPinnedComponents(ids: string[]) {
+    pinnedComponents.value = ids
+    localStorage.setItem('pinnedComponents', JSON.stringify(ids))
+  }
+
   // Размеры SVG платы и контейнера (обновляются из PCBBoard)
   const svgWidth = ref(0)
   const svgHeight = ref(0)
@@ -151,7 +161,7 @@ export const useEditorStore = defineStore('editor', () => {
     movingElementId, movePreviewPos,
     selectedElementId,
     wireStart, wirePreviewEnd,
-    recentlyUsed,
+    recentlyUsed, pinnedComponents, setPinnedComponents,
     hiddenElementIds, toggleElementVisibility, isElementHidden,
     svgWidth, svgHeight, containerWidth, containerHeight, centerBoard,
     showPinLabels, pinUserLabels, SIGNAL_PRESETS,

@@ -125,7 +125,16 @@
     "elements": {
       "recent": "Recently used",
       "recentEmpty": "None yet",
-      "loading": "Loading..."
+      "loading": "Loading...",
+      "pinned": "My components",
+      "pinnedEmpty": "Click «Manage» to add components",
+      "manage": "Manage",
+      "pickerTitle": "Choose components",
+      "pickerSearch": "Search...",
+      "pickerAll": "All",
+      "pickerEmpty": "Nothing found",
+      "pickerSelected": "Selected: {count}",
+      "pickerDone": "Done"
     },
     "history": {
       "undo": "↩ Undo",

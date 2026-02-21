@@ -125,7 +125,16 @@
     "elements": {
       "recent": "Последние использованные",
       "recentEmpty": "Пока нет",
-      "loading": "Загрузка..."
+      "loading": "Загрузка...",
+      "pinned": "Мои компоненты",
+      "pinnedEmpty": "Нажмите «Управлять» чтобы добавить",
+      "manage": "Управлять",
+      "pickerTitle": "Выбор компонентов",
+      "pickerSearch": "Поиск...",
+      "pickerAll": "Все",
+      "pickerEmpty": "Ничего не найдено",
+      "pickerSelected": "Выбрано: {count}",
+      "pickerDone": "Готово"
     },
     "history": {
       "undo": "↩ Отмена",
