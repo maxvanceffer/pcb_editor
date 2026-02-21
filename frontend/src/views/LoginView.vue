@@ -1,5 +1,58 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-background">
+    <!-- Переключалки языка и темы -->
+    <div class="fixed top-4 right-4 flex gap-2">
+      <!-- Язык -->
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Button variant="outline" size="sm" class="gap-1.5">
+            <Languages class="h-4 w-4" />
+            {{ locale === 'ru' ? 'RU' : 'EN' }}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem @click="setLocale('ru')">
+            <Check v-if="locale === 'ru'" class="h-4 w-4 mr-2" />
+            <span v-else class="h-4 w-4 mr-2" />
+            {{ t('editor.langRu') }}
+          </DropdownMenuItem>
+          <DropdownMenuItem @click="setLocale('en')">
+            <Check v-if="locale === 'en'" class="h-4 w-4 mr-2" />
+            <span v-else class="h-4 w-4 mr-2" />
+            {{ t('editor.langEn') }}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <!-- Тема -->
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Button variant="outline" size="sm">
+            <Sun v-if="currentTheme === 'light'" class="h-4 w-4" />
+            <Moon v-else-if="currentTheme === 'dark'" class="h-4 w-4" />
+            <Monitor v-else class="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem @click="setTheme('light')">
+            <Check v-if="currentTheme === 'light'" class="h-4 w-4 mr-2" />
+            <span v-else class="h-4 w-4 mr-2" />
+            <Sun class="h-4 w-4 mr-2" />{{ t('editor.themeLight') }}
+          </DropdownMenuItem>
+          <DropdownMenuItem @click="setTheme('dark')">
+            <Check v-if="currentTheme === 'dark'" class="h-4 w-4 mr-2" />
+            <span v-else class="h-4 w-4 mr-2" />
+            <Moon class="h-4 w-4 mr-2" />{{ t('editor.themeDark') }}
+          </DropdownMenuItem>
+          <DropdownMenuItem @click="setTheme('auto')">
+            <Check v-if="currentTheme === 'auto'" class="h-4 w-4 mr-2" />
+            <span v-else class="h-4 w-4 mr-2" />
+            <Monitor class="h-4 w-4 mr-2" />{{ t('editor.themeAuto') }}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+
     <Card class="w-[400px]">
       <CardHeader>
         <CardTitle class="text-2xl">{{ t('auth.login.title') }}</CardTitle>
@@ -88,8 +141,10 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { Github } from 'lucide-vue-next'
+import { Github, Sun, Moon, Monitor, Languages, Check } from 'lucide-vue-next'
+import { useColorMode } from '@vueuse/core'
 import { useAuthStore } from '@/stores/authStore'
+import { i18n } from '@/main'
 import api from '@/lib/api'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -103,8 +158,29 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const colorMode = useColorMode({ attribute: 'class', selector: 'html' })
+const currentTheme = ref<'light' | 'dark' | 'auto'>(
+  (localStorage.getItem('theme') as 'light' | 'dark' | 'auto') ?? 'auto'
+)
+
+function setLocale(lang: 'ru' | 'en') {
+  i18n.global.locale.value = lang
+  localStorage.setItem('locale', lang)
+}
+
+function setTheme(theme: 'light' | 'dark' | 'auto') {
+  currentTheme.value = theme
+  colorMode.value = theme === 'auto' ? 'auto' : theme
+  localStorage.setItem('theme', theme)
+}
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()

@@ -9,6 +9,14 @@ import en from './locales/en.json'
 
 const savedLocale = localStorage.getItem('locale') ?? 'ru'
 
+// Применяем тему до монтирования приложения чтобы избежать мигания
+const savedTheme = localStorage.getItem('theme') ?? 'auto'
+if (savedTheme === 'dark') {
+  document.documentElement.classList.add('dark')
+} else if (savedTheme === 'light') {
+  document.documentElement.classList.remove('dark')
+}
+
 export const i18n = createI18n({
   legacy: false,
   locale: savedLocale,
