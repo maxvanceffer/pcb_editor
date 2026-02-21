@@ -1,6 +1,6 @@
 [build]
 builder = "nixpacks"
-buildCommand = "cd frontend && npm install && npm run build && cp -r dist ../backend/public && cd ../backend && npm install && npm run build"
+buildCommand = "cd frontend && npm install && npm run build && cd ../backend && npm install && npm run build && cp -r ../frontend/dist public && cp -r public build/public"
 
 [deploy]
 startCommand = "cd backend && node build/ace.js migration:run --force && node build/bin/server.js"
