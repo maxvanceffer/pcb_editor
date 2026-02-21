@@ -1,4 +1,5 @@
 import { defineConfig, stores } from '@adonisjs/session'
+import app from '@adonisjs/core/services/app'
 
 const sessionConfig = defineConfig({
   age: '2h',
@@ -10,7 +11,7 @@ const sessionConfig = defineConfig({
   cookie: {
     path: '/',
     httpOnly: true,
-    secure: false,
+    secure: app.inProduction,
     sameSite: 'lax',
   },
 
