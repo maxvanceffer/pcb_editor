@@ -3,7 +3,7 @@ builder = "nixpacks"
 buildCommand = "cd backend && npm install && npm run build"
 
 [build.nixpacksPlan.phases.setup]
-nixPkgs = ["nodejs_20"]
+nixPkgs = ["nodejs_24"]
 
 [deploy]
 startCommand = "cd backend/build && node bin/server.js"
