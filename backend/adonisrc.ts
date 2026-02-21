@@ -62,6 +62,13 @@ export default defineConfig({
   */
   preloads: [() => import('#start/routes'), () => import('#start/kernel')],
 
+  metaFiles: [
+    {
+      pattern: 'public/**',
+      reloadServer: false,
+    },
+  ],
+
   /*
   |--------------------------------------------------------------------------
   | Tests
