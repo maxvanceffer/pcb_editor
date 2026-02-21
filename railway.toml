@@ -2,9 +2,6 @@
 builder = "nixpacks"
 buildCommand = "cd backend && npm install && npm run build"
 
-[build.nixpacksPlan.phases.setup]
-nixPkgs = ["nodejs_22"]
-
 [deploy]
 startCommand = "cd backend/build && node bin/server.js"
 healthcheckPath = "/api/health"
