@@ -1,6 +1,7 @@
 import router from '@adonisjs/core/services/router'
 import app from '@adonisjs/core/services/app'
 import { middleware } from './kernel.js'
+import { readdir, access } from 'node:fs/promises'
 
 // Health check (для Railway)
 router.get('/api/health', async ({ response }) => {
@@ -42,6 +43,24 @@ router
   .use(middleware.auth())
 
 // SPA fallback — отдаём index.html для всех не-API маршрутов
-router.get('*', async ({ response }) => {
-  return response.download(app.publicPath('index.html'))
+router.get('*', async ({ response, logger }) => {
+  const publicDir = app.publicPath()
+  const indexPath = app.publicPath('index.html')
+
+  try {
+    const files = await readdir(publicDir)
+    logger.info('public/ contents: %s', files.join(', '))
+  } catch {
+    logger.error('public/ dir not found at: %s', publicDir)
+  }
+
+  try {
+    await access(indexPath)
+    logger.info('index.html found at: %s', indexPath)
+  } catch {
+    logger.error('index.html NOT found at: %s', indexPath)
+    return response.status(404).send('index.html not found at: ' + indexPath)
+  }
+
+  return response.download(indexPath)
 })
