@@ -24,7 +24,7 @@ export default class AuthController {
     })
   }
 
-  async login({ request, response, auth }: HttpContext) {
+  async login({ request, response }: HttpContext) {
     const { email, password } = request.only(['email', 'password'])
 
     try {

@@ -64,7 +64,11 @@ export default class SocialAuthController {
 
     let email = githubUser.email
     if (!email) {
-      const emails = await github.userEmails()
+      const token = await github.accessToken()
+      const emailsRes = await fetch('https://api.github.com/user/emails', {
+        headers: { Authorization: `Bearer ${token.token}`, 'User-Agent': 'tracify-app' },
+      })
+      const emails = (await emailsRes.json()) as { email: string; verified: boolean; primary: boolean }[]
       const primary = emails.find((e) => e.verified && e.primary)
       email = primary?.email ?? null
     }

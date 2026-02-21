@@ -14,7 +14,10 @@ const sessionConfig = defineConfig({
     sameSite: 'lax',
   },
 
-  store: stores.cookie(),
+  store: 'cookie',
+  stores: {
+    cookie: stores.cookie(),
+  },
 })
 
 export default sessionConfig
