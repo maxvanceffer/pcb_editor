@@ -25,7 +25,6 @@ export class BatteryHolder extends BaseComponent {
   readonly color = "#8b5cf6";
   readonly pins: Pin[];
   readonly batteryType: BatteryType;
-  Н;
 
   constructor(
     batteryType: BatteryType,

@@ -64,12 +64,18 @@ import { useI18n } from 'vue-i18n'
 import { useEditorStore } from '@/stores/editorStore'
 import { useProjectStore } from '@/stores/projectStore'
 import { WireTrace } from '@/lib/components/WireTrace'
-import { BaseComponent } from '@/lib/components/BaseComponent'
+import type { Pin, GridPosition } from '@/lib/components/types'
+
+interface ComponentLike {
+  id: string
+  type: string
+  getAbsolutePinPositions(): Array<Pin & GridPosition>
+}
 
 const { t } = useI18n()
 
 const props = defineProps<{
-  comp: BaseComponent
+  comp: ComponentLike
   x: number
   y: number
 }>()
