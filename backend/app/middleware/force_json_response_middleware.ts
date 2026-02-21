@@ -8,8 +8,12 @@ import type { NextFn } from '@adonisjs/core/types/http'
  */
 export default class ForceJsonResponseMiddleware {
   async handle({ request }: HttpContext, next: NextFn) {
-    const headers = request.headers()
-    headers.accept = 'application/json'
+    const url = request.url()
+    // OAuth callback маршруты делают redirect — не форсируем JSON
+    if (!url.includes('/auth/google/') && !url.includes('/auth/github/')) {
+      const headers = request.headers()
+      headers.accept = 'application/json'
+    }
 
     return next()
   }
