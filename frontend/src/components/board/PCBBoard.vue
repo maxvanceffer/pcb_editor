@@ -202,6 +202,8 @@
           @click.stop="selectElement(comp.id)"
           @mousedown.stop="onComponentMouseDown($event, comp.id)"
           @contextmenu.prevent.stop="openCtxMenu($event, comp.id, comp.type, true)"
+          @mouseenter="hoveredCompId = comp.id"
+          @mouseleave="hoveredCompId = null"
         >
           <!-- Тело компонента -->
           <rect
@@ -336,6 +338,51 @@
         />
       </svg>
     </div>
+
+    <!-- Component hover tooltip -->
+    <Transition name="tooltip-fade">
+      <div
+        v-if="showTooltip && tooltipStyle && hoveredComp"
+        class="absolute z-40 pointer-events-none"
+        :style="tooltipStyle"
+      >
+        <div class="bg-popover border border-border rounded-lg shadow-xl p-3 w-56 text-sm">
+          <!-- Header: image + name -->
+          <div class="flex items-center gap-2.5 mb-2">
+            <img
+              v-if="getComponentImage(hoveredComp.type)"
+              :src="getComponentImage(hoveredComp.type)!"
+              class="h-10 w-10 object-contain rounded bg-muted shrink-0"
+              alt=""
+            />
+            <div class="min-w-0">
+              <div class="font-semibold text-foreground leading-tight truncate">{{ hoveredComp.name }}</div>
+              <div class="text-xs text-muted-foreground font-mono">{{ hoveredComp.type }}</div>
+            </div>
+          </div>
+
+          <!-- User description -->
+          <p
+            v-if="editorStore.getComponentDescription(hoveredComp.id)"
+            class="text-xs text-muted-foreground mb-2 border-t pt-2"
+          >{{ editorStore.getComponentDescription(hoveredComp.id) }}</p>
+
+          <!-- Pins -->
+          <div class="border-t pt-2 space-y-0.5">
+            <div
+              v-for="pin in hoveredComp.getAbsolutePinPositions()"
+              :key="pin.id"
+              class="flex items-center justify-between gap-2 text-xs"
+            >
+              <span class="text-muted-foreground font-mono shrink-0">{{ pin.id }}</span>
+              <span class="text-foreground truncate text-right">
+                {{ editorStore.getPinLabel(hoveredComp.id, pin.id) || pin.label }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -350,8 +397,11 @@ import { WireTrace } from '@/lib/components/WireTrace'
 import { BaseComponent } from '@/lib/components/BaseComponent'
 import type { GridPosition } from '@/lib/components/types'
 import PinLabelPanel from '@/components/editor/PinLabelPanel.vue'
+import { useSettingsStore } from '@/stores/settingsStore'
+import { getComponentImage } from '@/lib/components/componentImages'
 
 const { t } = useI18n()
+const settingsStore = useSettingsStore()
 
 const HOLE_RADIUS = 4
 const DRILL_RADIUS = 2
@@ -381,6 +431,50 @@ const editorStore = useEditorStore()
 const historyStore = useHistoryStore()
 
 const canvasWrap = ref<HTMLDivElement>()
+
+// ─── Hover tooltip ───────────────────────────────────────────────────────────
+const hoveredCompId = ref<string | null>(null)
+const mousePos = ref<{ x: number; y: number }>({ x: 0, y: 0 })
+
+const hoveredComp = computed(() => {
+  if (!hoveredCompId.value) return null
+  const el = projectStore.getElementById(hoveredCompId.value)
+  return el instanceof BaseComponent ? el : null
+})
+
+const tooltipPosition = computed(() => settingsStore.settings.tooltipPosition ?? 'component')
+
+// Returns tooltip CSS position based on user setting
+const tooltipStyle = computed(() => {
+  const pos = tooltipPosition.value
+  if (pos === 'off' || !hoveredComp.value) return null
+  if (pos === 'component') {
+    const wrap = canvasWrap.value
+    const w = wrap?.clientWidth ?? 800
+    const h = wrap?.clientHeight ?? 600
+    const mx = mousePos.value.x
+    const my = mousePos.value.y
+    // Flip horizontally if too close to right edge (tooltip is 224px wide + 16px gap)
+    const flipX = mx + 240 > w
+    // Flip vertically if too close to bottom edge (tooltip ~280px tall)
+    const flipY = my + 300 > h
+    return {
+      left: flipX ? undefined : `${mx + 16}px`,
+      right: flipX ? `${w - mx + 8}px` : undefined,
+      top: flipY ? undefined : `${my + 16}px`,
+      bottom: flipY ? `${h - my + 8}px` : undefined,
+    }
+  }
+  if (pos === 'top-left')     return { left: '12px', top: '12px' }
+  if (pos === 'top-right')    return { right: '12px', top: '12px' }
+  if (pos === 'bottom-left')  return { left: '12px', bottom: '12px' }
+  if (pos === 'bottom-right') return { right: '12px', bottom: '12px' }
+  return null
+})
+
+const showTooltip = computed(() =>
+  tooltipPosition.value !== 'off' && !!hoveredComp.value && !movingId.value && !ctxMenu.value,
+)
 
 const boardConfig = computed(() => projectStore.boardConfig)
 const boardCols = computed(() => Math.max(1, Math.floor(boardConfig.value.widthMm / boardConfig.value.holePitchMm)))
@@ -599,6 +693,12 @@ function onMouseDown(e: MouseEvent) {
 }
 
 function onMouseMove(e: MouseEvent) {
+  // Track cursor position for tooltip
+  if (canvasWrap.value) {
+    const rect = canvasWrap.value.getBoundingClientRect()
+    mousePos.value = { x: e.clientX - rect.left, y: e.clientY - rect.top }
+  }
+
   // Pan
   if (isPanning.value && panStart) {
     editorStore.panX = panStart.px + (e.clientX - panStart.mx)
@@ -623,6 +723,7 @@ function onMouseMove(e: MouseEvent) {
 
 function onMouseLeave() {
   wireHoverPos.value = null
+  hoveredCompId.value = null
   onMouseUp()
 }
 
@@ -753,4 +854,8 @@ function onDrop(e: DragEvent) {
 <style scoped>
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+.tooltip-fade-enter-active { transition: opacity 0.15s ease, transform 0.15s ease; }
+.tooltip-fade-leave-active { transition: opacity 0.1s ease; }
+.tooltip-fade-enter-from { opacity: 0; transform: translateY(4px); }
+.tooltip-fade-leave-to { opacity: 0; }
 </style>

@@ -176,6 +176,17 @@
       "notSet": "Not set",
       "conflicts": "Connection conflicts:",
       "fixedPins": "Pin assignments are fixed for this component"
+    },
+    "settings": {
+      "title": "Editor Settings",
+      "groupTooltip": "Component Tooltip",
+      "tooltipPosition": "Show tooltip",
+      "tooltipOff": "Disabled",
+      "tooltipComponent": "Near component",
+      "tooltipTopLeft": "Top left corner",
+      "tooltipTopRight": "Top right corner",
+      "tooltipBottomLeft": "Bottom left corner",
+      "tooltipBottomRight": "Bottom right corner"
     }
   }
 }

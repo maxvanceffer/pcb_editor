@@ -4,9 +4,12 @@ import { useColorMode } from '@vueuse/core'
 import api from '@/lib/api'
 import { i18n } from '@/main'
 
+export type TooltipPosition = 'component' | 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'off'
+
 export interface UserSettings {
   theme?: 'light' | 'dark' | 'auto'
   locale?: 'ru' | 'en'
+  tooltipPosition?: TooltipPosition
   [key: string]: unknown
 }
 

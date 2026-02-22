@@ -176,6 +176,17 @@
       "notSet": "Не задано",
       "conflicts": "Конфликты соединений:",
       "fixedPins": "Назначения пинов фиксированы для этого компонента"
+    },
+    "settings": {
+      "title": "Настройки редактора",
+      "groupTooltip": "Подсказка компонента",
+      "tooltipPosition": "Показывать подсказку",
+      "tooltipOff": "Отключена",
+      "tooltipComponent": "Рядом с компонентом",
+      "tooltipTopLeft": "Верхний левый угол",
+      "tooltipTopRight": "Верхний правый угол",
+      "tooltipBottomLeft": "Нижний левый угол",
+      "tooltipBottomRight": "Нижний правый угол"
     }
   }
 }

@@ -14,6 +14,13 @@
           class="text-xs border rounded px-3 py-1.5 hover:bg-accent transition-colors"
           @click="save"
         >{{ t('editor.save') }}</button>
+        <button
+          class="flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+          :title="t('editor.settings.title')"
+          @click="settingsDialogOpen = true"
+        >
+          <Settings class="h-4 w-4" />
+        </button>
 
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
@@ -119,6 +126,7 @@
     </div>
 
   <AccountDialog v-model:open="accountDialogOpen" />
+  <EditorSettingsDialog v-model:open="settingsDialogOpen" />
   </div>
 </template>
 
@@ -127,7 +135,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTitle } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
-import { LogOut, Languages, UserRound, Sun, Moon, MonitorCheck } from 'lucide-vue-next'
+import { LogOut, Languages, UserRound, Sun, Moon, MonitorCheck, Settings } from 'lucide-vue-next'
 import { useProjectStore } from '@/stores/projectStore'
 import { useEditorStore } from '@/stores/editorStore'
 import { useHistoryStore } from '@/stores/historyStore'
@@ -154,6 +162,7 @@ import HistoryTab from '@/components/editor/HistoryTab.vue'
 import BottomToolbar from '@/components/editor/BottomToolbar.vue'
 import AccountDialog from '@/components/AccountDialog.vue'
 import LogoIcon from '@/components/LogoIcon.vue'
+import EditorSettingsDialog from '@/components/EditorSettingsDialog.vue'
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -165,6 +174,7 @@ const authStore = useAuthStore()
 const settingsStore = useSettingsStore()
 
 const accountDialogOpen = ref(false)
+const settingsDialogOpen = ref(false)
 
 async function setLocale(lang: 'ru' | 'en') {
   await settingsStore.patch({ locale: lang })
