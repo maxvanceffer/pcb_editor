@@ -15,7 +15,7 @@ export default class AuthController {
       return response.conflict({ message: 'Email already in use' })
     }
 
-    const user = await User.create({ email, password, fullName: fullName ?? null })
+    const user = await User.create({ email, password, fullName: fullName ?? null, settings: {} })
     const token = await User.accessTokens.create(user)
 
     return response.created({

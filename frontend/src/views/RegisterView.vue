@@ -64,8 +64,16 @@ async function submit() {
     await auth.register(email.value, password.value, fullName.value || undefined)
     router.push('/')
   } catch (e: unknown) {
-    const err = e as { response?: { data?: { message?: string } } }
-    error.value = err.response?.data?.message ?? t('auth.register.error')
+    const err = e as { response?: { status?: number; data?: { message?: string } } }
+    const status = err.response?.status
+    const serverMessage = err.response?.data?.message
+    // Known user-facing errors (conflict, bad request)
+    if (status === 409 || status === 400) {
+      error.value = serverMessage ?? t('auth.register.error')
+    } else {
+      console.error('[register]', e)
+      error.value = t('auth.register.error')
+    }
   } finally {
     loading.value = false
   }
