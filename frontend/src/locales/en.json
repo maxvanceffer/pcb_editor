@@ -11,7 +11,8 @@
       "register": "Sign Up",
       "error": "Login error",
       "orContinueWith": "or continue with",
-      "oauthError": "OAuth login failed. Please try again."
+      "oauthError": "OAuth login failed. Please try again.",
+      "lastUsed": "Last used:"
     },
     "register": {
       "title": "Sign Up",

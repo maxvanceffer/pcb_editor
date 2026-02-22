@@ -84,15 +84,25 @@
         </div>
 
         <div class="flex gap-2 w-full">
-          <Button variant="outline" class="flex-1 gap-2" @click="loginWithGoogle">
-            <img src="/google.svg" class="h-4 w-4" alt="Google" />
-            Google
+          <Button variant="outline" class="flex-1 gap-2 flex-col h-auto py-2" @click="loginWithGoogle">
+            <div class="flex items-center gap-2">
+              <img src="/google.svg" class="h-4 w-4" alt="Google" />
+              Google
+            </div>
+            <span v-if="lastLogin?.method === 'google'" class="text-[10px] text-muted-foreground leading-none truncate max-w-full px-1">{{ lastLogin.email }}</span>
           </Button>
-          <Button variant="outline" class="flex-1 gap-2" @click="loginWithGithub">
-            <Github class="h-4 w-4" />
-            GitHub
+          <Button variant="outline" class="flex-1 gap-2 flex-col h-auto py-2" @click="loginWithGithub">
+            <div class="flex items-center gap-2">
+              <Github class="h-4 w-4" />
+              GitHub
+            </div>
+            <span v-if="lastLogin?.method === 'github'" class="text-[10px] text-muted-foreground leading-none truncate max-w-full px-1">{{ lastLogin.email }}</span>
           </Button>
         </div>
+        <!-- Last used: email -->
+        <p v-if="lastLogin?.method === 'email'" class="text-xs text-muted-foreground text-center">
+          {{ t('auth.login.lastUsed') }} <span class="font-medium text-foreground">{{ lastLogin.email }}</span>
+        </p>
 
         <p v-if="oauthError" class="text-sm text-destructive text-center">{{ oauthError }}</p>
 
@@ -185,7 +195,9 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
-const email = ref('')
+const lastLogin = auth.getLastLogin()
+
+const email = ref(lastLogin?.method === 'email' ? lastLogin.email : '')
 const password = ref('')
 const error = ref('')
 const loading = ref(false)
