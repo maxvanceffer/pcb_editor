@@ -31,6 +31,8 @@ export default class ProjectsController {
         boardType: 'perfboard',
       },
       elements: [],
+      pinUserLabels: {},
+      componentDescriptions: {},
     })
 
     return response.created({
@@ -55,6 +57,8 @@ export default class ProjectsController {
       description: project.description,
       boardConfig: project.boardConfig,
       elements: project.elements,
+      pinUserLabels: project.pinUserLabels,
+      componentDescriptions: project.componentDescriptions,
       createdAt: project.createdAt,
       updatedAt: project.updatedAt,
     })
@@ -67,11 +71,13 @@ export default class ProjectsController {
       .where('userId', user.id)
       .firstOrFail()
 
-    const { name, description, boardConfig, elements } = request.only([
+    const { name, description, boardConfig, elements, pinUserLabels, componentDescriptions } = request.only([
       'name',
       'description',
       'boardConfig',
       'elements',
+      'pinUserLabels',
+      'componentDescriptions',
     ])
 
     project.merge({
@@ -79,6 +85,8 @@ export default class ProjectsController {
       description: description !== undefined ? description : project.description,
       boardConfig: boardConfig ?? project.boardConfig,
       elements: elements ?? project.elements,
+      pinUserLabels: pinUserLabels ?? project.pinUserLabels,
+      componentDescriptions: componentDescriptions ?? project.componentDescriptions,
     })
 
     await project.save()

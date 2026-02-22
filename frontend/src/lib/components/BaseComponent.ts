@@ -8,6 +8,8 @@ export abstract class BaseComponent {
   abstract readonly heightInHoles: number
   abstract readonly pins: Pin[]
   abstract readonly color: string
+  /** Whether the user can reassign pin labels for this component */
+  readonly pinLabelsEditable: boolean = false
 
   position: GridPosition
   rotation: 0 | 90 | 180 | 270

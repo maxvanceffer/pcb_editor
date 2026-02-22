@@ -28,6 +28,18 @@ export default class Project extends BaseModel {
   })
   declare elements: unknown[]
 
+  @column({
+    prepare: (value: Record<string, string>) => JSON.stringify(value),
+    consume: (value: string) => JSON.parse(value),
+  })
+  declare pinUserLabels: Record<string, string>
+
+  @column({
+    prepare: (value: Record<string, string>) => JSON.stringify(value),
+    consume: (value: string) => JSON.parse(value),
+  })
+  declare componentDescriptions: Record<string, string>
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

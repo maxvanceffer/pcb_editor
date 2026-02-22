@@ -173,7 +173,8 @@
       "description": "Description",
       "descriptionPlaceholder": "E.g. Power input",
       "notSet": "Not set",
-      "conflicts": "Connection conflicts:"
+      "conflicts": "Connection conflicts:",
+      "fixedPins": "Pin assignments are fixed for this component"
     }
   }
 }

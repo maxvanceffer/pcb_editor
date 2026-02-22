@@ -11,7 +11,7 @@
       <button class="text-muted-foreground hover:text-foreground text-lg leading-none" @click="$emit('close')">×</button>
     </div>
 
-    <!-- Описание -->
+    <!-- Description -->
     <div class="px-3 py-2 border-b">
       <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">{{ t('editor.pins.description') }}</p>
       <input
@@ -24,7 +24,7 @@
       />
     </div>
 
-    <!-- Секция PINS -->
+    <!-- PINS section -->
     <div class="max-h-72 overflow-y-auto">
       <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider px-3 pt-2 pb-1">{{ t('editor.pins.section') }}</p>
       <div
@@ -32,11 +32,11 @@
         :key="pin.id"
         class="flex items-center gap-2 px-3 py-1.5 border-b last:border-0"
       >
-        <!-- Встроенная метка -->
+        <!-- Built-in label -->
         <span class="text-xs text-muted-foreground w-8 shrink-0 font-mono">{{ pin.label }}</span>
 
-        <!-- Поле ввода с datalist -->
-        <div class="flex-1 relative">
+        <!-- Editable input (only when pinLabelsEditable) -->
+        <div v-if="comp.pinLabelsEditable" class="flex-1 relative">
           <input
             type="text"
             :list="`presets-${pin.id}`"
@@ -50,10 +50,21 @@
             <option v-for="p in editorStore.SIGNAL_PRESETS" :key="p" :value="p" />
           </datalist>
         </div>
+
+        <!-- Read-only label (fixed component) -->
+        <span
+          v-else
+          class="flex-1 text-xs text-muted-foreground italic px-2"
+        >{{ pin.label }}</span>
       </div>
+
+      <!-- Notice for fixed-pin components -->
+      <p v-if="!comp.pinLabelsEditable" class="text-xs text-muted-foreground px-3 py-2 border-t">
+        {{ t('editor.pins.fixedPins') }}
+      </p>
     </div>
 
-    <!-- Предупреждения о несовместимых соединениях -->
+    <!-- Power conflict warnings -->
     <div v-if="conflicts.length > 0" class="px-3 py-2 border-t bg-destructive/10">
       <p class="text-xs font-medium text-destructive mb-1">{{ t('editor.pins.conflicts') }}</p>
       <div v-for="c in conflicts" :key="c" class="text-xs text-destructive">{{ c }}</div>
@@ -72,6 +83,7 @@ import type { Pin, GridPosition } from '@/lib/components/types'
 interface ComponentLike {
   id: string
   type: string
+  pinLabelsEditable: boolean
   getAbsolutePinPositions(): Array<Pin & GridPosition>
 }
 
@@ -90,7 +102,6 @@ const projectStore = useProjectStore()
 
 const pins = computed(() => props.comp.getAbsolutePinPositions())
 
-// Проверяем конфликты: wire соединяет пин с меткой GND с пином VCC/5V/3V3 и наоборот
 const POWER_POSITIVE = new Set(['VCC', '5V', '3V3', 'PWR'])
 const POWER_NEGATIVE = new Set(['GND'])
 

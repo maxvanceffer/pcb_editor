@@ -10,6 +10,7 @@ export class JSTConnector extends BaseComponent {
   readonly color = '#e8a838'
   readonly pins: Pin[]
   readonly pinCount: number
+  readonly pinLabelsEditable = true
 
   constructor(
     pinCount: 2 | 3 | 4 | 5 | 6,

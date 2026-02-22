@@ -215,6 +215,57 @@
             :stroke="selectedId === comp.id ? '#fff' : 'transparent'"
             stroke-width="2"
           />
+          <!-- Хвостик JST (передняя сторона, куда входит кабель) -->
+          <template v-if="comp.type.startsWith('jst-')">
+            <!-- rotation=0: хвостик снизу -->
+            <rect
+              v-if="comp.rotation === 0"
+              :x="gridToSvgX(comp.position.x) + comp.effectiveWidth * HOLE_SPACING / 2 - 6"
+              :y="gridToSvgY(comp.position.y) + comp.effectiveHeight * HOLE_SPACING - 1"
+              width="12"
+              height="7"
+              :fill="comp.color"
+              fill-opacity="0.9"
+              rx="2"
+              pointer-events="none"
+            />
+            <!-- rotation=180: хвостик сверху -->
+            <rect
+              v-if="comp.rotation === 180"
+              :x="gridToSvgX(comp.position.x) + comp.effectiveWidth * HOLE_SPACING / 2 - 6"
+              :y="gridToSvgY(comp.position.y) - 6"
+              width="12"
+              height="7"
+              :fill="comp.color"
+              fill-opacity="0.9"
+              rx="2"
+              pointer-events="none"
+            />
+            <!-- rotation=90: хвостик слева -->
+            <rect
+              v-if="comp.rotation === 90"
+              :x="gridToSvgX(comp.position.x) - 6"
+              :y="gridToSvgY(comp.position.y) + comp.effectiveHeight * HOLE_SPACING / 2 - 6"
+              width="7"
+              height="12"
+              :fill="comp.color"
+              fill-opacity="0.9"
+              rx="2"
+              pointer-events="none"
+            />
+            <!-- rotation=270: хвостик справа -->
+            <rect
+              v-if="comp.rotation === 270"
+              :x="gridToSvgX(comp.position.x) + comp.effectiveWidth * HOLE_SPACING - 1"
+              :y="gridToSvgY(comp.position.y) + comp.effectiveHeight * HOLE_SPACING / 2 - 6"
+              width="7"
+              height="12"
+              :fill="comp.color"
+              fill-opacity="0.9"
+              rx="2"
+              pointer-events="none"
+            />
+          </template>
           <!-- Название компонента (скрывается в режиме меток пинов) -->
           <text
             v-if="!showPinLabels"
