@@ -86,7 +86,7 @@
         <div class="flex gap-2 w-full">
           <Button variant="outline" class="flex-1 gap-2 flex-col h-auto py-2" @click="loginWithGoogle">
             <div class="flex items-center gap-2">
-              <img src="/google.svg" class="h-4 w-4" alt="Google" />
+              <GoogleIcon :size="16" />
               Google
             </div>
             <span v-if="lastLogin?.method === 'google'" class="text-[10px] text-muted-foreground leading-none truncate max-w-full px-1">{{ lastLogin.email }}</span>
@@ -152,6 +152,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Github, Sun, Moon, Monitor, Languages, Check } from 'lucide-vue-next'
+import GoogleIcon from '@/components/GoogleIcon.vue'
 import { useColorMode } from '@vueuse/core'
 import { useAuthStore } from '@/stores/authStore'
 import { i18n } from '@/main'
