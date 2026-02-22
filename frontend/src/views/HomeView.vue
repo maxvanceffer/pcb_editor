@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-background">
     <!-- Header -->
     <header class="border-b px-6 py-4 flex items-center justify-between">
-      <img src="/logo.svg" alt="Tracify" class="h-6 w-auto" />
+      <LogoIcon :size="24" class="text-foreground" />
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
           <button class="flex items-center gap-2 rounded-md px-1.5 py-1 hover:bg-accent transition-colors outline-none">
@@ -124,6 +124,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import AccountDialog from '@/components/AccountDialog.vue'
+import LogoIcon from '@/components/LogoIcon.vue'
 import {
   DropdownMenu,
   DropdownMenuContent,

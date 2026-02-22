@@ -3,7 +3,7 @@
     <!-- Top Bar -->
     <header class="h-12 border-b flex items-center px-4 gap-4 shrink-0">
       <RouterLink to="/" class="text-muted-foreground hover:text-foreground text-sm shrink-0 flex items-center gap-2">
-        <img src="/logo.svg" alt="Tracify" class="h-5 w-auto" />
+        <LogoIcon :size="20" class="text-foreground" />
       </RouterLink>
       <Separator orientation="vertical" class="h-5" />
       <span class="font-semibold text-sm truncate flex-1">{{ projectStore.projectName }}</span>
@@ -153,6 +153,7 @@ import ElementsTab from '@/components/editor/ElementsTab.vue'
 import HistoryTab from '@/components/editor/HistoryTab.vue'
 import BottomToolbar from '@/components/editor/BottomToolbar.vue'
 import AccountDialog from '@/components/AccountDialog.vue'
+import LogoIcon from '@/components/LogoIcon.vue'
 
 const { t, locale } = useI18n()
 const route = useRoute()
