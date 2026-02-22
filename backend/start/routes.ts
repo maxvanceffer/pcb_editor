@@ -42,6 +42,12 @@ router
   .use(middleware.auth())
 
 // SPA fallback — отдаём index.html для всех не-API маршрутов
-router.get('*', async ({ response }) => {
+// Статические файлы (assets, иконки и т.д.) обрабатывает @adonisjs/static provider
+router.get('*', async ({ request, response }) => {
+  const url = request.url()
+  // Если запрашивается статический файл — не отдаём index.html
+  if (url.match(/\.(js|css|svg|png|ico|jpg|jpeg|webp|gif|woff|woff2|ttf|eot|map)$/i)) {
+    return response.status(404).send('Not found')
+  }
   return response.download(app.publicPath('index.html'))
 })
