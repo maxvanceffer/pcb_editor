@@ -79,9 +79,10 @@ export const useEditorStore = defineStore('editor', () => {
   // Пользовательские описания компонентов: ключ = componentId, значение = описание
   const componentDescriptions = ref<Record<string, string>>({})
 
-  function setComponentDescription(componentId: string, description: string) {
-    if (description.trim()) {
-      componentDescriptions.value = { ...componentDescriptions.value, [componentId]: description.trim() }
+  function setComponentDescription(componentId: string, description: string, trim = false) {
+    const value = trim ? description.trim() : description
+    if (value) {
+      componentDescriptions.value = { ...componentDescriptions.value, [componentId]: value }
     } else {
       const next = { ...componentDescriptions.value }
       delete next[componentId]

@@ -17,7 +17,8 @@
       <input
         type="text"
         :value="editorStore.getComponentDescription(comp.id)"
-        @input="editorStore.setComponentDescription(comp.id, ($event.target as HTMLInputElement).value)"
+        @input="editorStore.setComponentDescription(comp.id, ($event.target as HTMLInputElement).value, false)"
+        @blur="editorStore.setComponentDescription(comp.id, ($event.target as HTMLInputElement).value, true)"
         :placeholder="t('editor.pins.descriptionPlaceholder')"
         class="w-full h-7 text-xs border rounded px-2 bg-background focus:outline-none focus:ring-1 focus:ring-ring"
       />
