@@ -7,7 +7,7 @@
     @mousedown="onMouseDown"
     @mousemove="onMouseMove"
     @mouseup="onMouseUp"
-    @mouseleave="onMouseUp"
+    @mouseleave="onMouseLeave"
     @dragover.prevent="onDragOver"
     @drop.prevent="onDrop"
     @click="closeCtxMenu"
@@ -106,8 +106,9 @@
           :key="`col-${i}`"
           :x="boardOffsetX + i * HOLE_SPACING + HOLE_SPACING / 2"
           :y="boardOffsetY - BOARD_PAD * 0.3"
-          fill="#7ab648"
-          font-size="9"
+          :fill="wireHoverPos && wireHoverPos.x === i ? '#c8f07a' : '#7ab648'"
+          :font-size="wireHoverPos && wireHoverPos.x === i ? 11 : 9"
+          :font-weight="wireHoverPos && wireHoverPos.x === i ? 'bold' : 'normal'"
           text-anchor="middle"
           dominant-baseline="middle"
           font-family="monospace"
@@ -119,8 +120,9 @@
           :key="`row-${row}`"
           :x="boardOffsetX - BOARD_PAD * 0.3"
           :y="boardOffsetY + (row - 1) * HOLE_SPACING + HOLE_SPACING / 2"
-          fill="#7ab648"
-          font-size="9"
+          :fill="wireHoverPos && wireHoverPos.y === row - 1 ? '#c8f07a' : '#7ab648'"
+          :font-size="wireHoverPos && wireHoverPos.y === row - 1 ? 11 : 9"
+          :font-weight="wireHoverPos && wireHoverPos.y === row - 1 ? 'bold' : 'normal'"
           text-anchor="middle"
           dominant-baseline="middle"
           font-family="monospace"
@@ -384,6 +386,9 @@ function pinLabelColor(compId: string, pinId: string, builtinLabel: string): str
 const wireStart = computed(() => editorStore.wireStart)
 const wirePreviewEnd = computed(() => editorStore.wirePreviewEnd)
 const dragPreview = computed(() => editorStore.dragPreview)
+
+// Позиция дырки под курсором в режиме wire (для подсветки меток строк/колонок)
+const wireHoverPos = ref<GridPosition | null>(null)
 const movePreviewPos = computed(() => editorStore.movePreviewPos)
 const movingId = computed(() => editorStore.movingElementId)
 
@@ -549,10 +554,13 @@ function onMouseMove(e: MouseEvent) {
     editorStore.panY = panStart.py + (e.clientY - panStart.my)
   }
 
-  // Wire preview
-  if (activeTool.value === 'wire' && wireStart.value) {
+  // Wire preview + hover highlight
+  if (activeTool.value === 'wire') {
     const grid = svgCoordsToGrid(e)
-    if (grid) editorStore.wirePreviewEnd = grid
+    wireHoverPos.value = grid
+    if (grid && wireStart.value) editorStore.wirePreviewEnd = grid
+  } else {
+    wireHoverPos.value = null
   }
 
   // Move component
@@ -560,6 +568,11 @@ function onMouseMove(e: MouseEvent) {
     const grid = svgCoordsToGrid(e)
     if (grid) editorStore.movePreviewPos = grid
   }
+}
+
+function onMouseLeave() {
+  wireHoverPos.value = null
+  onMouseUp()
 }
 
 function onMouseUp(_e?: MouseEvent) {
