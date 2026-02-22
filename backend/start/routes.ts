@@ -1,10 +1,27 @@
 import router from '@adonisjs/core/services/router'
 import app from '@adonisjs/core/services/app'
 import { middleware } from './kernel.js'
+import { readdirSync, existsSync } from 'node:fs'
 
 // Health check (для Railway)
 router.get('/api/health', async ({ response }) => {
   return response.ok({ status: 'ok' })
+})
+
+// Диагностика путей (временно)
+router.get('/api/debug/paths', async ({ response }) => {
+  const publicPath = app.publicPath()
+  const exists = existsSync(publicPath)
+  let contents: string[] = []
+  let assetsContents: string[] = []
+  if (exists) {
+    contents = readdirSync(publicPath)
+    const assetsPath = publicPath + '/assets'
+    if (existsSync(assetsPath)) {
+      assetsContents = readdirSync(assetsPath).slice(0, 10)
+    }
+  }
+  return response.ok({ publicPath, exists, contents, assetsContents })
 })
 
 // Auth (публичные)
