@@ -169,6 +169,10 @@
     },
     "pins": {
       "title": "Pin labels — {type}",
+      "section": "Pins",
+      "description": "Description",
+      "descriptionPlaceholder": "E.g. Power input",
+      "notSet": "Not set",
       "conflicts": "Connection conflicts:"
     }
   }

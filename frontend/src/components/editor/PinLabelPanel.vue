@@ -7,12 +7,25 @@
   >
     <!-- Header -->
     <div class="flex items-center justify-between px-3 py-2 border-b">
-      <span class="text-sm font-medium">{{ t('editor.pins.title', { type: comp.type }) }}</span>
+      <span class="text-sm font-medium">{{ comp.type }}</span>
       <button class="text-muted-foreground hover:text-foreground text-lg leading-none" @click="$emit('close')">×</button>
     </div>
 
-    <!-- Список пинов -->
-    <div class="max-h-80 overflow-y-auto">
+    <!-- Описание -->
+    <div class="px-3 py-2 border-b">
+      <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">{{ t('editor.pins.description') }}</p>
+      <input
+        type="text"
+        :value="editorStore.getComponentDescription(comp.id)"
+        @input="editorStore.setComponentDescription(comp.id, ($event.target as HTMLInputElement).value)"
+        :placeholder="t('editor.pins.descriptionPlaceholder')"
+        class="w-full h-7 text-xs border rounded px-2 bg-background focus:outline-none focus:ring-1 focus:ring-ring"
+      />
+    </div>
+
+    <!-- Секция PINS -->
+    <div class="max-h-72 overflow-y-auto">
+      <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider px-3 pt-2 pb-1">{{ t('editor.pins.section') }}</p>
       <div
         v-for="pin in pins"
         :key="pin.id"
@@ -21,7 +34,7 @@
         <!-- Встроенная метка -->
         <span class="text-xs text-muted-foreground w-8 shrink-0 font-mono">{{ pin.label }}</span>
 
-        <!-- Поле ввода / выбор -->
+        <!-- Поле ввода с datalist -->
         <div class="flex-1 relative">
           <input
             type="text"
@@ -29,23 +42,12 @@
             :value="editorStore.getPinLabel(comp.id, pin.id)"
             @change="editorStore.setPinLabel(comp.id, pin.id, ($event.target as HTMLInputElement).value)"
             @input="editorStore.setPinLabel(comp.id, pin.id, ($event.target as HTMLInputElement).value)"
-            :placeholder="pin.label || 'Не задано'"
+            :placeholder="pin.label || t('editor.pins.notSet')"
             class="w-full h-7 text-xs border rounded px-2 bg-background focus:outline-none focus:ring-1 focus:ring-ring"
           />
           <datalist :id="`presets-${pin.id}`">
             <option v-for="p in editorStore.SIGNAL_PRESETS" :key="p" :value="p" />
           </datalist>
-        </div>
-
-        <!-- Быстрые пресеты -->
-        <div class="flex gap-0.5 shrink-0">
-          <button
-            v-for="preset in quickPresets"
-            :key="preset"
-            class="text-[9px] px-1 py-0.5 rounded border hover:bg-accent transition-colors"
-            :class="editorStore.getPinLabel(comp.id, pin.id) === preset ? 'bg-primary text-primary-foreground border-primary' : 'text-muted-foreground'"
-            @click="togglePreset(comp.id, pin.id, preset)"
-          >{{ preset }}</button>
         </div>
       </div>
     </div>
@@ -86,12 +88,6 @@ const editorStore = useEditorStore()
 const projectStore = useProjectStore()
 
 const pins = computed(() => props.comp.getAbsolutePinPositions())
-const quickPresets = ['GND', 'VCC', '3V3', '5V', 'SDA', 'SCL']
-
-function togglePreset(compId: string, pinId: string, preset: string) {
-  const current = editorStore.getPinLabel(compId, pinId)
-  editorStore.setPinLabel(compId, pinId, current === preset ? '' : preset)
-}
 
 // Проверяем конфликты: wire соединяет пин с меткой GND с пином VCC/5V/3V3 и наоборот
 const POWER_POSITIVE = new Set(['VCC', '5V', '3V3', 'PWR'])

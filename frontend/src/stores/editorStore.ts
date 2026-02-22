@@ -76,6 +76,23 @@ export const useEditorStore = defineStore('editor', () => {
   // Режим отображения меток пинов
   const showPinLabels = ref(false)
 
+  // Пользовательские описания компонентов: ключ = componentId, значение = описание
+  const componentDescriptions = ref<Record<string, string>>({})
+
+  function setComponentDescription(componentId: string, description: string) {
+    if (description.trim()) {
+      componentDescriptions.value = { ...componentDescriptions.value, [componentId]: description.trim() }
+    } else {
+      const next = { ...componentDescriptions.value }
+      delete next[componentId]
+      componentDescriptions.value = next
+    }
+  }
+
+  function getComponentDescription(componentId: string): string {
+    return componentDescriptions.value[componentId] ?? ''
+  }
+
   // Пользовательские метки пинов: ключ = `${componentId}:${pinId}`, значение = метка
   const pinUserLabels = ref<Record<string, string>>({})
 
@@ -165,6 +182,7 @@ export const useEditorStore = defineStore('editor', () => {
     hiddenElementIds, toggleElementVisibility, isElementHidden,
     svgWidth, svgHeight, containerWidth, containerHeight, centerBoard,
     showPinLabels, pinUserLabels, SIGNAL_PRESETS,
+    componentDescriptions, setComponentDescription, getComponentDescription,
     setZoom, pan, startDrag, updateDragPreview, endDrag, addToRecentlyUsed,
     pixelToGrid, gridToPixelCenter, setPinLabel, getPinLabel,
   }
