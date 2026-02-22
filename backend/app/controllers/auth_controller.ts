@@ -28,12 +28,21 @@ export default class AuthController {
     const { email, password } = request.only(['email', 'password'])
 
     try {
-      const user = await User.verifyCredentials(email, password)
-      const token = await User.accessTokens.create(user)
+      // Check if user exists but has no password (OAuth-only account)
+      const user = await User.findBy('email', email)
+      if (user && !user.password) {
+        const provider = user.oauthProvider
+          ? user.oauthProvider.charAt(0).toUpperCase() + user.oauthProvider.slice(1)
+          : 'OAuth'
+        return response.unauthorized({ message: `This account uses ${provider} sign-in. Please use the "${provider}" button below.` })
+      }
+
+      const verified = await User.verifyCredentials(email, password)
+      const token = await User.accessTokens.create(verified)
 
       return response.ok({
         token: token.value!.release(),
-        user: { id: user.id, email: user.email, fullName: user.fullName },
+        user: { id: verified.id, email: verified.email, fullName: verified.fullName },
       })
     } catch (error) {
       if (error instanceof authErrors.E_INVALID_CREDENTIALS) {

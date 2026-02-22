@@ -230,8 +230,15 @@ async function submit() {
     await auth.login(email.value, password.value)
     router.push('/')
   } catch (e: unknown) {
-    const err = e as { response?: { data?: { message?: string } } }
-    error.value = err.response?.data?.message ?? t('auth.login.error')
+    const err = e as { response?: { status?: number; data?: { message?: string } } }
+    const status = err.response?.status
+    const serverMessage = err.response?.data?.message
+    if (status === 401 || status === 400) {
+      error.value = serverMessage ?? t('auth.login.error')
+    } else {
+      console.error('[login]', e)
+      error.value = t('auth.login.error')
+    }
   } finally {
     loading.value = false
   }
