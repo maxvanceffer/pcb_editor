@@ -17,7 +17,8 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => {
     const serverVersion = response.headers['x-app-version']
-    if (serverVersion && serverVersion !== __APP_VERSION__) {
+    const clientVersion = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'unknown'
+    if (serverVersion && clientVersion !== 'unknown' && serverVersion !== clientVersion) {
       useAppUpdate().markUpdateAvailable()
     }
     return response
