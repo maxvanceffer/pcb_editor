@@ -16,6 +16,8 @@ export class WireTrace {
   color: WireColor
   waypoints: GridPosition[]
   crossings: CrossingPoint[]
+  // Дырки где пользователь явно выбрал "оставить раздельно" (показывать точки-индикаторы)
+  sharedHoles: GridPosition[]
 
   constructor(
     startPosition: GridPosition,
@@ -24,6 +26,7 @@ export class WireTrace {
     waypoints: GridPosition[] = [],
     id?: string,
     crossings: CrossingPoint[] = [],
+    sharedHoles: GridPosition[] = [],
   ) {
     this.id = id ?? uuid()
     this.startPosition = { ...startPosition }
@@ -31,6 +34,7 @@ export class WireTrace {
     this.color = color
     this.waypoints = waypoints.map((p) => ({ ...p }))
     this.crossings = crossings.map((c) => ({ ...c, point: { ...c.point } }))
+    this.sharedHoles = sharedHoles.map((p) => ({ ...p }))
   }
 
   getAllPoints(): GridPosition[] {
@@ -57,6 +61,7 @@ export class WireTrace {
       color: this.color,
       waypoints: this.waypoints,
       crossings: this.crossings,
+      sharedHoles: this.sharedHoles,
     }
   }
 }

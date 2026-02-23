@@ -57,6 +57,7 @@ export class ComponentFactory {
           (serialized.waypoints as GridPosition[]) ?? [],
           id,
           (serialized.crossings as CrossingPoint[]) ?? [],
+          (serialized.sharedHoles as GridPosition[]) ?? [],
         )
 
       default:

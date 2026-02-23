@@ -802,17 +802,20 @@ function onConflictDialogOpenChange(val: boolean) {
 }
 
 // ─── Junction holes indicator ────────────────────────────────────────────────
+// Показываем точки только там где пользователь явно выбрал "оставить раздельно"
 const junctionHoles = computed(() => {
-  const map = new Map<string, { x: number; y: number; count: number }>()
+  const seen = new Set<string>()
+  const result: { x: number; y: number }[] = []
   for (const wire of wires.value) {
-    for (const pt of [wire.startPosition, wire.endPosition]) {
+    for (const pt of wire.sharedHoles) {
       const key = `${pt.x},${pt.y}`
-      const entry = map.get(key) ?? { x: holeX(pt.x), y: holeY(pt.y), count: 0 }
-      entry.count++
-      map.set(key, entry)
+      if (!seen.has(key)) {
+        seen.add(key)
+        result.push({ x: holeX(pt.x), y: holeY(pt.y) })
+      }
     }
   }
-  return [...map.values()].filter((h) => h.count >= 2)
+  return result
 })
 
 // ─── Wire path builder (для проводов с jump-over арками) ─────────────────────
@@ -1109,7 +1112,22 @@ async function onHoleClick(col: number, row: number) {
         editorStore.wirePreviewEnd = null
         return
       }
-      // 0 merge — все 'keep', продолжаем добавить как новый провод
+      // 'keep' junctions — записываем sharedHoles для визуальных индикаторов
+      for (let i = 0; i < junctions.length; i++) {
+        if (decisions[i] === 'keep') {
+          const pt = junctions[i].sharedEndpoint
+          const gx = Math.round((pt.x - MARGIN_LEFT - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+          const gy = Math.round((pt.y - MARGIN_TOP - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+          const gridPt = { x: gx, y: gy }
+          // Добавляем в новый провод
+          newWire.sharedHoles.push(gridPt)
+          // Добавляем в существующий провод (если ещё нет)
+          const existing = junctions[i].wire
+          if (!existing.sharedHoles.some((h) => h.x === gx && h.y === gy)) {
+            existing.sharedHoles.push(gridPt)
+          }
+        }
+      }
 
       // Обрабатываем решения по crossings
       for (let i = 0; i < uniqueCrossings.length; i++) {
