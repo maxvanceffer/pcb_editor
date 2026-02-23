@@ -28,6 +28,10 @@
         <button class="w-full text-left px-3 py-1.5 hover:bg-accent" @click="openPinLabels()">{{ t('editor.board.configurePins') }}</button>
         <div class="border-t my-1" />
       </template>
+      <template v-if="!ctxMenu.isComponent">
+        <button class="w-full text-left px-3 py-1.5 hover:bg-accent" @click="ctxCheckCrossings()">Проверить пересечения</button>
+        <div class="border-t my-1" />
+      </template>
       <button class="w-full text-left px-3 py-1.5 hover:bg-accent text-destructive" @click="ctxDelete()">{{ t('editor.board.delete') }}</button>
     </div>
 
@@ -47,6 +51,16 @@
         class="absolute top-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-4 py-2 rounded-lg bg-destructive text-destructive-foreground text-sm shadow-lg"
       >
         <span>⚠</span> {{ wireConflictMsg }}
+      </div>
+    </Transition>
+
+    <!-- Wire toast (инфо) -->
+    <Transition name="fade">
+      <div
+        v-if="wireToastMsg"
+        class="absolute top-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary text-secondary-foreground text-sm shadow-lg"
+      >
+        {{ wireToastMsg }}
       </div>
     </Transition>
 
@@ -669,6 +683,60 @@ function ctxDelete() {
   editorStore.selectedElementId = null
 }
 
+// ─── Wire toast ──────────────────────────────────────────────────────────────
+const wireToastMsg = ref<string | null>(null)
+let wireToastTimer: ReturnType<typeof setTimeout> | null = null
+function showToast(msg: string) {
+  if (wireToastTimer) clearTimeout(wireToastTimer)
+  wireToastMsg.value = msg
+  wireToastTimer = setTimeout(() => { wireToastMsg.value = null }, 3000)
+}
+
+async function ctxCheckCrossings() {
+  const id = ctxMenu.value?.id
+  closeCtxMenu()
+  if (!id) return
+  const el = projectStore.getElementById(id)
+  if (!(el instanceof WireTrace)) return
+
+  const otherWires = wires.value.filter((w) => w.id !== id)
+  const crossings = findCrossings(el, otherWires, GEOMETRY_CONSTANTS)
+
+  // Фильтруем уже известные jump-over пересечения
+  const knownIds = new Set(el.crossings.map((c) => c.withWireId))
+  const newCrossings = crossings.filter((c) => !knownIds.has(c.wire.id))
+
+  if (newCrossings.length === 0) {
+    showToast('Пересечений не найдено')
+    return
+  }
+
+  const items: ConflictItem[] = newCrossings.map((c) => {
+    const gx = Math.round((c.point.x - MARGIN_LEFT - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+    const gy = Math.round((c.point.y - MARGIN_TOP - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+    return {
+      label: `Пересечение в ${formatGridPos(gx, gy)}`,
+      description: 'Провод пересекает другой провод',
+      optionA: { label: 'Перепрыгнуть', value: 'jumpOver' },
+      optionB: { label: 'Соединить', value: 'connect' },
+      defaultValue: 'jumpOver',
+    }
+  })
+
+  const decisions = await askConflicts(items)
+
+  for (let i = 0; i < newCrossings.length; i++) {
+    if (decisions[i] === 'jumpOver') {
+      el.crossings.push({
+        withWireId: newCrossings[i].wire.id,
+        point: { ...newCrossings[i].point },
+        jumpOver: true,
+      })
+    }
+  }
+  projectStore.notifyElementChanged()
+}
+
 // ─── Wire conflict validation ────────────────────────────────────────────────
 const wireConflictMsg = ref<string | null>(null)
 const POWER_POS = new Set(['VCC', '5V', '3V3', 'PWR', '3.3V'])
@@ -977,31 +1045,71 @@ async function onHoleClick(col: number, row: number) {
 
       const decisions = await askConflicts(items)
 
-      // Обрабатываем решения по junctions
-      for (let i = 0; i < junctions.length; i++) {
-        if (decisions[i] === 'merge') {
-          const existing = junctions[i].wire
-          const sharedPt = junctions[i].sharedEndpoint
-          const existingStartSvgX = MARGIN_LEFT + (existing.startPosition.x + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
-          const existingStartSvgY = MARGIN_TOP + (existing.startPosition.y + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
-          const sharedIsStart = Math.abs(existingStartSvgX - sharedPt.x) < 1 && Math.abs(existingStartSvgY - sharedPt.y) < 1
-          const gx = Math.round((sharedPt.x - MARGIN_LEFT - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
-          const gy = Math.round((sharedPt.y - MARGIN_TOP - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
-          const sharedKey = `${gx},${gy}`
-          const newStartKey = `${newWire.startPosition.x},${newWire.startPosition.y}`
-          const otherEnd = newStartKey === sharedKey ? newWire.endPosition : newWire.startPosition
-          if (sharedIsStart) {
-            existing.startPosition = { ...otherEnd }
-          } else {
-            existing.endPosition = { ...otherEnd }
-          }
-          projectStore.notifyElementChanged()
-          editorStore.wireStart = null
-          editorStore.wirePreviewEnd = null
-          return
+      // Собираем все junctions с решением 'merge'
+      const mergeJunctions = junctions.filter((_, i) => decisions[i] === 'merge')
+
+      if (mergeJunctions.length === 2) {
+        // Оба конца нового провода объединяются с существующими:
+        // Объединяем wireA + newWire + wireB в один провод.
+        // Стратегия: расширяем wireA чтобы он дошёл до свободного конца wireB, удаляем wireB.
+        const wireA = mergeJunctions[0].wire
+        const wireB = mergeJunctions[1].wire
+        const sharedA = mergeJunctions[0].sharedEndpoint
+        const sharedB = mergeJunctions[1].sharedEndpoint
+
+        // Определяем свободный конец wireA (тот, что НЕ совпадает с sharedA)
+        const aStartSvgX = MARGIN_LEFT + (wireA.startPosition.x + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
+        const aStartSvgY = MARGIN_TOP + (wireA.startPosition.y + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
+        const aSharedIsStart = Math.abs(aStartSvgX - sharedA.x) < 1 && Math.abs(aStartSvgY - sharedA.y) < 1
+
+        // Определяем свободный конец wireB (тот, что НЕ совпадает с sharedB)
+        const bStartSvgX = MARGIN_LEFT + (wireB.startPosition.x + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
+        const bStartSvgY = MARGIN_TOP + (wireB.startPosition.y + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
+        const bSharedIsStart = Math.abs(bStartSvgX - sharedB.x) < 1 && Math.abs(bStartSvgY - sharedB.y) < 1
+        const bFreeEnd = bSharedIsStart ? wireB.endPosition : wireB.startPosition
+
+        // Расширяем wireA до свободного конца wireB
+        // Добавляем waypoints: точки нового провода как промежуточные
+        const newMidpoints = newWire.getAllPoints().slice(1, -1)
+        if (aSharedIsStart) {
+          wireA.startPosition = { ...bFreeEnd }
+          wireA.waypoints = [...newMidpoints].reverse()
+        } else {
+          wireA.endPosition = { ...bFreeEnd }
+          wireA.waypoints = [...newMidpoints]
         }
-        // 'keep' — продолжаем
+
+        // Удаляем wireB
+        historyStore.push({ type: 'remove', element: wireB.serialize() })
+        projectStore.removeElement(wireB.id)
+        projectStore.notifyElementChanged()
+        editorStore.wireStart = null
+        editorStore.wirePreviewEnd = null
+        return
+
+      } else if (mergeJunctions.length === 1) {
+        // Один конец нового провода объединяется с существующим
+        const existing = mergeJunctions[0].wire
+        const sharedPt = mergeJunctions[0].sharedEndpoint
+        const existingStartSvgX = MARGIN_LEFT + (existing.startPosition.x + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
+        const existingStartSvgY = MARGIN_TOP + (existing.startPosition.y + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
+        const sharedIsStart = Math.abs(existingStartSvgX - sharedPt.x) < 1 && Math.abs(existingStartSvgY - sharedPt.y) < 1
+        const gx = Math.round((sharedPt.x - MARGIN_LEFT - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+        const gy = Math.round((sharedPt.y - MARGIN_TOP - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+        const sharedKey = `${gx},${gy}`
+        const newStartKey = `${newWire.startPosition.x},${newWire.startPosition.y}`
+        const otherEnd = newStartKey === sharedKey ? newWire.endPosition : newWire.startPosition
+        if (sharedIsStart) {
+          existing.startPosition = { ...otherEnd }
+        } else {
+          existing.endPosition = { ...otherEnd }
+        }
+        projectStore.notifyElementChanged()
+        editorStore.wireStart = null
+        editorStore.wirePreviewEnd = null
+        return
       }
+      // 0 merge — все 'keep', продолжаем добавить как новый провод
 
       // Обрабатываем решения по crossings
       for (let i = 0; i < uniqueCrossings.length; i++) {
