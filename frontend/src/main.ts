@@ -56,4 +56,18 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(i18n)
+
+app.config.errorHandler = (err) => {
+  const msg = String((err as Error)?.message ?? err ?? '')
+  if (
+    msg.includes('Failed to fetch dynamically imported module') ||
+    msg.includes('Importing a module script failed') ||
+    msg.includes('error loading dynamically imported module') ||
+    msg.includes('Unable to preload CSS') ||
+    msg.includes('ChunkLoadError')
+  ) {
+    useAppUpdate().markUpdateAvailable()
+  }
+}
+
 app.mount('#app')
