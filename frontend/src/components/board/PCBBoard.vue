@@ -30,6 +30,7 @@
       </template>
       <template v-if="!ctxMenu.isComponent">
         <button class="w-full text-left px-3 py-1.5 hover:bg-accent" @click="ctxCheckCrossings()">Проверить пересечения</button>
+        <button class="w-full text-left px-3 py-1.5 hover:bg-accent" @click="ctxMergeWires()">Объединить провода</button>
         <div class="border-t my-1" />
       </template>
       <button class="w-full text-left px-3 py-1.5 hover:bg-accent text-destructive" @click="ctxDelete()">{{ t('editor.board.delete') }}</button>
@@ -737,6 +738,66 @@ async function ctxCheckCrossings() {
   projectStore.notifyElementChanged()
 }
 
+async function ctxMergeWires() {
+  const id = ctxMenu.value?.id
+  closeCtxMenu()
+  if (!id) return
+  const el = projectStore.getElementById(id)
+  if (!(el instanceof WireTrace)) return
+
+  const otherWires = wires.value.filter((w) => w.id !== id)
+  const junctions = findJunctions(el, otherWires, GEOMETRY_CONSTANTS)
+
+  if (junctions.length === 0) {
+    showToast('Нет соседних проводов для объединения')
+    return
+  }
+
+  const items: ConflictItem[] = junctions.map((j) => {
+    const pt = j.sharedEndpoint
+    const gx = Math.round((pt.x - MARGIN_LEFT - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+    const gy = Math.round((pt.y - MARGIN_TOP - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+    return {
+      label: `Дырка ${formatGridPos(gx, gy)}`,
+      description: 'Объединить провода в этой точке?',
+      optionA: { label: 'Раздельно', value: 'keep' },
+      optionB: { label: 'Объединить', value: 'merge' },
+      defaultValue: 'merge',
+    }
+  })
+
+  const decisions = await askConflicts(items)
+
+  // Обрабатываем по одному: каждый merge заменяет текущий el + other на новый WireTrace
+  // Используем актуальную ссылку на el, т.к. после первого merge el заменяется в store
+  let currentEl = el
+  for (let i = 0; i < junctions.length; i++) {
+    if (decisions[i] !== 'merge') continue
+    const other = junctions[i].wire
+    const sharedPt = junctions[i].sharedEndpoint
+
+    const elStartSvgX = MARGIN_LEFT + (currentEl.startPosition.x + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
+    const elStartSvgY = MARGIN_TOP + (currentEl.startPosition.y + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
+    const elSharedIsStart = Math.abs(elStartSvgX - sharedPt.x) < 1 && Math.abs(elStartSvgY - sharedPt.y) < 1
+
+    const otherStartSvgX = MARGIN_LEFT + (other.startPosition.x + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
+    const otherStartSvgY = MARGIN_TOP + (other.startPosition.y + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
+    const otherSharedIsStart = Math.abs(otherStartSvgX - sharedPt.x) < 1 && Math.abs(otherStartSvgY - sharedPt.y) < 1
+
+    const elFreeEnd = elSharedIsStart ? currentEl.endPosition : currentEl.startPosition
+    const otherFreeEnd = otherSharedIsStart ? other.endPosition : other.startPosition
+
+    const merged = new WireTrace(elFreeEnd, otherFreeEnd, currentEl.color, [], currentEl.id, currentEl.crossings, currentEl.sharedHoles)
+    historyStore.push({ type: 'remove', element: currentEl.serialize() })
+    historyStore.push({ type: 'remove', element: other.serialize() })
+    historyStore.push({ type: 'add', element: merged.serialize() })
+    projectStore.removeElement(currentEl.id)
+    projectStore.removeElement(other.id)
+    projectStore.addElement(merged)
+    currentEl = merged
+  }
+}
+
 // ─── Wire conflict validation ────────────────────────────────────────────────
 const wireConflictMsg = ref<string | null>(null)
 const POWER_POS = new Set(['VCC', '5V', '3V3', 'PWR', '3.3V'])
@@ -1054,7 +1115,6 @@ async function onHoleClick(col: number, row: number) {
       if (mergeJunctions.length === 2) {
         // Оба конца нового провода объединяются с существующими:
         // Объединяем wireA + newWire + wireB в один провод.
-        // Стратегия: расширяем wireA чтобы он дошёл до свободного конца wireB, удаляем wireB.
         const wireA = mergeJunctions[0].wire
         const wireB = mergeJunctions[1].wire
         const sharedA = mergeJunctions[0].sharedEndpoint
@@ -1064,6 +1124,7 @@ async function onHoleClick(col: number, row: number) {
         const aStartSvgX = MARGIN_LEFT + (wireA.startPosition.x + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
         const aStartSvgY = MARGIN_TOP + (wireA.startPosition.y + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
         const aSharedIsStart = Math.abs(aStartSvgX - sharedA.x) < 1 && Math.abs(aStartSvgY - sharedA.y) < 1
+        const aFreeEnd = aSharedIsStart ? wireA.endPosition : wireA.startPosition
 
         // Определяем свободный конец wireB (тот, что НЕ совпадает с sharedB)
         const bStartSvgX = MARGIN_LEFT + (wireB.startPosition.x + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
@@ -1071,21 +1132,18 @@ async function onHoleClick(col: number, row: number) {
         const bSharedIsStart = Math.abs(bStartSvgX - sharedB.x) < 1 && Math.abs(bStartSvgY - sharedB.y) < 1
         const bFreeEnd = bSharedIsStart ? wireB.endPosition : wireB.startPosition
 
-        // Расширяем wireA до свободного конца wireB
-        // Добавляем waypoints: точки нового провода как промежуточные
+        // Waypoints нового провода как промежуточные точки
         const newMidpoints = newWire.getAllPoints().slice(1, -1)
-        if (aSharedIsStart) {
-          wireA.startPosition = { ...bFreeEnd }
-          wireA.waypoints = [...newMidpoints].reverse()
-        } else {
-          wireA.endPosition = { ...bFreeEnd }
-          wireA.waypoints = [...newMidpoints]
-        }
+        const allWaypoints = aSharedIsStart ? [...newMidpoints].reverse() : [...newMidpoints]
 
-        // Удаляем wireB
+        // Создаём новый объект вместо мутации (shallowRef требует замены ссылки)
+        const merged = new WireTrace(aFreeEnd, bFreeEnd, wireA.color, allWaypoints, wireA.id)
+        historyStore.push({ type: 'remove', element: wireA.serialize() })
         historyStore.push({ type: 'remove', element: wireB.serialize() })
+        historyStore.push({ type: 'add', element: merged.serialize() })
+        projectStore.removeElement(wireA.id)
         projectStore.removeElement(wireB.id)
-        projectStore.notifyElementChanged()
+        projectStore.addElement(merged)
         editorStore.wireStart = null
         editorStore.wirePreviewEnd = null
         return
@@ -1102,12 +1160,14 @@ async function onHoleClick(col: number, row: number) {
         const sharedKey = `${gx},${gy}`
         const newStartKey = `${newWire.startPosition.x},${newWire.startPosition.y}`
         const otherEnd = newStartKey === sharedKey ? newWire.endPosition : newWire.startPosition
-        if (sharedIsStart) {
-          existing.startPosition = { ...otherEnd }
-        } else {
-          existing.endPosition = { ...otherEnd }
-        }
-        projectStore.notifyElementChanged()
+        const newStart = sharedIsStart ? otherEnd : existing.startPosition
+        const newEnd = sharedIsStart ? existing.endPosition : otherEnd
+        // Создаём новый объект вместо мутации (shallowRef требует замены ссылки)
+        const merged = new WireTrace(newStart, newEnd, existing.color, existing.waypoints, existing.id, existing.crossings, existing.sharedHoles)
+        historyStore.push({ type: 'remove', element: existing.serialize() })
+        historyStore.push({ type: 'add', element: merged.serialize() })
+        projectStore.removeElement(existing.id)
+        projectStore.addElement(merged)
         editorStore.wireStart = null
         editorStore.wirePreviewEnd = null
         return

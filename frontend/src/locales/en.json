@@ -188,5 +188,9 @@
       "tooltipBottomLeft": "Bottom left corner",
       "tooltipBottomRight": "Bottom right corner"
     }
+  },
+  "update": {
+    "banner": "A new version is available. Reload the page to update.",
+    "reloadBtn": "Reload"
   }
 }

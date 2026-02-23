@@ -1,3 +1,6 @@
+# Auto-generated version file
+app/version.ts
+
 # Dependencies and AdonisJS build
 node_modules
 build

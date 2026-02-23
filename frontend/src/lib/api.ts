@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { useAppUpdate } from '@/lib/useAppUpdate'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? '',
@@ -14,7 +15,13 @@ api.interceptors.request.use((config) => {
 })
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const serverVersion = response.headers['x-app-version']
+    if (serverVersion && serverVersion !== __APP_VERSION__) {
+      useAppUpdate().markUpdateAvailable()
+    }
+    return response
+  },
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('auth_token')

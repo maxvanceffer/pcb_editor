@@ -6,6 +6,18 @@ import './style.css'
 import App from './App.vue'
 import ru from './locales/ru.json'
 import en from './locales/en.json'
+import { useAppUpdate } from '@/lib/useAppUpdate'
+
+window.addEventListener('unhandledrejection', (event) => {
+  const msg = String(event.reason?.message ?? event.reason ?? '')
+  if (
+    msg.includes('Failed to fetch dynamically imported module') ||
+    msg.includes('Importing a module script failed') ||
+    msg.includes('error loading dynamically imported module')
+  ) {
+    useAppUpdate().markUpdateAvailable()
+  }
+})
 
 const SUPPORTED_LOCALES = ['ru', 'en'] as const
 type SupportedLocale = typeof SUPPORTED_LOCALES[number]
