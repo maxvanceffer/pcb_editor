@@ -1,4 +1,5 @@
 import type { SerializedElement, GridPosition, ComponentDefinition, WireColor } from './types'
+import type { CrossingPoint } from './WireTrace'
 import { BaseComponent } from './BaseComponent'
 import { ESP32S3Component } from './ESP32S3'
 import { JSTConnector } from './JSTConnector'
@@ -55,6 +56,7 @@ export class ComponentFactory {
           (serialized.color as WireColor) ?? '#ff0000',
           (serialized.waypoints as GridPosition[]) ?? [],
           id,
+          (serialized.crossings as CrossingPoint[]) ?? [],
         )
 
       default:

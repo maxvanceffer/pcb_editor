@@ -155,19 +155,44 @@
         </g>
 
         <!-- Wire traces -->
-        <polyline
-          v-for="wire in wires"
-          :key="wire.id"
-          :points="wire.toSVGPoints(HOLE_SPACING, MARGIN_LEFT + CANVAS_PADDING * HOLE_SPACING, MARGIN_TOP + CANVAS_PADDING * HOLE_SPACING)"
-          :stroke="wire.color"
-          stroke-width="2.5"
-          fill="none"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          :opacity="selectedId === wire.id ? 1 : 0.85"
-          @click.stop="selectElement(wire.id)"
-          @contextmenu.prevent.stop="openCtxMenu($event, wire.id, 'Провод', false)"
-        />
+        <template v-for="wire in wires" :key="wire.id">
+          <!-- Обычный провод без jump-over арок -->
+          <polyline
+            v-if="!wire.crossings.some(c => c.jumpOver)"
+            :points="wire.toSVGPoints(HOLE_SPACING, MARGIN_LEFT + CANVAS_PADDING * HOLE_SPACING, MARGIN_TOP + CANVAS_PADDING * HOLE_SPACING)"
+            :stroke="wire.color"
+            stroke-width="2.5"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            :opacity="selectedId === wire.id ? 1 : 0.85"
+            @click.stop="selectElement(wire.id)"
+            @contextmenu.prevent.stop="openCtxMenu($event, wire.id, 'Провод', false)"
+          />
+          <!-- Провод с jump-over арками -->
+          <path
+            v-else
+            :d="buildWirePath(wire)"
+            :stroke="wire.color"
+            stroke-width="2.5"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            :opacity="selectedId === wire.id ? 1 : 0.85"
+            @click.stop="selectElement(wire.id)"
+            @contextmenu.prevent.stop="openCtxMenu($event, wire.id, 'Провод', false)"
+          />
+        </template>
+
+        <!-- Индикаторы нескольких проводов в одной дырке -->
+        <g
+          v-for="(junc, i) in junctionHoles"
+          :key="`junc-${i}`"
+          pointer-events="none"
+        >
+          <circle :cx="junc.x - 2" :cy="junc.y - 2" r="1.5" fill="white" opacity="0.75" />
+          <circle :cx="junc.x + 2" :cy="junc.y + 2" r="1.5" fill="white" opacity="0.75" />
+        </g>
 
         <!-- Wire preview (пунктирная линия при рисовании) -->
         <line
@@ -339,6 +364,14 @@
       </svg>
     </div>
 
+    <!-- Wire conflict dialog (объединённый) -->
+    <WireConflictDialog
+      :open="conflictDialogOpen"
+      :conflicts="conflictItems"
+      @update:open="onConflictDialogOpenChange"
+      @confirm="onConflictConfirm"
+    />
+
     <!-- Component hover tooltip -->
     <Transition name="tooltip-fade">
       <div
@@ -399,6 +432,9 @@ import type { GridPosition } from '@/lib/components/types'
 import PinLabelPanel from '@/components/editor/PinLabelPanel.vue'
 import { useSettingsStore } from '@/stores/settingsStore'
 import { getComponentImage } from '@/lib/components/componentImages'
+import WireConflictDialog from '@/components/board/WireConflictDialog.vue'
+import type { ConflictItem } from '@/components/board/WireConflictDialog.vue'
+import { findJunctions, findCrossings } from '@/lib/wireGeometry'
 
 const { t } = useI18n()
 const settingsStore = useSettingsStore()
@@ -660,6 +696,111 @@ function checkWireConflict(start: GridPosition, end: GridPosition): string | nul
   return null
 }
 
+// ─── Wire geometry constants ─────────────────────────────────────────────────
+const GEOMETRY_CONSTANTS = { HOLE_SPACING, MARGIN_LEFT, MARGIN_TOP, CANVAS_PADDING } as const
+
+// Форматирует grid-координату в "A3", "B5" и т.д.
+function formatGridPos(x: number, y: number): string {
+  const col = x < 26
+    ? String.fromCharCode(65 + x)
+    : String.fromCharCode(64 + Math.floor(x / 26)) + String.fromCharCode(65 + (x % 26))
+  return `${col}${y + 1}`
+}
+
+// ─── Unified conflict dialog ──────────────────────────────────────────────────
+const conflictDialogOpen = ref(false)
+const conflictItems = ref<ConflictItem[]>([])
+let resolveConflict: ((decisions: string[]) => void) | null = null
+
+function askConflicts(items: ConflictItem[]): Promise<string[]> {
+  conflictItems.value = items
+  conflictDialogOpen.value = true
+  return new Promise((r) => { resolveConflict = r })
+}
+
+function onConflictConfirm(decisions: string[]) {
+  conflictDialogOpen.value = false
+  resolveConflict?.(decisions)
+  resolveConflict = null
+}
+
+function onConflictDialogOpenChange(val: boolean) {
+  if (!val && resolveConflict) {
+    // Escape — применяем дефолтные решения
+    onConflictConfirm(conflictItems.value.map((c) => c.defaultValue))
+  } else {
+    conflictDialogOpen.value = val
+  }
+}
+
+// ─── Junction holes indicator ────────────────────────────────────────────────
+const junctionHoles = computed(() => {
+  const map = new Map<string, { x: number; y: number; count: number }>()
+  for (const wire of wires.value) {
+    for (const pt of [wire.startPosition, wire.endPosition]) {
+      const key = `${pt.x},${pt.y}`
+      const entry = map.get(key) ?? { x: holeX(pt.x), y: holeY(pt.y), count: 0 }
+      entry.count++
+      map.set(key, entry)
+    }
+  }
+  return [...map.values()].filter((h) => h.count >= 2)
+})
+
+// ─── Wire path builder (для проводов с jump-over арками) ─────────────────────
+function buildWirePath(wire: WireTrace): string {
+  const pts = wire.getAllPoints().map((p) => ({ x: holeX(p.x), y: holeY(p.y) }))
+  const jumpOvers = wire.crossings.filter((c) => c.jumpOver)
+  if (jumpOvers.length === 0) return ''
+
+  const ARC_HALF = 5
+  const ARC_HEIGHT = 5
+
+  let d = `M ${pts[0].x},${pts[0].y}`
+
+  for (let i = 0; i < pts.length - 1; i++) {
+    const segStart = pts[i]
+    const segEnd = pts[i + 1]
+    const dx = segEnd.x - segStart.x
+    const dy = segEnd.y - segStart.y
+    const len2 = dx * dx + dy * dy
+
+    const segJumps = jumpOvers
+      .filter((jo) => {
+        if (len2 < 1) return false
+        const t = ((jo.point.x - segStart.x) * dx + (jo.point.y - segStart.y) * dy) / len2
+        return t > 0.05 && t < 0.95
+      })
+      .sort((a, b) => {
+        const tA = ((a.point.x - segStart.x) * dx + (a.point.y - segStart.y) * dy) / len2
+        const tB = ((b.point.x - segStart.x) * dx + (b.point.y - segStart.y) * dy) / len2
+        return tA - tB
+      })
+
+    for (const jo of segJumps) {
+      const len = Math.sqrt(len2)
+      const ux = dx / len
+      const uy = dy / len
+      const px = -uy
+      const py = ux
+
+      const arcStartX = jo.point.x - ux * ARC_HALF
+      const arcStartY = jo.point.y - uy * ARC_HALF
+      const arcEndX = jo.point.x + ux * ARC_HALF
+      const arcEndY = jo.point.y + uy * ARC_HALF
+      const ctrlX = jo.point.x + px * ARC_HEIGHT
+      const ctrlY = jo.point.y + py * ARC_HEIGHT
+
+      d += ` L ${arcStartX},${arcStartY}`
+      d += ` Q ${ctrlX},${ctrlY} ${arcEndX},${arcEndY}`
+    }
+
+    d += ` L ${segEnd.x},${segEnd.y}`
+  }
+
+  return d
+}
+
 // ─── Center board on mount ───────────────────────────────────────────────────
 onMounted(() => {
   const wrap = canvasWrap.value
@@ -777,29 +918,116 @@ function svgCoordsToGrid(e: MouseEvent): GridPosition | null {
 }
 
 // ─── Click на плату/отверстие ────────────────────────────────────────────────
-function onHoleClick(col: number, row: number) {
+async function onHoleClick(col: number, row: number) {
+  if (conflictDialogOpen.value) return
+
   if (activeTool.value === 'wire') {
     const pos: GridPosition = { x: col, y: row }
     if (!wireStart.value) {
       editorStore.wireStart = pos
-    } else {
-      if (wireStart.value.x === col && wireStart.value.y === row) {
-        editorStore.wireStart = null
-        editorStore.wirePreviewEnd = null
-        return
-      }
-      const wire = new WireTrace(wireStart.value, pos)
-      // Проверка совместимости пинов
-      const conflict = checkWireConflict(wireStart.value, pos)
-      if (conflict) {
-        wireConflictMsg.value = conflict
-        setTimeout(() => { wireConflictMsg.value = null }, 4000)
-      }
-      projectStore.addElement(wire)
-      historyStore.push({ type: 'add', element: wire.serialize() })
+      return
+    }
+
+    if (wireStart.value.x === col && wireStart.value.y === row) {
       editorStore.wireStart = null
       editorStore.wirePreviewEnd = null
+      return
     }
+
+    const newWire = new WireTrace(wireStart.value, pos)
+
+    const junctions = findJunctions(newWire, wires.value, GEOMETRY_CONSTANTS)
+    const crossings = findCrossings(newWire, wires.value, GEOMETRY_CONSTANTS)
+
+    // Исключаем провода из crossings, которые уже есть в junctions (один провод — один вопрос)
+    const junctionWireIds = new Set(junctions.map((j) => j.wire.id))
+    const uniqueCrossings = crossings.filter((c) => !junctionWireIds.has(c.wire.id))
+
+    if (junctions.length > 0 || uniqueCrossings.length > 0) {
+      const items: ConflictItem[] = [
+        ...junctions.map((j) => ({
+          label: `Дырка ${formatGridPos(j.sharedEndpoint.x > 0 ? Math.round((j.sharedEndpoint.x - MARGIN_LEFT - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING : 0, 0)}`,
+          description: 'Два провода заканчиваются в одной точке',
+          optionA: { label: 'Раздельно', value: 'keep' },
+          optionB: { label: 'Объединить', value: 'merge' },
+          defaultValue: 'keep',
+        })),
+        ...uniqueCrossings.map((c) => ({
+          label: `Пересечение`,
+          description: 'Новый провод пересекает существующий',
+          optionA: { label: 'Перепрыгнуть', value: 'jumpOver' },
+          optionB: { label: 'Соединить', value: 'connect' },
+          defaultValue: 'jumpOver',
+        })),
+      ]
+
+      // Строим читаемые метки с координатами
+      for (let i = 0; i < junctions.length; i++) {
+        const pt = junctions[i].sharedEndpoint
+        const gx = Math.round((pt.x - MARGIN_LEFT - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+        const gy = Math.round((pt.y - MARGIN_TOP - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+        items[i].label = `Дырка ${formatGridPos(gx, gy)}`
+      }
+      for (let i = 0; i < uniqueCrossings.length; i++) {
+        const pt = uniqueCrossings[i].point
+        const gx = Math.round((pt.x - MARGIN_LEFT - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+        const gy = Math.round((pt.y - MARGIN_TOP - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+        items[junctions.length + i].label = `Пересечение в ${formatGridPos(gx, gy)}`
+      }
+
+      const decisions = await askConflicts(items)
+
+      // Обрабатываем решения по junctions
+      for (let i = 0; i < junctions.length; i++) {
+        if (decisions[i] === 'merge') {
+          const existing = junctions[i].wire
+          const sharedPt = junctions[i].sharedEndpoint
+          const existingStartSvgX = MARGIN_LEFT + (existing.startPosition.x + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
+          const existingStartSvgY = MARGIN_TOP + (existing.startPosition.y + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
+          const sharedIsStart = Math.abs(existingStartSvgX - sharedPt.x) < 1 && Math.abs(existingStartSvgY - sharedPt.y) < 1
+          const gx = Math.round((sharedPt.x - MARGIN_LEFT - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+          const gy = Math.round((sharedPt.y - MARGIN_TOP - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+          const sharedKey = `${gx},${gy}`
+          const newStartKey = `${newWire.startPosition.x},${newWire.startPosition.y}`
+          const otherEnd = newStartKey === sharedKey ? newWire.endPosition : newWire.startPosition
+          if (sharedIsStart) {
+            existing.startPosition = { ...otherEnd }
+          } else {
+            existing.endPosition = { ...otherEnd }
+          }
+          projectStore.notifyElementChanged()
+          editorStore.wireStart = null
+          editorStore.wirePreviewEnd = null
+          return
+        }
+        // 'keep' — продолжаем
+      }
+
+      // Обрабатываем решения по crossings
+      for (let i = 0; i < uniqueCrossings.length; i++) {
+        if (decisions[junctions.length + i] === 'jumpOver') {
+          newWire.crossings.push({
+            withWireId: uniqueCrossings[i].wire.id,
+            point: { ...uniqueCrossings[i].point },
+            jumpOver: true,
+          })
+        }
+        // 'connect' — ничего, провода электрически соединены
+      }
+    }
+
+    // Проверка совместимости пинов (существующая логика)
+    const conflict = checkWireConflict(wireStart.value, pos)
+    if (conflict) {
+      wireConflictMsg.value = conflict
+      setTimeout(() => { wireConflictMsg.value = null }, 4000)
+    }
+
+    projectStore.addElement(newWire)
+    historyStore.push({ type: 'add', element: newWire.serialize() })
+    editorStore.wireStart = null
+    editorStore.wirePreviewEnd = null
+
   } else if (activeTool.value === 'select') {
     editorStore.selectedElementId = null
   }
