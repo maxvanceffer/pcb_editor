@@ -1,6 +1,6 @@
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="sm:max-w-[560px] h-[600px] flex flex-col gap-0 p-0">
+    <DialogContent class="sm:max-w-[560px] max-h-[90dvh] flex flex-col gap-0 p-0">
       <DialogHeader class="px-4 pt-4 pb-3 border-b shrink-0">
         <DialogTitle>{{ t('editor.elements.pickerTitle') }}</DialogTitle>
         <div class="relative mt-2">
@@ -14,7 +14,7 @@
         </div>
       </DialogHeader>
 
-      <!-- Фильтр по категориям -->
+      <!-- Category filter -->
       <div class="flex gap-1.5 px-4 py-2 border-b shrink-0 flex-wrap">
         <Badge
           v-for="cat in ['all', ...categories]"
@@ -27,8 +27,8 @@
         </Badge>
       </div>
 
-      <!-- Список компонентов -->
-      <ScrollArea class="flex-1">
+      <!-- Component list -->
+      <ScrollArea class="flex-1 min-h-0">
         <div v-if="filtered.length === 0" class="p-6 text-center text-sm text-muted-foreground">
           {{ t('editor.elements.pickerEmpty') }}
         </div>
@@ -67,12 +67,12 @@
         </div>
       </ScrollArea>
 
-      <div class="px-4 py-3 border-t shrink-0 flex justify-between items-center">
-        <span class="text-xs text-muted-foreground">
+      <DialogFooter class="px-4 py-3 border-t shrink-0 sm:justify-between">
+        <span class="text-xs text-muted-foreground self-center">
           {{ t('editor.elements.pickerSelected', { count: pinnedIds.length }) }}
         </span>
         <Button size="sm" @click="$emit('update:open', false)">{{ t('editor.elements.pickerDone') }}</Button>
-      </div>
+      </DialogFooter>
     </DialogContent>
   </Dialog>
 </template>
@@ -87,7 +87,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 
 const props = defineProps<{
   open: boolean
