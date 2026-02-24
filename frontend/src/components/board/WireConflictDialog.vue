@@ -71,7 +71,9 @@ watch(() => props.conflicts, (list) => {
 }, { immediate: true })
 
 function onConfirm() {
-  emit('update:open', false)
+  // emit confirm before update:open so the parent resolves the Promise
+  // with user choices before the dialog-close event fires
   emit('confirm', [...decisions.value])
+  emit('update:open', false)
 }
 </script>

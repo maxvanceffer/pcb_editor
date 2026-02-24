@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "skills": {
+    "shadcn-vue": {
+      "source": "noartem/laravel-vue-skills",
+      "sourceType": "github",
+      "computedHash": "e625cdb20ad7e79b78fdf73a213894e0a4a0c4f410e6edebc413101746e04031"
+    },
+    "vee-validate-skilld": {
+      "source": "harlan-zw/vue-ecosystem-skills",
+      "sourceType": "github",
+      "computedHash": "2bdbf6c262cb9356e51eb84d2f4158e0c98df3110ee194b880705dc4569b4aeb"
+    },
+    "vue": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "computedHash": "9c241141e07e836e4f0537c63e8f929fba3767c2997250be38e699f19b75e3f2"
+    }
+  }
+}

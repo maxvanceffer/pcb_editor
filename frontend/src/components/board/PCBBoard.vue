@@ -848,15 +848,19 @@ function askConflicts(items: ConflictItem[]): Promise<string[]> {
 }
 
 function onConflictConfirm(decisions: string[]) {
-  conflictDialogOpen.value = false
-  resolveConflict?.(decisions)
+  const resolve = resolveConflict
   resolveConflict = null
+  conflictDialogOpen.value = false
+  resolve?.(decisions)
 }
 
 function onConflictDialogOpenChange(val: boolean) {
   if (!val && resolveConflict) {
     // Escape — применяем дефолтные решения
-    onConflictConfirm(conflictItems.value.map((c) => c.defaultValue))
+    const resolve = resolveConflict
+    resolveConflict = null
+    conflictDialogOpen.value = false
+    resolve?.(conflictItems.value.map((c) => c.defaultValue))
   } else {
     conflictDialogOpen.value = val
   }
@@ -885,8 +889,8 @@ function buildWirePath(wire: WireTrace): string {
   const jumpOvers = wire.crossings.filter((c) => c.jumpOver)
   if (jumpOvers.length === 0) return ''
 
-  const ARC_HALF = 5
-  const ARC_HEIGHT = 5
+  const ARC_HALF = 10
+  const ARC_HEIGHT = 18
 
   let d = `M ${pts[0].x},${pts[0].y}`
 
@@ -1114,27 +1118,39 @@ async function onHoleClick(col: number, row: number) {
 
       if (mergeJunctions.length === 2) {
         // Оба конца нового провода объединяются с существующими:
-        // Объединяем wireA + newWire + wireB в один провод.
+        // Строим: aFree → sharedA → [new internal] → sharedB → bFree
         const wireA = mergeJunctions[0].wire
         const wireB = mergeJunctions[1].wire
-        const sharedA = mergeJunctions[0].sharedEndpoint
-        const sharedB = mergeJunctions[1].sharedEndpoint
 
-        // Определяем свободный конец wireA (тот, что НЕ совпадает с sharedA)
-        const aStartSvgX = MARGIN_LEFT + (wireA.startPosition.x + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
-        const aStartSvgY = MARGIN_TOP + (wireA.startPosition.y + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
-        const aSharedIsStart = Math.abs(aStartSvgX - sharedA.x) < 1 && Math.abs(aStartSvgY - sharedA.y) < 1
-        const aFreeEnd = aSharedIsStart ? wireA.endPosition : wireA.startPosition
+        // sharedA = grid координаты точки соединения нового провода с wireA
+        const sharedAGx = Math.round((mergeJunctions[0].sharedEndpoint.x - MARGIN_LEFT - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+        const sharedAGy = Math.round((mergeJunctions[0].sharedEndpoint.y - MARGIN_TOP - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+        const sharedBGx = Math.round((mergeJunctions[1].sharedEndpoint.x - MARGIN_LEFT - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+        const sharedBGy = Math.round((mergeJunctions[1].sharedEndpoint.y - MARGIN_TOP - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
 
-        // Определяем свободный конец wireB (тот, что НЕ совпадает с sharedB)
-        const bStartSvgX = MARGIN_LEFT + (wireB.startPosition.x + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
-        const bStartSvgY = MARGIN_TOP + (wireB.startPosition.y + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
-        const bSharedIsStart = Math.abs(bStartSvgX - sharedB.x) < 1 && Math.abs(bStartSvgY - sharedB.y) < 1
-        const bFreeEnd = bSharedIsStart ? wireB.endPosition : wireB.startPosition
+        // Свободный конец wireA (противоположный sharedA)
+        const aStartIsShared = wireA.startPosition.x === sharedAGx && wireA.startPosition.y === sharedAGy
+        const aFreeEnd = aStartIsShared ? wireA.endPosition : wireA.startPosition
+        // Waypoints wireA в порядке aFree→sharedA
+        const aWpts = aStartIsShared ? [...wireA.waypoints].reverse() : [...wireA.waypoints]
 
-        // Waypoints нового провода как промежуточные точки
-        const newMidpoints = newWire.getAllPoints().slice(1, -1)
-        const allWaypoints = aSharedIsStart ? [...newMidpoints].reverse() : [...newMidpoints]
+        // Свободный конец wireB (противоположный sharedB)
+        const bStartIsShared = wireB.startPosition.x === sharedBGx && wireB.startPosition.y === sharedBGy
+        const bFreeEnd = bStartIsShared ? wireB.endPosition : wireB.startPosition
+        // Waypoints wireB в порядке sharedB→bFree
+        const bWpts = bStartIsShared ? [...wireB.waypoints] : [...wireB.waypoints].reverse()
+
+        // Waypoints нового провода в порядке sharedA→sharedB
+        const newStartIsSharedA = newWire.startPosition.x === sharedAGx && newWire.startPosition.y === sharedAGy
+        const newInternalWpts = newStartIsSharedA ? [...newWire.waypoints] : [...newWire.waypoints].reverse()
+
+        const allWaypoints = [
+          ...aWpts,
+          { x: sharedAGx, y: sharedAGy },
+          ...newInternalWpts,
+          { x: sharedBGx, y: sharedBGy },
+          ...bWpts,
+        ]
 
         // Создаём новый объект вместо мутации (shallowRef требует замены ссылки)
         const merged = new WireTrace(aFreeEnd, bFreeEnd, wireA.color, allWaypoints, wireA.id)
@@ -1149,21 +1165,27 @@ async function onHoleClick(col: number, row: number) {
         return
 
       } else if (mergeJunctions.length === 1) {
-        // Один конец нового провода объединяется с существующим
+        // Один конец нового провода объединяется с существующим.
+        // Строим merged: newFree → sharedPoint → existingFree
         const existing = mergeJunctions[0].wire
-        const sharedPt = mergeJunctions[0].sharedEndpoint
-        const existingStartSvgX = MARGIN_LEFT + (existing.startPosition.x + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
-        const existingStartSvgY = MARGIN_TOP + (existing.startPosition.y + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
-        const sharedIsStart = Math.abs(existingStartSvgX - sharedPt.x) < 1 && Math.abs(existingStartSvgY - sharedPt.y) < 1
-        const gx = Math.round((sharedPt.x - MARGIN_LEFT - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
-        const gy = Math.round((sharedPt.y - MARGIN_TOP - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
-        const sharedKey = `${gx},${gy}`
-        const newStartKey = `${newWire.startPosition.x},${newWire.startPosition.y}`
-        const otherEnd = newStartKey === sharedKey ? newWire.endPosition : newWire.startPosition
-        const newStart = sharedIsStart ? otherEnd : existing.startPosition
-        const newEnd = sharedIsStart ? existing.endPosition : otherEnd
+
+        // Определяем свободный конец нового провода (не совпадающий с shared)
+        const sharedGx = Math.round((mergeJunctions[0].sharedEndpoint.x - MARGIN_LEFT - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+        const sharedGy = Math.round((mergeJunctions[0].sharedEndpoint.y - MARGIN_TOP - HOLE_SPACING / 2) / HOLE_SPACING) - CANVAS_PADDING
+        const newStartIsShared = newWire.startPosition.x === sharedGx && newWire.startPosition.y === sharedGy
+        const newFree = newStartIsShared ? newWire.endPosition : newWire.startPosition
+        // Waypoints нового провода в порядке newFree→shared
+        const newWpts = newStartIsShared ? [...newWire.waypoints].reverse() : [...newWire.waypoints]
+
+        // Определяем свободный конец существующего (не совпадающий с shared)
+        const exStartIsShared = existing.startPosition.x === sharedGx && existing.startPosition.y === sharedGy
+        const existingFree = exStartIsShared ? existing.endPosition : existing.startPosition
+        // Waypoints существующего в порядке shared→existingFree
+        const exWpts = exStartIsShared ? [...existing.waypoints] : [...existing.waypoints].reverse()
+
+        const mergedWaypoints = [...newWpts, { x: sharedGx, y: sharedGy }, ...exWpts]
         // Создаём новый объект вместо мутации (shallowRef требует замены ссылки)
-        const merged = new WireTrace(newStart, newEnd, existing.color, existing.waypoints, existing.id, existing.crossings, existing.sharedHoles)
+        const merged = new WireTrace(newFree, existingFree, existing.color, mergedWaypoints, existing.id, existing.crossings, existing.sharedHoles)
         historyStore.push({ type: 'remove', element: existing.serialize() })
         historyStore.push({ type: 'add', element: merged.serialize() })
         projectStore.removeElement(existing.id)

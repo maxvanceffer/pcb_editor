@@ -1,8 +1,6 @@
 <template>
     <div class="min-h-screen flex items-center justify-center bg-background">
-        <!-- Переключалки языка и темы -->
         <div class="fixed top-4 right-4 flex gap-2">
-            <!-- Язык -->
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>
                     <Button variant="outline" size="sm" class="gap-1.5">
@@ -24,7 +22,6 @@
                 </DropdownMenuContent>
             </DropdownMenu>
 
-            <!-- Тема -->
             <DropdownMenu>
                 <DropdownMenuTrigger as-child>
                     <Button variant="outline" size="sm">
@@ -67,7 +64,7 @@
             </DropdownMenu>
         </div>
 
-        <Card class="w-[400px]">
+        <Card class="w-100">
             <CardHeader>
                 <CardTitle class="text-2xl">{{
                     t("auth.login.title")
@@ -150,7 +147,6 @@
                         >
                     </Button>
                 </div>
-                <!-- Last used: email -->
                 <p
                     v-if="lastLogin?.method === 'email'"
                     class="text-xs text-muted-foreground text-center"
@@ -179,7 +175,6 @@
             </CardFooter>
         </Card>
 
-        <!-- Модал объединения аккаунтов -->
         <Dialog :open="linkDialogOpen" @update:open="linkDialogOpen = $event">
             <DialogContent class="sm:max-w-md">
                 <DialogHeader>
