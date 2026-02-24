@@ -5,6 +5,7 @@ const staticConfig = defineConfig({
   etag: true,
   lastModified: true,
   dotFiles: 'ignore',
+  maxAge: '30d',
 })
 
 export default staticConfig
