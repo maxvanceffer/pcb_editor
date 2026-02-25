@@ -100,8 +100,8 @@
       <!-- Canvas -->
       <div class="flex-1 overflow-hidden relative">
         <template v-if="projectLoaded">
-          <PCBBoard />
-          <BottomToolbar />
+          <PCBBoard ref="pcbBoardRef" />
+          <BottomToolbar @open-shortcuts="shortcutsDialogOpen = true" />
         </template>
         <div v-else class="flex items-center justify-center h-full text-muted-foreground">
           {{ t('editor.loading') }}
@@ -127,11 +127,12 @@
 
   <AccountDialog v-model:open="accountDialogOpen" />
   <EditorSettingsDialog v-model:open="settingsDialogOpen" />
+  <ShortcutsDialog v-model:open="shortcutsDialogOpen" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, type ComponentPublicInstance } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTitle } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
@@ -163,6 +164,7 @@ import BottomToolbar from '@/components/editor/BottomToolbar.vue'
 import AccountDialog from '@/components/AccountDialog.vue'
 import LogoIcon from '@/components/LogoIcon.vue'
 import EditorSettingsDialog from '@/components/EditorSettingsDialog.vue'
+import ShortcutsDialog from '@/components/editor/ShortcutsDialog.vue'
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -175,6 +177,8 @@ const settingsStore = useSettingsStore()
 
 const accountDialogOpen = ref(false)
 const settingsDialogOpen = ref(false)
+const shortcutsDialogOpen = ref(false)
+const pcbBoardRef = ref<ComponentPublicInstance & { cutWireSegment: () => void } | null>(null)
 
 async function setLocale(lang: 'ru' | 'en') {
   await settingsStore.patch({ locale: lang })
@@ -235,11 +239,17 @@ function onKeyDown(e: KeyboardEvent) {
   const tag = (e.target as HTMLElement).tagName
   if (tag === 'INPUT' || tag === 'TEXTAREA') return
 
-  if (e.key === 's' && !e.ctrlKey && !e.metaKey) {
+  if (e.key === '?') {
+    shortcutsDialogOpen.value = true
+    return
+  } else if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+    e.preventDefault()
     editorStore.activeTool = 'select'
-  } else if (e.key === 'h') {
+  } else if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
+    e.preventDefault()
     editorStore.activeTool = 'hand'
-  } else if (e.key === 'w') {
+  } else if ((e.ctrlKey || e.metaKey) && e.key === 'w') {
+    e.preventDefault()
     editorStore.activeTool = 'wire'
   } else if ((e.ctrlKey || e.metaKey) && e.key === 's') {
     e.preventDefault()
@@ -254,6 +264,11 @@ function onKeyDown(e: KeyboardEvent) {
     e.preventDefault()
     historyStore.redo()
   } else if (e.key === 'Delete' || e.key === 'Backspace') {
+    // Priority: segment cut if two points are selected
+    if (editorStore.segmentCutPoints.length === 2) {
+      pcbBoardRef.value?.cutWireSegment()
+      return
+    }
     const id = editorStore.selectedElementId
     if (!id) return
     const el = projectStore.getElementById(id)
@@ -261,7 +276,8 @@ function onKeyDown(e: KeyboardEvent) {
     historyStore.push({ type: 'remove', element: el.serialize() })
     projectStore.removeElement(id)
     editorStore.selectedElementId = null
-  } else if (e.key === 'r' || e.key === 'R') {
+  } else if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+    e.preventDefault()
     const id = editorStore.selectedElementId
     if (!id) return
     const el = projectStore.getElementById(id)
@@ -273,6 +289,8 @@ function onKeyDown(e: KeyboardEvent) {
       projectStore.notifyElementChanged()
     }
   } else if (e.key === 'Escape') {
+    editorStore.segmentCutPoints = []
+    editorStore.segmentCutWireId = null
     editorStore.wireStart = null
     editorStore.wirePreviewEnd = null
     editorStore.selectedElementId = null

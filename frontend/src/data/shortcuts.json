@@ -1,0 +1,72 @@
+[
+  {
+    "id": "tool-select",
+    "category": "tools",
+    "label": "editor.shortcuts.toolSelect.label",
+    "description": "editor.shortcuts.toolSelect.description",
+    "keystrokes": ["Ctrl", "P"]
+  },
+  {
+    "id": "tool-hand",
+    "category": "tools",
+    "label": "editor.shortcuts.toolHand.label",
+    "description": "editor.shortcuts.toolHand.description",
+    "keystrokes": ["Ctrl", "H"]
+  },
+  {
+    "id": "tool-wire",
+    "category": "tools",
+    "label": "editor.shortcuts.toolWire.label",
+    "description": "editor.shortcuts.toolWire.description",
+    "keystrokes": ["Ctrl", "W"]
+  },
+  {
+    "id": "save",
+    "category": "actions",
+    "label": "editor.shortcuts.save.label",
+    "description": "editor.shortcuts.save.description",
+    "keystrokes": ["Ctrl", "S"]
+  },
+  {
+    "id": "undo",
+    "category": "actions",
+    "label": "editor.shortcuts.undo.label",
+    "description": "editor.shortcuts.undo.description",
+    "keystrokes": ["Ctrl", "Z"]
+  },
+  {
+    "id": "redo",
+    "category": "actions",
+    "label": "editor.shortcuts.redo.label",
+    "description": "editor.shortcuts.redo.description",
+    "keystrokes": ["Ctrl", "Shift", "Z"]
+  },
+  {
+    "id": "delete",
+    "category": "actions",
+    "label": "editor.shortcuts.delete.label",
+    "description": "editor.shortcuts.delete.description",
+    "keystrokes": ["Delete"]
+  },
+  {
+    "id": "rotate",
+    "category": "actions",
+    "label": "editor.shortcuts.rotate.label",
+    "description": "editor.shortcuts.rotate.description",
+    "keystrokes": ["Ctrl", "R"]
+  },
+  {
+    "id": "wire-cut",
+    "category": "actions",
+    "label": "editor.shortcuts.wireCut.label",
+    "description": "editor.shortcuts.wireCut.description",
+    "keystrokes": ["Ctrl", "Click"]
+  },
+  {
+    "id": "cancel",
+    "category": "actions",
+    "label": "editor.shortcuts.cancel.label",
+    "description": "editor.shortcuts.cancel.description",
+    "keystrokes": ["Escape"]
+  }
+]

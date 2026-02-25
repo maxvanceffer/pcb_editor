@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { ComponentDefinition, GridPosition } from '@/lib/components/types'
 
 export type Tool = 'select' | 'hand' | 'wire'
@@ -33,6 +33,15 @@ export const useEditorStore = defineStore('editor', () => {
   // Wire tool
   const wireStart = ref<GridPosition | null>(null)
   const wirePreviewEnd = ref<GridPosition | null>(null)
+
+  // Segment cut mode: two ctrl+clicked holes on the same wire
+  const segmentCutPoints = ref<GridPosition[]>([])
+  const segmentCutWireId = ref<string | null>(null)
+
+  watch(activeTool, () => {
+    segmentCutPoints.value = []
+    segmentCutWireId.value = null
+  })
 
   // Недавно использованные (ids)
   const recentlyUsed = ref<string[]>([])
@@ -184,6 +193,7 @@ export const useEditorStore = defineStore('editor', () => {
     svgWidth, svgHeight, containerWidth, containerHeight, centerBoard,
     showPinLabels, pinUserLabels, SIGNAL_PRESETS,
     componentDescriptions, setComponentDescription, getComponentDescription,
+    segmentCutPoints, segmentCutWireId,
     setZoom, pan, startDrag, updateDragPreview, endDrag, addToRecentlyUsed,
     pixelToGrid, gridToPixelCenter, setPinLabel, getPinLabel,
   }

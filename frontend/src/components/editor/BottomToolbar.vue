@@ -78,12 +78,21 @@
             >
                 <component :is="tool.icon" class="w-4 h-4" />
                 <div
-                    class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                    class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover text-popover-foreground border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5"
                 >
                     {{ tool.label }}
-                    <kbd class="ml-1.5 text-muted-foreground">{{
-                        tool.key
-                    }}</kbd>
+                    <KbdGroup>
+                        <Kbd
+                            v-for="key in getKeystrokes(tool.shortcutId)"
+                            :key="key"
+                            :class="{
+                                'text-xl': ['Ctrl', 'Shift', 'Alt'].includes(
+                                    key,
+                                ),
+                            }"
+                            >{{ displayKey(key) }}</Kbd
+                        >
+                    </KbdGroup>
                 </div>
             </button>
             <div v-if="tool.id === 'hand'" class="w-px h-5 bg-border mx-0.5" />
@@ -103,7 +112,7 @@
         >
             <Tag class="w-4 h-4" />
             <div
-                class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover text-popover-foreground border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
             >
                 {{
                     editorStore.showPinLabels
@@ -125,9 +134,23 @@
         >
             <ListTree class="w-4 h-4" />
             <div
-                class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover text-popover-foreground border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
             >
                 {{ t("editor.toolbar.elementsList") }}
+            </div>
+        </button>
+
+        <!-- Keyboard shortcuts -->
+        <button
+            class="relative group flex items-center justify-center w-9 h-9 rounded-lg transition-colors text-muted-foreground hover:bg-accent hover:text-foreground"
+            @click="emit('open-shortcuts')"
+        >
+            <Keyboard class="w-4 h-4" />
+            <div
+                class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover text-popover-foreground border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+                {{ t("editor.tools.shortcuts") }}
+                <kbd class="ml-1.5 text-muted-foreground text-[10px]">?</kbd>
             </div>
         </button>
     </div>
@@ -142,7 +165,7 @@
         >
             <Crosshair class="w-3.5 h-3.5" />
             <div
-                class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover text-popover-foreground border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
             >
                 {{ t("editor.toolbar.center") }}
             </div>
@@ -156,7 +179,7 @@
         >
             <Minus class="w-3.5 h-3.5" />
             <div
-                class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover text-popover-foreground border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
             >
                 {{ t("editor.toolbar.zoomOut") }}
             </div>
@@ -168,7 +191,7 @@
         >
             {{ Math.round(editorStore.zoom * 100) }}%
             <div
-                class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover text-popover-foreground border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
             >
                 {{ t("editor.toolbar.zoomReset") }}
             </div>
@@ -180,7 +203,7 @@
         >
             <Plus class="w-3.5 h-3.5" />
             <div
-                class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover text-popover-foreground border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
             >
                 {{ t("editor.toolbar.zoomIn") }}
             </div>
@@ -190,6 +213,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
+
+const emit = defineEmits<{ "open-shortcuts": [] }>();
 import { useI18n } from "vue-i18n";
 import {
     MousePointer2,
@@ -202,9 +227,12 @@ import {
     ListTree,
     Eye,
     EyeOff,
+    Keyboard,
 } from "lucide-vue-next";
 import { useEditorStore, type Tool } from "@/stores/editorStore";
 import { useProjectStore } from "@/stores/projectStore";
+import { Kbd, KbdGroup } from "@/components/ui/kbd";
+import shortcutsData from "@/data/shortcuts.json";
 
 const { t } = useI18n();
 const editorStore = useEditorStore();
@@ -220,15 +248,43 @@ const visibleCount = computed(
             .length,
 );
 
+const isMac = navigator.platform.toUpperCase().includes("MAC");
+
+function displayKey(key: string): string {
+    if (isMac) {
+        if (key === "Ctrl") return "⌘";
+        if (key === "Shift") return "⇧";
+        if (key === "Alt") return "⌥";
+    }
+    return key;
+}
+
+function getKeystrokes(shortcutId: string): string[] {
+    const found = (
+        shortcutsData as Array<{ id: string; keystrokes: string[] }>
+    ).find((s) => s.id === shortcutId);
+    return found?.keystrokes ?? [];
+}
+
 const tools = computed(() => [
     {
         id: "select",
+        shortcutId: "tool-select",
         icon: MousePointer2,
         label: t("editor.tools.select"),
-        key: "S",
     },
-    { id: "hand", icon: Hand, label: t("editor.tools.hand"), key: "H" },
-    { id: "wire", icon: Spline, label: t("editor.tools.wire"), key: "W" },
+    {
+        id: "hand",
+        shortcutId: "tool-hand",
+        icon: Hand,
+        label: t("editor.tools.hand"),
+    },
+    {
+        id: "wire",
+        shortcutId: "tool-wire",
+        icon: Spline,
+        label: t("editor.tools.wire"),
+    },
 ]);
 
 function resetZoom() {

@@ -177,6 +177,22 @@
       "conflicts": "Конфликты соединений:",
       "fixedPins": "Назначения пинов фиксированы для этого компонента"
     },
+    "shortcuts": {
+      "categories": {
+        "tools": "Инструменты",
+        "actions": "Действия"
+      },
+      "toolSelect": { "label": "Выбор",          "description": "Инструмент выбора" },
+      "toolHand":   { "label": "Рука",            "description": "Инструмент перемещения" },
+      "toolWire":   { "label": "Провод",          "description": "Рисование проводов" },
+      "save":       { "label": "Сохранить",       "description": "Сохранить проект" },
+      "undo":       { "label": "Отмена",          "description": "Отменить последнее действие" },
+      "redo":       { "label": "Повтор",          "description": "Повторить отменённое действие" },
+      "delete":     { "label": "Удалить",         "description": "Удалить выбранный элемент" },
+      "rotate":     { "label": "Повернуть",       "description": "Повернуть компонент на 90°" },
+      "cancel":     { "label": "Отмена",          "description": "Снять выделение / отменить" },
+      "wireCut":    { "label": "Разрез провода",  "description": "Установить точку разреза провода" }
+    },
     "settings": {
       "title": "Настройки редактора",
       "groupTooltip": "Подсказка компонента",

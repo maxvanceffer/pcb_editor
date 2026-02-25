@@ -1,5 +1,6 @@
+import { v4 as uuid } from 'uuid'
 import type { GridPosition } from './components/types'
-import type { WireTrace } from './components/WireTrace'
+import { WireTrace } from './components/WireTrace'
 
 export interface SvgPoint {
   x: number
@@ -143,4 +144,177 @@ export function findCrossings(
     }
   }
   return result
+}
+
+/**
+ * Checks if a grid hole lies on any segment of the wire.
+ * Uses exact integer arithmetic (no epsilon) since both holes and wire waypoints are integers.
+ * Returns the first matching { segmentIndex, t } or null.
+ */
+export function findHoleOnWire(
+  hole: GridPosition,
+  wire: WireTrace,
+): { segmentIndex: number; t: number } | null {
+  const points = wire.getAllPoints()
+  for (let i = 0; i < points.length - 1; i++) {
+    const p1 = points[i]
+    const p2 = points[i + 1]
+    const dx = p2.x - p1.x
+    const dy = p2.y - p1.y
+
+    // Cross product must be zero (collinear)
+    const cross = dx * (hole.y - p1.y) - dy * (hole.x - p1.x)
+    if (cross !== 0) continue
+
+    // Compute parameter t
+    let t: number
+    if (dx !== 0) {
+      t = (hole.x - p1.x) / dx
+    } else if (dy !== 0) {
+      t = (hole.y - p1.y) / dy
+    } else {
+      // Degenerate zero-length segment
+      t = hole.x === p1.x && hole.y === p1.y ? 0 : -1
+    }
+
+    if (t >= 0 && t <= 1) {
+      return { segmentIndex: i, t }
+    }
+  }
+  return null
+}
+
+/**
+ * Checks whether an SVG-coordinate point lies on any segment of a wire (within 2px tolerance).
+ * Used to redistribute crossing points after a split.
+ */
+export function svgPointOnWireSegments(pt: SvgPoint, wire: WireTrace, c: GeometryConstants): boolean {
+  const pts = wire.getAllPoints().map((p) => toSvgPoint(p, c))
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p1 = pts[i]
+    const p2 = pts[i + 1]
+    const dx = p2.x - p1.x
+    const dy = p2.y - p1.y
+    const len2 = dx * dx + dy * dy
+    if (len2 < 1e-10) continue
+
+    const t = ((pt.x - p1.x) * dx + (pt.y - p1.y) * dy) / len2
+    if (t < -0.01 || t > 1.01) continue
+
+    const closestX = p1.x + t * dx
+    const closestY = p1.y + t * dy
+    const dist2 = (pt.x - closestX) ** 2 + (pt.y - closestY) ** 2
+    if (dist2 <= 4) return true
+  }
+  return false
+}
+
+/**
+ * Splits a wire at two grid holes (holeA and holeB), removing the segment between them.
+ * Returns wire1 (start → holeA) and wire2 (holeB → end), either of which may be null
+ * if the cut point coincides with the wire's endpoint.
+ * Crossings and sharedHoles are redistributed to the appropriate piece.
+ */
+export function splitWireAtPoints(
+  wire: WireTrace,
+  holeA: GridPosition,
+  holeB: GridPosition,
+  c: GeometryConstants,
+): { wire1: WireTrace | null; wire2: WireTrace | null } {
+  // Identical points — nothing to cut
+  if (holeA.x === holeB.x && holeA.y === holeB.y) {
+    return { wire1: null, wire2: null }
+  }
+
+  const hitA = findHoleOnWire(holeA, wire)
+  const hitB = findHoleOnWire(holeB, wire)
+  if (!hitA || !hitB) return { wire1: null, wire2: null }
+
+  // Normalize: earlyHit comes before lateHit along the wire
+  const paramA = hitA.segmentIndex + hitA.t
+  const paramB = hitB.segmentIndex + hitB.t
+
+  let earlyPos: GridPosition, latePos: GridPosition
+  let earlyHit: { segmentIndex: number; t: number }
+  let lateHit: { segmentIndex: number; t: number }
+
+  if (paramA <= paramB) {
+    earlyPos = holeA; earlyHit = hitA
+    latePos = holeB; lateHit = hitB
+  } else {
+    earlyPos = holeB; earlyHit = hitB
+    latePos = holeA; lateHit = hitA
+  }
+
+  // Build expanded points array, inserting interior cut points
+  const allPoints = wire.getAllPoints()
+  const expanded: GridPosition[] = []
+
+  for (let i = 0; i < allPoints.length; i++) {
+    expanded.push({ ...allPoints[i] })
+    if (i < allPoints.length - 1) {
+      // Insert earlyPos if it is interior to segment [i, i+1]
+      if (earlyHit.segmentIndex === i && earlyHit.t > 0 && earlyHit.t < 1) {
+        expanded.push({ ...earlyPos })
+      }
+      // Insert latePos if it is interior to segment [i, i+1]
+      if (lateHit.segmentIndex === i && lateHit.t > 0 && lateHit.t < 1) {
+        expanded.push({ ...latePos })
+      }
+    }
+  }
+
+  // Find index of earlyPos in expanded (first occurrence)
+  let indexEarly = -1
+  for (let i = 0; i < expanded.length; i++) {
+    if (expanded[i].x === earlyPos.x && expanded[i].y === earlyPos.y) {
+      indexEarly = i
+      break
+    }
+  }
+
+  // Find index of latePos after earlyPos (first occurrence after indexEarly)
+  let indexLate = -1
+  for (let i = indexEarly + 1; i < expanded.length; i++) {
+    if (expanded[i].x === latePos.x && expanded[i].y === latePos.y) {
+      indexLate = i
+      break
+    }
+  }
+
+  if (indexEarly === -1 || indexLate === -1) return { wire1: null, wire2: null }
+
+  // wire1: expanded[0 .. indexEarly]
+  let wire1: WireTrace | null = null
+  const pts1 = expanded.slice(0, indexEarly + 1)
+  if (pts1.length >= 2) {
+    wire1 = new WireTrace(pts1[0], pts1[pts1.length - 1], wire.color, pts1.slice(1, -1), uuid())
+  }
+
+  // wire2: expanded[indexLate .. end]
+  let wire2: WireTrace | null = null
+  const pts2 = expanded.slice(indexLate)
+  if (pts2.length >= 2) {
+    wire2 = new WireTrace(pts2[0], pts2[pts2.length - 1], wire.color, pts2.slice(1, -1), uuid())
+  }
+
+  // Redistribute crossings to the correct piece
+  for (const crossing of wire.crossings) {
+    const inW1 = wire1 && svgPointOnWireSegments(crossing.point, wire1, c)
+    const target = inW1 ? wire1 : wire2
+    if (target) {
+      target.crossings.push({ ...crossing, point: { ...crossing.point } })
+    }
+  }
+
+  // Redistribute sharedHoles to the correct piece
+  for (const hole of wire.sharedHoles) {
+    const inW1 = wire1 && findHoleOnWire(hole, wire1) !== null
+    const target = inW1 ? wire1 : wire2
+    if (target) {
+      target.sharedHoles.push({ ...hole })
+    }
+  }
+
+  return { wire1, wire2 }
 }

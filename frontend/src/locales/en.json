@@ -177,6 +177,22 @@
       "conflicts": "Connection conflicts:",
       "fixedPins": "Pin assignments are fixed for this component"
     },
+    "shortcuts": {
+      "categories": {
+        "tools": "Tools",
+        "actions": "Actions"
+      },
+      "toolSelect": { "label": "Select", "description": "Switch to select tool" },
+      "toolHand":   { "label": "Hand",   "description": "Switch to pan/move tool" },
+      "toolWire":   { "label": "Wire",   "description": "Switch to wire drawing tool" },
+      "save":       { "label": "Save",   "description": "Save project" },
+      "undo":       { "label": "Undo",   "description": "Undo last action" },
+      "redo":       { "label": "Redo",   "description": "Redo last undone action" },
+      "delete":     { "label": "Delete", "description": "Delete selected element" },
+      "rotate":     { "label": "Rotate", "description": "Rotate selected component 90°" },
+      "cancel":     { "label": "Cancel", "description": "Deselect / cancel current action" },
+      "wireCut":    { "label": "Wire Cut", "description": "Place cut point on wire segment" }
+    },
     "settings": {
       "title": "Editor Settings",
       "groupTooltip": "Component Tooltip",

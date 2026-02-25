@@ -1,8 +1,13 @@
 {
   "version": 1,
   "skills": {
+    "adonisjs": {
+      "source": "filipebraida/skills",
+      "sourceType": "github",
+      "computedHash": "fb9c4094940e2b4c20f1aa4018d33ed830a62735c0e458e57c161369978fb24a"
+    },
     "shadcn-vue": {
-      "source": "noartem/laravel-vue-skills",
+      "source": "noartem/skills",
       "sourceType": "github",
       "computedHash": "e625cdb20ad7e79b78fdf73a213894e0a4a0c4f410e6edebc413101746e04031"
     },
