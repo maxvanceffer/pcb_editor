@@ -57,8 +57,8 @@
                 <!-- Select for editable pins -->
                 <Select
                   v-if="comp.pinLabelsEditable"
-                  :model-value="(values[`pin_${pin.id}`] as string) || ''"
-                  @update:model-value="(v) => setFieldValue(`pin_${pin.id}`, v)"
+                  :model-value="pinValues[pin.id] || ''"
+                  @update:model-value="(v) => (pinValues[pin.id] = v)"
                 >
                   <SelectTrigger class="h-8 text-xs flex-1">
                     <SelectValue :placeholder="t('editor.pins.notSet')" />
@@ -110,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from "vue";
+import { computed, reactive, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
@@ -169,22 +169,28 @@ const formSchema = toTypedSchema(
   }),
 );
 
-const { handleSubmit, resetForm, values, setFieldValue } = useForm({
+const { handleSubmit, resetForm } = useForm({
   validationSchema: formSchema,
 });
+
+// Pin label values are stored separately from vee-validate to avoid
+// issues with schema-stripping unknown fields during handleSubmit.
+const pinValues = reactive<Record<string, string>>({});
 
 watch(
   () => [props.open, props.comp?.id] as const,
   ([open]) => {
     if (!open || !props.comp) return;
-    const initial: Record<string, string | null> = {
-      description: editorStore.getComponentDescription(props.comp.id),
-      color: editorStore.getComponentColor(props.comp.id),
-    };
+    resetForm({
+      values: {
+        description: editorStore.getComponentDescription(props.comp.id),
+        color: editorStore.getComponentColor(props.comp.id),
+      },
+    });
+    for (const key of Object.keys(pinValues)) delete pinValues[key];
     for (const pin of props.comp.getAbsolutePinPositions()) {
-      initial[`pin_${pin.id}`] = editorStore.getPinLabel(props.comp.id, pin.id);
+      pinValues[pin.id] = editorStore.getPinLabel(props.comp.id, pin.id);
     }
-    resetForm({ values: initial });
   },
   { immediate: true },
 );
@@ -256,8 +262,7 @@ const handleSave = handleSubmit((formValues) => {
 
   if (props.comp.pinLabelsEditable) {
     for (const pin of props.comp.getAbsolutePinPositions()) {
-      const label = (values[`pin_${pin.id}`] as string | undefined) ?? "";
-      editorStore.setPinLabel(id, pin.id, label);
+      editorStore.setPinLabel(id, pin.id, pinValues[pin.id] ?? "");
     }
   }
 
