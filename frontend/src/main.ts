@@ -71,3 +71,7 @@ app.config.errorHandler = (err) => {
 }
 
 app.mount('#app')
+
+// Expose version for debugging in dev console
+;(window as Record<string, unknown>).__APP_VERSION__ =
+  typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'unknown'
