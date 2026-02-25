@@ -43,17 +43,20 @@ export const useEditorStore = defineStore('editor', () => {
     segmentCutWireId.value = null
   })
 
-  // Недавно использованные (ids)
-  const recentlyUsed = ref<string[]>([])
-
-  // Закреплённые компоненты в сайдбаре (ids)
-  const pinnedComponents = ref<string[]>(
-    JSON.parse(localStorage.getItem('pinnedComponents') ?? '[]'),
+  // Component types added to the project sidebar (ids)
+  const projectComponentIds = ref<string[]>(
+    JSON.parse(localStorage.getItem('projectComponentIds') ?? '[]'),
   )
 
-  function setPinnedComponents(ids: string[]) {
-    pinnedComponents.value = ids
-    localStorage.setItem('pinnedComponents', JSON.stringify(ids))
+  function addProjectComponent(id: string) {
+    if (projectComponentIds.value.includes(id)) return
+    projectComponentIds.value = [...projectComponentIds.value, id]
+    localStorage.setItem('projectComponentIds', JSON.stringify(projectComponentIds.value))
+  }
+
+  function removeProjectComponent(id: string) {
+    projectComponentIds.value = projectComponentIds.value.filter((x) => x !== id)
+    localStorage.setItem('projectComponentIds', JSON.stringify(projectComponentIds.value))
   }
 
   // Размеры SVG платы и контейнера (обновляются из PCBBoard)
@@ -101,6 +104,23 @@ export const useEditorStore = defineStore('editor', () => {
 
   function getComponentDescription(componentId: string): string {
     return componentDescriptions.value[componentId] ?? ''
+  }
+
+  // Пользовательские цвета компонентов: ключ = componentId, значение = hex-цвет
+  const componentColors = ref<Record<string, string>>({})
+
+  function setComponentColor(componentId: string, color: string | null) {
+    if (color) {
+      componentColors.value = { ...componentColors.value, [componentId]: color }
+    } else {
+      const next = { ...componentColors.value }
+      delete next[componentId]
+      componentColors.value = next
+    }
+  }
+
+  function getComponentColor(componentId: string): string | null {
+    return componentColors.value[componentId] ?? null
   }
 
   // Пользовательские метки пинов: ключ = `${componentId}:${pinId}`, значение = метка
@@ -156,10 +176,6 @@ export const useEditorStore = defineStore('editor', () => {
     dragGridPos.value = null
   }
 
-  function addToRecentlyUsed(typeId: string) {
-    recentlyUsed.value = [typeId, ...recentlyUsed.value.filter((t) => t !== typeId)].slice(0, 10)
-  }
-
   function pixelToGrid(
     px: number,
     py: number,
@@ -188,13 +204,14 @@ export const useEditorStore = defineStore('editor', () => {
     movingElementId, movePreviewPos,
     selectedElementId,
     wireStart, wirePreviewEnd,
-    recentlyUsed, pinnedComponents, setPinnedComponents,
+    projectComponentIds, addProjectComponent, removeProjectComponent,
     hiddenElementIds, toggleElementVisibility, isElementHidden,
     svgWidth, svgHeight, containerWidth, containerHeight, centerBoard,
     showPinLabels, pinUserLabels, SIGNAL_PRESETS,
     componentDescriptions, setComponentDescription, getComponentDescription,
+    componentColors, setComponentColor, getComponentColor,
     segmentCutPoints, segmentCutWireId,
-    setZoom, pan, startDrag, updateDragPreview, endDrag, addToRecentlyUsed,
+    setZoom, pan, startDrag, updateDragPreview, endDrag,
     pixelToGrid, gridToPixelCenter, setPinLabel, getPinLabel,
   }
 })

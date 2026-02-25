@@ -13,70 +13,51 @@
         @click="closeCtxMenu"
         @contextmenu.prevent="closeCtxMenu"
     >
-        <!-- Context menu -->
-        <div
-            v-if="ctxMenu"
-            class="absolute z-20 bg-background border rounded-md shadow-lg py-1 min-w-40 text-sm"
-            :style="{ left: ctxMenu.x + 'px', top: ctxMenu.y + 'px' }"
-            @mousedown.stop
-            @click.stop
-        >
-            <div
-                class="px-2 py-1 text-xs text-muted-foreground border-b mb-1 truncate max-w-40"
-            >
-                {{ ctxMenu.label }}
-            </div>
-            <template v-if="ctxMenu.isComponent">
-                <button
-                    class="w-full text-left px-3 py-1.5 hover:bg-accent"
-                    @click="ctxRotate(1)"
-                >
-                    {{ t("editor.board.rotate90cw") }}
-                </button>
-                <button
-                    class="w-full text-left px-3 py-1.5 hover:bg-accent"
-                    @click="ctxRotate(-1)"
-                >
-                    {{ t("editor.board.rotate90ccw") }}
-                </button>
-                <button
-                    class="w-full text-left px-3 py-1.5 hover:bg-accent"
-                    @click="openPinLabels()"
-                >
-                    {{ t("editor.board.configurePins") }}
-                </button>
-                <div class="border-t my-1" />
-            </template>
-            <template v-if="!ctxMenu.isComponent">
-                <button
-                    class="w-full text-left px-3 py-1.5 hover:bg-accent"
-                    @click="ctxCheckCrossings()"
-                >
-                    Проверить пересечения
-                </button>
-                <button
-                    class="w-full text-left px-3 py-1.5 hover:bg-accent"
-                    @click="ctxMergeWires()"
-                >
-                    Объединить провода
-                </button>
-                <div class="border-t my-1" />
-            </template>
-            <button
-                class="w-full text-left px-3 py-1.5 hover:bg-accent text-destructive"
-                @click="ctxDelete()"
-            >
-                {{ t("editor.board.delete") }}
-            </button>
-        </div>
+        <!-- Context menu (virtual-trigger DropdownMenu) -->
+        <DropdownMenu :open="!!ctxMenu" @update:open="(v) => { if (!v) closeCtxMenu() }">
+            <DropdownMenuTrigger as-child>
+                <span
+                    class="absolute w-0 h-0 overflow-hidden pointer-events-none opacity-0"
+                    :style="{ left: (ctxMenu?.x ?? 0) + 'px', top: (ctxMenu?.y ?? 0) + 'px' }"
+                />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" :side-offset="0">
+                <DropdownMenuLabel class="text-xs text-muted-foreground font-medium truncate max-w-48">
+                    {{ ctxMenu?.label }}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <template v-if="ctxMenu?.isComponent">
+                    <DropdownMenuItem @select="ctxRotate(1)">
+                        <RotateCw /> {{ t("editor.board.rotate90cw") }}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem @select="ctxRotate(-1)">
+                        <RotateCcw /> {{ t("editor.board.rotate90ccw") }}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem @select="openPinLabels()">
+                        <SlidersHorizontal /> {{ t("editor.board.configure") }}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                </template>
+                <template v-else>
+                    <DropdownMenuItem @select="ctxCheckCrossings()">
+                        <Network /> {{ t("editor.board.wireCheckCrossings") }}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem @select="ctxMergeWires()">
+                        <GitMerge /> {{ t("editor.board.wireMerge") }}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                </template>
+                <DropdownMenuItem variant="destructive" @select="ctxDelete()">
+                    <Trash2 /> {{ t("editor.board.delete") }}
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
 
-        <!-- Pin label panel -->
-        <PinLabelPanel
-            v-if="pinLabelPanel"
-            :comp="pinLabelPanel.comp"
-            :x="pinLabelPanel.x"
-            :y="pinLabelPanel.y"
-            @close="pinLabelPanel = null"
+        <!-- Component config dialog -->
+        <ComponentConfigDialog
+            :open="configDialogOpen"
+            :comp="configDialogComp"
+            @update:open="configDialogOpen = $event"
         />
 
         <!-- Wire conflict warning -->
@@ -357,7 +338,7 @@
                         :y="gridToSvgY(comp.position.y) + 1"
                         :width="comp.effectiveWidth * HOLE_SPACING - 2"
                         :height="comp.effectiveHeight * HOLE_SPACING - 2"
-                        :fill="comp.color"
+                        :fill="compColor(comp.id, comp.color)"
                         fill-opacity="0.7"
                         rx="3"
                         :stroke="
@@ -382,7 +363,7 @@
                             "
                             width="7"
                             height="12"
-                            :fill="comp.color"
+                            :fill="compColor(comp.id, comp.color)"
                             fill-opacity="0.9"
                             rx="2"
                             pointer-events="none"
@@ -398,7 +379,7 @@
                             "
                             width="7"
                             height="12"
-                            :fill="comp.color"
+                            :fill="compColor(comp.id, comp.color)"
                             fill-opacity="0.9"
                             rx="2"
                             pointer-events="none"
@@ -418,7 +399,7 @@
                             "
                             width="12"
                             height="7"
-                            :fill="comp.color"
+                            :fill="compColor(comp.id, comp.color)"
                             fill-opacity="0.9"
                             rx="2"
                             pointer-events="none"
@@ -434,7 +415,7 @@
                             :y="gridToSvgY(comp.position.y) - 6"
                             width="12"
                             height="7"
-                            :fill="comp.color"
+                            :fill="compColor(comp.id, comp.color)"
                             fill-opacity="0.9"
                             rx="2"
                             pointer-events="none"
@@ -651,7 +632,7 @@ import { ComponentFactory } from "@/lib/components/ComponentFactory";
 import { WireTrace } from "@/lib/components/WireTrace";
 import { BaseComponent } from "@/lib/components/BaseComponent";
 import type { GridPosition } from "@/lib/components/types";
-import PinLabelPanel from "@/components/editor/PinLabelPanel.vue";
+import ComponentConfigDialog from "@/components/editor/ComponentConfigDialog.vue";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { getComponentImage } from "@/lib/components/componentImages";
 import WireConflictDialog from "@/components/board/WireConflictDialog.vue";
@@ -663,6 +644,15 @@ import {
     svgPointOnWireSegments,
     splitWireAtPoints,
 } from "@/lib/wireGeometry";
+import { RotateCw, RotateCcw, SlidersHorizontal, Network, GitMerge, Trash2 } from "lucide-vue-next";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const { t } = useI18n();
 const settingsStore = useSettingsStore();
@@ -897,9 +887,8 @@ const ctxMenu = ref<{
     label: string;
     isComponent: boolean;
 } | null>(null);
-const pinLabelPanel = ref<{ comp: BaseComponent; x: number; y: number } | null>(
-    null,
-);
+const configDialogOpen = ref(false);
+const configDialogComp = ref<BaseComponent | null>(null);
 
 function openCtxMenu(
     e: MouseEvent,
@@ -942,19 +931,12 @@ function ctxRotate(dir: 1 | -1) {
 
 function openPinLabels() {
     const id = ctxMenu.value?.id;
-    const x = ctxMenu.value?.x ?? 0;
-    const y = ctxMenu.value?.y ?? 0;
     closeCtxMenu();
     if (!id) return;
     const el = projectStore.getElementById(id);
     if (!(el instanceof BaseComponent)) return;
-    const wrap = canvasWrap.value!.getBoundingClientRect();
-    // Не выйти за правый/нижний край
-    pinLabelPanel.value = {
-        comp: el,
-        x: Math.min(x, wrap.width - 295),
-        y: Math.min(y, wrap.height - 340),
-    };
+    configDialogComp.value = el;
+    configDialogOpen.value = true;
 }
 
 function ctxDelete() {
@@ -966,6 +948,10 @@ function ctxDelete() {
     historyStore.push({ type: "remove", element: el.serialize() });
     projectStore.removeElement(id);
     editorStore.selectedElementId = null;
+}
+
+function compColor(id: string, fallback: string): string {
+    return editorStore.getComponentColor(id) ?? fallback;
 }
 
 // ─── Wire toast ──────────────────────────────────────────────────────────────
@@ -1970,7 +1956,7 @@ function onDrop(e: DragEvent) {
         if (!hasCollision) {
             projectStore.addElement(newEl);
             historyStore.push({ type: "add", element: newEl.serialize() });
-            editorStore.addToRecentlyUsed(typeId);
+            editorStore.addProjectComponent(typeId);
             editorStore.selectedElementId = newEl.id;
         }
     }

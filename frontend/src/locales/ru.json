@@ -124,18 +124,17 @@
       "redo": "Повтор"
     },
     "elements": {
-      "recent": "Последние использованные",
-      "recentEmpty": "Пока нет",
+      "inProject": "В проекте",
+      "addComponent": "Добавить",
       "loading": "Загрузка...",
-      "pinned": "Мои компоненты",
-      "pinnedEmpty": "Нажмите «Управлять» чтобы добавить",
-      "manage": "Управлять",
-      "pickerTitle": "Выбор компонентов",
+      "projectEmpty": "Нажмите «Добавить» чтобы добавить компоненты",
+      "pickerTitle": "Добавить компонент",
       "pickerSearch": "Поиск...",
-      "pickerAll": "Все",
       "pickerEmpty": "Ничего не найдено",
-      "pickerSelected": "Выбрано: {count}",
-      "pickerDone": "Готово"
+      "pickerAdd": "Добавить",
+      "pickerCancel": "Отмена",
+      "loadMore": "Загрузить ещё",
+      "showing": "Показано {shown} из {total}"
     },
     "history": {
       "undo": "↩ Отмена",
@@ -162,7 +161,9 @@
     "board": {
       "rotate90cw": "Повернуть +90°",
       "rotate90ccw": "Повернуть −90°",
-      "configurePins": "Настроить пины…",
+      "configure": "Настроить…",
+      "wireCheckCrossings": "Проверить пересечения",
+      "wireMerge": "Объединить провода",
       "delete": "Удалить",
       "chess": "Chess",
       "solid": "Solid",
@@ -170,9 +171,15 @@
     },
     "pins": {
       "title": "Метки пинов — {type}",
+      "configDescription": "Настройка меток, цвета и назначений пинов",
       "section": "Pins",
       "description": "Описание",
       "descriptionPlaceholder": "Например: Вход питания",
+      "descriptionTooLong": "Максимум 200 символов",
+      "color": "Цвет",
+      "colorDefault": "По умолчанию",
+      "save": "Сохранить",
+      "cancel": "Отмена",
       "notSet": "Не задано",
       "conflicts": "Конфликты соединений:",
       "fixedPins": "Назначения пинов фиксированы для этого компонента"

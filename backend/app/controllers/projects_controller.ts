@@ -33,6 +33,7 @@ export default class ProjectsController {
       elements: [],
       pinUserLabels: {},
       componentDescriptions: {},
+      componentColors: {},
     })
 
     return response.created({
@@ -59,6 +60,7 @@ export default class ProjectsController {
       elements: project.elements,
       pinUserLabels: project.pinUserLabels,
       componentDescriptions: project.componentDescriptions,
+      componentColors: project.componentColors,
       createdAt: project.createdAt,
       updatedAt: project.updatedAt,
     })
@@ -71,13 +73,14 @@ export default class ProjectsController {
       .where('userId', user.id)
       .firstOrFail()
 
-    const { name, description, boardConfig, elements, pinUserLabels, componentDescriptions } = request.only([
+    const { name, description, boardConfig, elements, pinUserLabels, componentDescriptions, componentColors } = request.only([
       'name',
       'description',
       'boardConfig',
       'elements',
       'pinUserLabels',
       'componentDescriptions',
+      'componentColors',
     ])
 
     project.merge({
@@ -87,6 +90,7 @@ export default class ProjectsController {
       elements: elements ?? project.elements,
       pinUserLabels: pinUserLabels ?? project.pinUserLabels,
       componentDescriptions: componentDescriptions ?? project.componentDescriptions,
+      componentColors: componentColors ?? project.componentColors,
     })
 
     await project.save()

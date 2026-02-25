@@ -82,4 +82,4 @@ Railway: backend serves built frontend from `public/` (SPA fallback in routes.ts
 
 ## Others
 
-All comments in the code must in english language
+All comments in the code must be in english language, only.

@@ -124,18 +124,17 @@
       "redo": "Redo"
     },
     "elements": {
-      "recent": "Recently used",
-      "recentEmpty": "None yet",
+      "inProject": "In project",
+      "addComponent": "Add",
       "loading": "Loading...",
-      "pinned": "My components",
-      "pinnedEmpty": "Click «Manage» to add components",
-      "manage": "Manage",
-      "pickerTitle": "Choose components",
+      "projectEmpty": "Click «Add» to add components",
+      "pickerTitle": "Add component",
       "pickerSearch": "Search...",
-      "pickerAll": "All",
       "pickerEmpty": "Nothing found",
-      "pickerSelected": "Selected: {count}",
-      "pickerDone": "Done"
+      "pickerAdd": "Add",
+      "pickerCancel": "Cancel",
+      "loadMore": "Load more",
+      "showing": "Showing {shown} of {total}"
     },
     "history": {
       "undo": "↩ Undo",
@@ -162,7 +161,9 @@
     "board": {
       "rotate90cw": "Rotate +90°",
       "rotate90ccw": "Rotate −90°",
-      "configurePins": "Configure pins…",
+      "configure": "Configure…",
+      "wireCheckCrossings": "Check crossings",
+      "wireMerge": "Merge wires",
       "delete": "Delete",
       "chess": "Chess",
       "solid": "Solid",
@@ -171,8 +172,14 @@
     "pins": {
       "title": "Pin labels — {type}",
       "section": "Pins",
+      "configDescription": "Configure labels, color and pin assignments",
       "description": "Description",
       "descriptionPlaceholder": "E.g. Power input",
+      "descriptionTooLong": "Max 200 characters",
+      "color": "Color",
+      "colorDefault": "Default",
+      "save": "Save",
+      "cancel": "Cancel",
       "notSet": "Not set",
       "conflicts": "Connection conflicts:",
       "fixedPins": "Pin assignments are fixed for this component"

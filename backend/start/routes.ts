@@ -39,6 +39,7 @@ router.get('/api/auth/github/callback', '#controllers/social_auth_controller.git
 router.post('/api/auth/link/confirm', '#controllers/social_auth_controller.confirmLink')
 
 // Components (публичные)
+router.get('/api/components/categories', '#controllers/components_controller.categories')
 router.get('/api/components', '#controllers/components_controller.index')
 router.get('/api/components/:id', '#controllers/components_controller.show')
 

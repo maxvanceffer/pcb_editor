@@ -2,10 +2,10 @@
   <div>
     <Transition name="slide-up">
       <div
-        v-if="updateAvailable"
+        v-if="updateAvailable && !isDev"
         class="fixed bottom-4 left-4 z-50 flex items-start gap-3 px-4 py-3 rounded-lg bg-secondary text-secondary-foreground text-sm shadow-lg max-w-xs"
       >
-        <span class="text-base leading-none mt-0.5">🔄</span>
+        <RefreshCcw class="h-4 w-4 shrink-0 mt-0.5" />
         <div class="flex flex-col gap-2">
           <p class="font-medium leading-snug">{{ $t('update.banner') }}</p>
           <button
@@ -22,8 +22,11 @@
 </template>
 
 <script setup lang="ts">
+import { RefreshCcw } from 'lucide-vue-next'
 import { useAppUpdate } from '@/lib/useAppUpdate'
+
 const { updateAvailable, reload } = useAppUpdate()
+const isDev = import.meta.env.DEV
 </script>
 
 <style scoped>

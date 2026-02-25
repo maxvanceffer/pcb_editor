@@ -12,14 +12,49 @@ function loadComponents() {
 }
 
 export default class ComponentsController {
-  async index({ response }: HttpContext) {
-    const components = loadComponents()
-    return response.ok({ components })
+  async index({ request, response }: HttpContext) {
+    const qs = request.qs()
+    const category = qs.category as string | undefined
+    const search = (qs.search as string | undefined)?.toLowerCase().trim()
+    const ids = qs.ids ? String(qs.ids).split(',').filter(Boolean) : null
+    const limit = Math.min(Number(qs.limit ?? 10), 200)
+    const offset = Number(qs.offset ?? 0)
+
+    let components = loadComponents()
+
+    if (ids?.length) {
+      components = components.filter((c: any) => ids.includes(String(c.id)))
+    }
+
+    if (category) {
+      components = components.filter((c: any) => c.category === category)
+    }
+
+    if (search) {
+      components = components.filter(
+        (c: any) =>
+          String(c.name).toLowerCase().includes(search) ||
+          String(c.description ?? '').toLowerCase().includes(search),
+      )
+    }
+
+    const total = components.length
+    const items = components.slice(offset, offset + limit)
+
+    return response.ok({ components: items, total, limit, offset })
+  }
+
+  async categories({ response }: HttpContext) {
+    const all = loadComponents()
+    const cats = [...new Set(all.map((c: any) => String(c.category)))]
+    // microcontroller always first
+    const sorted = ['microcontroller', ...cats.filter((c) => c !== 'microcontroller')]
+    return response.ok({ categories: sorted })
   }
 
   async show({ params, response }: HttpContext) {
     const components = loadComponents()
-    const component = components.find((c) => c.id === params.id)
+    const component = components.find((c: any) => c.id === params.id)
     if (!component) {
       return response.notFound({ message: 'Component not found' })
     }

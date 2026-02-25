@@ -62,10 +62,11 @@ export const useProjectStore = defineStore('project', () => {
     projectDescription.value = data.description ?? ''
     boardConfig.value = data.boardConfig
     elements.value = (data.elements as SerializedElement[]).map((e) => ComponentFactory.create(e))
-    // Restore pin label overrides and component descriptions
+    // Restore pin label overrides, component descriptions and colors
     const editorStore = useEditorStore()
     editorStore.pinUserLabels = (data.pinUserLabels as Record<string, string>) ?? {}
     editorStore.componentDescriptions = (data.componentDescriptions as Record<string, string>) ?? {}
+    editorStore.componentColors = (data.componentColors as Record<string, string>) ?? {}
   }
 
   async function saveProject() {
@@ -78,6 +79,7 @@ export const useProjectStore = defineStore('project', () => {
       elements: elements.value.map((e) => e.serialize()),
       pinUserLabels: editorStore.pinUserLabels,
       componentDescriptions: editorStore.componentDescriptions,
+      componentColors: editorStore.componentColors,
     })
   }
 

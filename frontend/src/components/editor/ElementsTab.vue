@@ -1,53 +1,48 @@
 <template>
   <div class="flex flex-col h-full">
-    <!-- Недавно использованные -->
-    <div class="p-3 border-b shrink-0">
-      <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">{{ t('editor.elements.recent') }}</p>
-      <div v-if="recentDefs.length === 0" class="text-xs text-muted-foreground italic">{{ t('editor.elements.recentEmpty') }}</div>
-      <div class="space-y-1">
-        <ComponentCard
-          v-for="def in recentDefs"
-          :key="def.id"
-          :definition="def"
-          :draggable="true"
-          @dragstart="onDragStart($event, def)"
-        />
-      </div>
+    <!-- Header -->
+    <div class="p-3 border-b shrink-0 flex items-center justify-between">
+      <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+        {{ t('editor.elements.inProject') }}
+      </p>
+      <button
+        class="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+        @click="pickerOpen = true"
+      >
+        <Plus class="h-3.5 w-3.5" />
+        {{ t('editor.elements.addComponent') }}
+      </button>
     </div>
 
-    <!-- Закреплённые компоненты -->
-    <div class="p-3 border-b shrink-0">
-      <div class="flex items-center justify-between mb-2">
-        <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider">{{ t('editor.elements.pinned') }}</p>
-        <button
-          class="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-          @click="pickerOpen = true"
-        >
-          <Plus class="h-3.5 w-3.5" />
-          {{ t('editor.elements.manage') }}
-        </button>
-      </div>
-      <div v-if="pinnedDefs.length === 0" class="text-xs text-muted-foreground italic">{{ t('editor.elements.pinnedEmpty') }}</div>
-      <div class="space-y-1">
-        <ComponentCard
-          v-for="def in pinnedDefs"
-          :key="def.id"
-          :definition="def"
-          :draggable="true"
-          @dragstart="onDragStart($event, def)"
-        />
-      </div>
-    </div>
-
-    <!-- Все компоненты по группам -->
+    <!-- Project component list grouped by category -->
     <ScrollArea class="flex-1">
-      <div v-if="loading" class="p-4 text-sm text-muted-foreground">{{ t('editor.elements.loading') }}</div>
+      <div v-if="loading" class="p-4 text-sm text-muted-foreground">
+        {{ t('editor.elements.loading') }}
+      </div>
+      <div
+        v-else-if="projectDefs.length === 0"
+        class="p-6 text-sm text-muted-foreground italic text-center"
+      >
+        {{ t('editor.elements.projectEmpty') }}
+      </div>
       <div v-else>
-        <div v-for="(group, category) in grouped" :key="category" class="p-3">
-          <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">{{ category }}</p>
-          <div class="space-y-1">
+        <div v-for="group in grouped" :key="group.category">
+          <!-- Group header -->
+          <button
+            class="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors border-b"
+            @click="toggleGroup(group.category)"
+          >
+            <span>{{ group.category }}</span>
+            <ChevronDown
+              class="h-3.5 w-3.5 transition-transform duration-150"
+              :class="{ '-rotate-90': collapsedGroups.has(group.category) }"
+            />
+          </button>
+
+          <!-- Group items -->
+          <div v-if="!collapsedGroups.has(group.category)" class="p-2 space-y-1">
             <ComponentCard
-              v-for="def in group"
+              v-for="def in group.items"
               :key="def.id"
               :definition="def"
               :draggable="true"
@@ -60,17 +55,17 @@
 
     <ComponentPickerDialog
       v-model:open="pickerOpen"
-      :components="allComponents"
-      :pinned-ids="editorStore.pinnedComponents"
-      @update:pinned-ids="editorStore.setPinnedComponents($event)"
+      :project-ids="editorStore.projectComponentIds"
+      @add="onAddComponent"
+      @remove="onRemoveComponent"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Plus } from 'lucide-vue-next'
+import { Plus, ChevronDown } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editorStore'
 import api from '@/lib/api'
 import type { ComponentDefinition } from '@/lib/components/types'
@@ -80,39 +75,68 @@ import ComponentPickerDialog from './ComponentPickerDialog.vue'
 
 const { t } = useI18n()
 const editorStore = useEditorStore()
-const allComponents = ref<ComponentDefinition[]>([])
-const loading = ref(true)
 const pickerOpen = ref(false)
+const loading = ref(true)
+const collapsedGroups = ref<Set<string>>(new Set())
+
+// Cache of fetched definitions (id → definition)
+const defsCache = ref<Map<string, ComponentDefinition>>(new Map())
+
+async function fetchMissingDefs(ids: string[]) {
+  const missing = ids.filter((id) => !defsCache.value.has(id))
+  if (!missing.length) return
+  const { data } = await api.get('/api/components', { params: { ids: missing.join(','), limit: 200 } })
+  const next = new Map(defsCache.value)
+  for (const def of data.components as ComponentDefinition[]) {
+    next.set(def.id, def)
+  }
+  defsCache.value = next
+}
 
 onMounted(async () => {
   try {
-    const { data } = await api.get('/api/components')
-    allComponents.value = data.components
+    await fetchMissingDefs(editorStore.projectComponentIds)
   } finally {
     loading.value = false
   }
 })
 
-const recentDefs = computed(() =>
-  editorStore.recentlyUsed
-    .map((id) => allComponents.value.find((c) => c.id === id))
-    .filter((c): c is ComponentDefinition => !!c),
+watch(
+  () => editorStore.projectComponentIds,
+  (ids) => fetchMissingDefs(ids),
 )
 
-const pinnedDefs = computed(() =>
-  editorStore.pinnedComponents
-    .map((id) => allComponents.value.find((c) => c.id === id))
-    .filter((c): c is ComponentDefinition => !!c),
+const projectDefs = computed(() =>
+  editorStore.projectComponentIds
+    .map((id) => defsCache.value.get(id))
+    .filter((d): d is ComponentDefinition => !!d),
 )
 
 const grouped = computed(() => {
-  const result: Record<string, ComponentDefinition[]> = {}
-  for (const comp of allComponents.value) {
-    if (!result[comp.category]) result[comp.category] = []
-    result[comp.category]!.push(comp)
+  const map = new Map<string, ComponentDefinition[]>()
+  for (const def of projectDefs.value) {
+    const cat = def.category
+    if (!map.has(cat)) map.set(cat, [])
+    map.get(cat)!.push(def)
   }
-  return result
+  return [...map.entries()].map(([category, items]) => ({ category, items }))
 })
+
+function toggleGroup(category: string) {
+  const next = new Set(collapsedGroups.value)
+  if (next.has(category)) next.delete(category)
+  else next.add(category)
+  collapsedGroups.value = next
+}
+
+function onAddComponent(def: ComponentDefinition) {
+  defsCache.value = new Map(defsCache.value).set(def.id, def)
+  editorStore.addProjectComponent(def.id)
+}
+
+function onRemoveComponent(id: string) {
+  editorStore.removeProjectComponent(id)
+}
 
 function onDragStart(e: DragEvent, def: ComponentDefinition) {
   e.dataTransfer!.effectAllowed = 'copy'

@@ -9,171 +9,979 @@
       "heightInHoles": 22,
       "color": "#4a90d9",
       "pins": [
-        { "id": "L3V3_1", "label": "3.3V", "offsetX": 0,  "offsetY": 0  },
-        { "id": "L3V3_2", "label": "3.3V", "offsetX": 0,  "offsetY": 1  },
-        { "id": "RST",    "label": "RST",  "offsetX": 0,  "offsetY": 2  },
-        { "id": "IO4",    "label": "IO4",  "offsetX": 0,  "offsetY": 3,  "functions": ["ADC1", "TOUCH"] },
-        { "id": "IO5",    "label": "IO5",  "offsetX": 0,  "offsetY": 4,  "functions": ["ADC1", "TOUCH"] },
-        { "id": "IO6",    "label": "IO6",  "offsetX": 0,  "offsetY": 5,  "functions": ["ADC1", "TOUCH"] },
-        { "id": "IO7",    "label": "IO7",  "offsetX": 0,  "offsetY": 6,  "functions": ["ADC1", "TOUCH"] },
-        { "id": "IO15",   "label": "IO15", "offsetX": 0,  "offsetY": 7,  "functions": ["ADC2"] },
-        { "id": "IO16",   "label": "IO16", "offsetX": 0,  "offsetY": 8,  "functions": ["ADC2"] },
-        { "id": "IO17",   "label": "IO17", "offsetX": 0,  "offsetY": 9,  "functions": ["ADC2"] },
-        { "id": "IO18",   "label": "IO18", "offsetX": 0,  "offsetY": 10, "functions": ["ADC2"] },
-        { "id": "IO8",    "label": "IO8",  "offsetX": 0,  "offsetY": 11, "functions": ["SDA", "ADC1", "TOUCH"] },
-        { "id": "IO3",    "label": "IO3",  "offsetX": 0,  "offsetY": 12, "functions": ["ADC1", "TOUCH"] },
-        { "id": "IO46",   "label": "IO46", "offsetX": 0,  "offsetY": 13, "functions": ["STRAP"] },
-        { "id": "IO9",    "label": "IO9",  "offsetX": 0,  "offsetY": 14, "functions": ["SCL", "ADC1", "TOUCH"] },
-        { "id": "IO10",   "label": "IO10", "offsetX": 0,  "offsetY": 15, "functions": ["ADC1", "TOUCH"] },
-        { "id": "IO11",   "label": "IO11", "offsetX": 0,  "offsetY": 16, "functions": ["ADC2", "TOUCH"] },
-        { "id": "IO12",   "label": "IO12", "offsetX": 0,  "offsetY": 17, "functions": ["ADC2", "TOUCH"] },
-        { "id": "IO13",   "label": "IO13", "offsetX": 0,  "offsetY": 18, "functions": ["ADC2", "TOUCH"] },
-        { "id": "IO14",   "label": "IO14", "offsetX": 0,  "offsetY": 19, "functions": ["ADC2", "TOUCH"] },
-        { "id": "L5V",    "label": "5V",   "offsetX": 0,  "offsetY": 20 },
-        { "id": "LGND",   "label": "GND",  "offsetX": 0,  "offsetY": 21 },
-
-        { "id": "RGND1",  "label": "GND",  "offsetX": 10, "offsetY": 0  },
-        { "id": "TX",     "label": "TX",   "offsetX": 10, "offsetY": 1,  "functions": ["UART0"] },
-        { "id": "RX",     "label": "RX",   "offsetX": 10, "offsetY": 2,  "functions": ["UART0"] },
-        { "id": "IO1",    "label": "IO1",  "offsetX": 10, "offsetY": 3,  "functions": ["ADC1", "TOUCH"] },
-        { "id": "IO2",    "label": "IO2",  "offsetX": 10, "offsetY": 4,  "functions": ["ADC1", "TOUCH"] },
-        { "id": "IO42",   "label": "IO42", "offsetX": 10, "offsetY": 5,  "functions": ["JTAG"] },
-        { "id": "IO41",   "label": "IO41", "offsetX": 10, "offsetY": 6,  "functions": ["JTAG"] },
-        { "id": "IO40",   "label": "IO40", "offsetX": 10, "offsetY": 7,  "functions": ["JTAG"] },
-        { "id": "IO39",   "label": "IO39", "offsetX": 10, "offsetY": 8,  "functions": ["JTAG"] },
-        { "id": "IO38",   "label": "IO38", "offsetX": 10, "offsetY": 9  },
-        { "id": "IO37",   "label": "IO37", "offsetX": 10, "offsetY": 10 },
-        { "id": "IO36",   "label": "IO36", "offsetX": 10, "offsetY": 11 },
-        { "id": "IO35",   "label": "IO35", "offsetX": 10, "offsetY": 12 },
-        { "id": "IO0",    "label": "IO0",  "offsetX": 10, "offsetY": 13, "functions": ["BOOT", "STRAP"] },
-        { "id": "IO45",   "label": "IO45", "offsetX": 10, "offsetY": 14, "functions": ["STRAP"] },
-        { "id": "IO48",   "label": "IO48", "offsetX": 10, "offsetY": 15, "functions": ["RGB LED"] },
-        { "id": "IO47",   "label": "IO47", "offsetX": 10, "offsetY": 16 },
-        { "id": "IO21",   "label": "IO21", "offsetX": 10, "offsetY": 17 },
-        { "id": "IO20",   "label": "IO20", "offsetX": 10, "offsetY": 18, "functions": ["USB D+"] },
-        { "id": "IO19",   "label": "IO19", "offsetX": 10, "offsetY": 19, "functions": ["USB D-"] },
-        { "id": "RGND2",  "label": "GND",  "offsetX": 10, "offsetY": 20 },
-        { "id": "RGND3",  "label": "GND",  "offsetX": 10, "offsetY": 21 }
+        { "id": "L3V3_1", "label": "3.3V", "offsetX": 0,  "offsetY": 0,  "direction": "power",        "description": "3.3V power output" },
+        { "id": "L3V3_2", "label": "3.3V", "offsetX": 0,  "offsetY": 1,  "direction": "power",        "description": "3.3V power output" },
+        { "id": "RST",    "label": "RST",  "offsetX": 0,  "offsetY": 2,  "direction": "input",        "description": "Hardware reset (active low)" },
+        { "id": "IO4",    "label": "IO4",  "offsetX": 0,  "offsetY": 3,  "direction": "bidirectional","description": "GPIO, ADC1, capacitive touch", "functions": ["ADC1", "TOUCH"] },
+        { "id": "IO5",    "label": "IO5",  "offsetX": 0,  "offsetY": 4,  "direction": "bidirectional","description": "GPIO, ADC1, capacitive touch", "functions": ["ADC1", "TOUCH"] },
+        { "id": "IO6",    "label": "IO6",  "offsetX": 0,  "offsetY": 5,  "direction": "bidirectional","description": "GPIO, ADC1, capacitive touch", "functions": ["ADC1", "TOUCH"] },
+        { "id": "IO7",    "label": "IO7",  "offsetX": 0,  "offsetY": 6,  "direction": "bidirectional","description": "GPIO, ADC1, capacitive touch", "functions": ["ADC1", "TOUCH"] },
+        { "id": "IO15",   "label": "IO15", "offsetX": 0,  "offsetY": 7,  "direction": "bidirectional","description": "GPIO, ADC2", "functions": ["ADC2"] },
+        { "id": "IO16",   "label": "IO16", "offsetX": 0,  "offsetY": 8,  "direction": "bidirectional","description": "GPIO, ADC2", "functions": ["ADC2"] },
+        { "id": "IO17",   "label": "IO17", "offsetX": 0,  "offsetY": 9,  "direction": "bidirectional","description": "GPIO, ADC2", "functions": ["ADC2"] },
+        { "id": "IO18",   "label": "IO18", "offsetX": 0,  "offsetY": 10, "direction": "bidirectional","description": "GPIO, ADC2", "functions": ["ADC2"] },
+        { "id": "IO8",    "label": "IO8",  "offsetX": 0,  "offsetY": 11, "direction": "bidirectional","description": "GPIO, ADC1, touch, default I2C SDA", "functions": ["SDA", "ADC1", "TOUCH"] },
+        { "id": "IO3",    "label": "IO3",  "offsetX": 0,  "offsetY": 12, "direction": "bidirectional","description": "GPIO, ADC1, capacitive touch", "functions": ["ADC1", "TOUCH"] },
+        { "id": "IO46",   "label": "IO46", "offsetX": 0,  "offsetY": 13, "direction": "bidirectional","description": "GPIO, strapping pin", "functions": ["STRAP"] },
+        { "id": "IO9",    "label": "IO9",  "offsetX": 0,  "offsetY": 14, "direction": "bidirectional","description": "GPIO, ADC1, touch, default I2C SCL", "functions": ["SCL", "ADC1", "TOUCH"] },
+        { "id": "IO10",   "label": "IO10", "offsetX": 0,  "offsetY": 15, "direction": "bidirectional","description": "GPIO, ADC1, capacitive touch", "functions": ["ADC1", "TOUCH"] },
+        { "id": "IO11",   "label": "IO11", "offsetX": 0,  "offsetY": 16, "direction": "bidirectional","description": "GPIO, ADC2, capacitive touch", "functions": ["ADC2", "TOUCH"] },
+        { "id": "IO12",   "label": "IO12", "offsetX": 0,  "offsetY": 17, "direction": "bidirectional","description": "GPIO, ADC2, capacitive touch", "functions": ["ADC2", "TOUCH"] },
+        { "id": "IO13",   "label": "IO13", "offsetX": 0,  "offsetY": 18, "direction": "bidirectional","description": "GPIO, ADC2, capacitive touch", "functions": ["ADC2", "TOUCH"] },
+        { "id": "IO14",   "label": "IO14", "offsetX": 0,  "offsetY": 19, "direction": "bidirectional","description": "GPIO, ADC2, capacitive touch", "functions": ["ADC2", "TOUCH"] },
+        { "id": "L5V",    "label": "5V",   "offsetX": 0,  "offsetY": 20, "direction": "power",        "description": "5V USB power input/output" },
+        { "id": "LGND",   "label": "GND",  "offsetX": 0,  "offsetY": 21, "direction": "ground",       "description": "Ground" },
+        { "id": "RGND1",  "label": "GND",  "offsetX": 10, "offsetY": 0,  "direction": "ground",       "description": "Ground" },
+        { "id": "TX",     "label": "TX",   "offsetX": 10, "offsetY": 1,  "direction": "output",       "description": "UART0 transmit (GPIO43)", "functions": ["UART0"] },
+        { "id": "RX",     "label": "RX",   "offsetX": 10, "offsetY": 2,  "direction": "input",        "description": "UART0 receive (GPIO44)", "functions": ["UART0"] },
+        { "id": "IO1",    "label": "IO1",  "offsetX": 10, "offsetY": 3,  "direction": "bidirectional","description": "GPIO, ADC1, capacitive touch", "functions": ["ADC1", "TOUCH"] },
+        { "id": "IO2",    "label": "IO2",  "offsetX": 10, "offsetY": 4,  "direction": "bidirectional","description": "GPIO, ADC1, capacitive touch", "functions": ["ADC1", "TOUCH"] },
+        { "id": "IO42",   "label": "IO42", "offsetX": 10, "offsetY": 5,  "direction": "bidirectional","description": "GPIO, JTAG MTMS", "functions": ["JTAG"] },
+        { "id": "IO41",   "label": "IO41", "offsetX": 10, "offsetY": 6,  "direction": "bidirectional","description": "GPIO, JTAG MTDI", "functions": ["JTAG"] },
+        { "id": "IO40",   "label": "IO40", "offsetX": 10, "offsetY": 7,  "direction": "bidirectional","description": "GPIO, JTAG MTDO", "functions": ["JTAG"] },
+        { "id": "IO39",   "label": "IO39", "offsetX": 10, "offsetY": 8,  "direction": "bidirectional","description": "GPIO, JTAG MTCK", "functions": ["JTAG"] },
+        { "id": "IO38",   "label": "IO38", "offsetX": 10, "offsetY": 9,  "direction": "bidirectional","description": "GPIO" },
+        { "id": "IO37",   "label": "IO37", "offsetX": 10, "offsetY": 10, "direction": "bidirectional","description": "GPIO" },
+        { "id": "IO36",   "label": "IO36", "offsetX": 10, "offsetY": 11, "direction": "bidirectional","description": "GPIO" },
+        { "id": "IO35",   "label": "IO35", "offsetX": 10, "offsetY": 12, "direction": "bidirectional","description": "GPIO" },
+        { "id": "IO0",    "label": "IO0",  "offsetX": 10, "offsetY": 13, "direction": "input",        "description": "GPIO, BOOT button, strapping pin", "functions": ["BOOT", "STRAP"] },
+        { "id": "IO45",   "label": "IO45", "offsetX": 10, "offsetY": 14, "direction": "bidirectional","description": "GPIO, strapping pin", "functions": ["STRAP"] },
+        { "id": "IO48",   "label": "IO48", "offsetX": 10, "offsetY": 15, "direction": "output",       "description": "GPIO, onboard RGB LED (WS2812)", "functions": ["RGB LED"] },
+        { "id": "IO47",   "label": "IO47", "offsetX": 10, "offsetY": 16, "direction": "bidirectional","description": "GPIO" },
+        { "id": "IO21",   "label": "IO21", "offsetX": 10, "offsetY": 17, "direction": "bidirectional","description": "GPIO" },
+        { "id": "IO20",   "label": "IO20", "offsetX": 10, "offsetY": 18, "direction": "bidirectional","description": "GPIO, USB D+", "functions": ["USB D+"] },
+        { "id": "IO19",   "label": "IO19", "offsetX": 10, "offsetY": 19, "direction": "bidirectional","description": "GPIO, USB D-", "functions": ["USB D-"] },
+        { "id": "RGND2",  "label": "GND",  "offsetX": 10, "offsetY": 20, "direction": "ground",       "description": "Ground" },
+        { "id": "RGND3",  "label": "GND",  "offsetX": 10, "offsetY": 21, "direction": "ground",       "description": "Ground" }
       ]
     },
+
+    {
+      "id": "aht20-bmp280",
+      "name": "AHT20+BMP280 Temp/Humidity/Pressure",
+      "description": "Combined I2C sensor: temperature, humidity (AHT20) and pressure (BMP280)",
+      "category": "sensor",
+      "widthInHoles": 6,
+      "heightInHoles": 6,
+      "color": "#2d6a4f",
+      "specs": { "Interface": "I2C", "VCC": "2.0-5V", "Temp": "-40..+85°C", "Humidity": "0-100%", "Pressure": "300-1100 hPa" },
+      "pins": [
+        { "id": "scl", "label": "SCL", "offsetX": 0, "offsetY": 0, "direction": "input",        "description": "I2C clock" },
+        { "id": "gnd", "label": "GND", "offsetX": 1, "offsetY": 0, "direction": "ground",       "description": "Ground" },
+        { "id": "sda", "label": "SDA", "offsetX": 2, "offsetY": 0, "direction": "bidirectional","description": "I2C data" },
+        { "id": "vdd", "label": "VDD", "offsetX": 3, "offsetY": 0, "direction": "power",        "description": "Power supply 2.0-5V" }
+      ]
+    },
+
+    {
+      "id": "am312-pir",
+      "name": "AM312 Mini PIR Motion Sensor",
+      "description": "Miniature PIR motion sensor, 2.7-12V, digital output, ~3m range",
+      "category": "sensor",
+      "widthInHoles": 4,
+      "heightInHoles": 3,
+      "color": "#2d6a4f",
+      "specs": { "VCC": "2.7-12V", "Output": "Digital 3.3V HIGH", "Range": "~3m", "Angle": "100°" },
+      "pins": [
+        { "id": "vcc",  "label": "VCC",  "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Power supply 2.7-12V" },
+        { "id": "vout", "label": "VOUT", "offsetX": 1, "offsetY": 0, "direction": "output", "description": "Digital output, HIGH when motion detected" },
+        { "id": "gnd",  "label": "GND",  "offsetX": 2, "offsetY": 0, "direction": "ground", "description": "Ground" }
+      ]
+    },
+
+    {
+      "id": "bmp180",
+      "name": "BMP180 Barometric Pressure Sensor",
+      "description": "I2C digital barometric pressure and temperature sensor, 1.8-3.6V",
+      "category": "sensor",
+      "widthInHoles": 6,
+      "heightInHoles": 5,
+      "color": "#2d6a4f",
+      "specs": { "Interface": "I2C", "VCC": "1.8-3.6V", "Pressure": "300-1100 hPa", "Temp": "-40..+85°C" },
+      "pins": [
+        { "id": "vcc", "label": "VCC", "offsetX": 0, "offsetY": 0, "direction": "power",        "description": "Power supply 1.8-3.6V" },
+        { "id": "gnd", "label": "GND", "offsetX": 1, "offsetY": 0, "direction": "ground",       "description": "Ground" },
+        { "id": "scl", "label": "SCL", "offsetX": 2, "offsetY": 0, "direction": "input",        "description": "I2C clock" },
+        { "id": "sda", "label": "SDA", "offsetX": 3, "offsetY": 0, "direction": "bidirectional","description": "I2C data" }
+      ]
+    },
+
+    {
+      "id": "cdm324",
+      "name": "CDM324 24GHz Radar Motion Sensor",
+      "description": "24GHz microwave Doppler radar sensor, differential IF analog output",
+      "category": "sensor",
+      "widthInHoles": 10,
+      "heightInHoles": 10,
+      "color": "#2d6a4f",
+      "specs": { "Frequency": "24GHz", "VCC": "5V", "Output": "Differential IF analog", "Range": "5-20m" },
+      "pins": [
+        { "id": "vcc",  "label": "VCC",  "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Power supply 5V" },
+        { "id": "gnd",  "label": "GND",  "offsetX": 1, "offsetY": 0, "direction": "ground", "description": "Ground" },
+        { "id": "ifp",  "label": "IF+",  "offsetX": 2, "offsetY": 0, "direction": "output", "description": "Doppler IF output positive (AC analog)" },
+        { "id": "ifn",  "label": "IF-",  "offsetX": 3, "offsetY": 0, "direction": "output", "description": "Doppler IF output negative (AC analog)" }
+      ]
+    },
+
+    {
+      "id": "ds3231-rtc",
+      "name": "DS3231 RTC + AT24C32 Module",
+      "description": "Precision real-time clock with I2C EEPROM, battery backup, 3.3-5.5V",
+      "category": "sensor",
+      "widthInHoles": 15,
+      "heightInHoles": 9,
+      "color": "#2d6a4f",
+      "specs": { "Interface": "I2C", "VCC": "3.3-5.5V", "Accuracy": "±2ppm", "EEPROM": "32kbit AT24C32" },
+      "pins": [
+        { "id": "clk32", "label": "32K",  "offsetX": 0, "offsetY": 0, "direction": "output", "description": "32.768kHz square wave output" },
+        { "id": "sqw",   "label": "SQW",  "offsetX": 1, "offsetY": 0, "direction": "output", "description": "Programmable square wave / interrupt output" },
+        { "id": "scl",   "label": "SCL",  "offsetX": 2, "offsetY": 0, "direction": "input",  "description": "I2C clock" },
+        { "id": "sda",   "label": "SDA",  "offsetX": 3, "offsetY": 0, "direction": "bidirectional", "description": "I2C data" },
+        { "id": "vcc",   "label": "VCC",  "offsetX": 4, "offsetY": 0, "direction": "power",  "description": "Power supply 3.3-5.5V" },
+        { "id": "gnd",   "label": "GND",  "offsetX": 5, "offsetY": 0, "direction": "ground", "description": "Ground" }
+      ]
+    },
+
+    {
+      "id": "gy-max4466",
+      "name": "GY-MAX4466 Electret Microphone Amplifier",
+      "description": "Electret microphone amplifier with adjustable gain, analog output, 2.4-5.5V",
+      "category": "sensor",
+      "widthInHoles": 10,
+      "heightInHoles": 6,
+      "color": "#2d6a4f",
+      "specs": { "VCC": "2.4-5.5V", "Output": "Analog AC audio", "Gain": "Adjustable 25-125x" },
+      "pins": [
+        { "id": "vcc", "label": "VCC", "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Power supply 2.4-5.5V" },
+        { "id": "gnd", "label": "GND", "offsetX": 1, "offsetY": 0, "direction": "ground", "description": "Ground" },
+        { "id": "out", "label": "OUT", "offsetX": 2, "offsetY": 0, "direction": "output", "description": "Analog audio output (AC, centered at VCC/2)" }
+      ]
+    },
+
+    {
+      "id": "hc-sr501",
+      "name": "HC-SR501 PIR Motion Sensor",
+      "description": "PIR infrared motion sensor, 4.5-20V, adjustable sensitivity and delay, ~7m range",
+      "category": "sensor",
+      "widthInHoles": 13,
+      "heightInHoles": 9,
+      "color": "#2d6a4f",
+      "specs": { "VCC": "4.5-20V", "Output": "3.3V digital HIGH", "Range": "3-7m", "Angle": "120°" },
+      "pins": [
+        { "id": "vcc", "label": "VCC", "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Power supply 4.5-20V" },
+        { "id": "out", "label": "OUT", "offsetX": 1, "offsetY": 0, "direction": "output", "description": "Digital output, 3.3V HIGH when motion detected" },
+        { "id": "gnd", "label": "GND", "offsetX": 2, "offsetY": 0, "direction": "ground", "description": "Ground" }
+      ]
+    },
+
+    {
+      "id": "hc-sr505",
+      "name": "HC-SR505 Mini PIR Motion Sensor",
+      "description": "Miniature PIR motion sensor, 4.5-20V, fixed sensitivity, ~3m range",
+      "category": "sensor",
+      "widthInHoles": 9,
+      "heightInHoles": 4,
+      "color": "#2d6a4f",
+      "specs": { "VCC": "4.5-20V", "Output": "Digital HIGH", "Range": "~3m", "Angle": "100°" },
+      "pins": [
+        { "id": "vcc", "label": "VCC", "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Power supply 4.5-20V" },
+        { "id": "out", "label": "OUT", "offsetX": 1, "offsetY": 0, "direction": "output", "description": "Digital output, HIGH when motion detected" },
+        { "id": "gnd", "label": "GND", "offsetX": 2, "offsetY": 0, "direction": "ground", "description": "Ground" }
+      ]
+    },
+
+    {
+      "id": "hlk-ld2420",
+      "name": "HLK-LD2420 24GHz Presence Radar",
+      "description": "24GHz mmWave presence detection radar with UART + digital output, 3.3V",
+      "category": "sensor",
+      "widthInHoles": 8,
+      "heightInHoles": 8,
+      "color": "#2d6a4f",
+      "specs": { "Interface": "UART + GPIO", "VCC": "3.3V", "Range": "0.15-20m", "Protocol": "UART 256000 baud" },
+      "pins": [
+        { "id": "vcc", "label": "VCC", "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Power supply 3.3V" },
+        { "id": "gnd", "label": "GND", "offsetX": 1, "offsetY": 0, "direction": "ground", "description": "Ground" },
+        { "id": "tx",  "label": "TX",  "offsetX": 2, "offsetY": 0, "direction": "output", "description": "UART transmit (connect to MCU RX)" },
+        { "id": "rx",  "label": "RX",  "offsetX": 3, "offsetY": 0, "direction": "input",  "description": "UART receive (connect to MCU TX)" },
+        { "id": "out", "label": "OUT", "offsetX": 4, "offsetY": 0, "direction": "output", "description": "Digital output, HIGH when presence detected" }
+      ]
+    },
+
+    {
+      "id": "ir-receiver",
+      "name": "IR Receiver Module 38kHz",
+      "description": "Infrared receiving module, 38KHz carrier, 5V, digital output, ~10m range",
+      "category": "sensor",
+      "widthInHoles": 9,
+      "heightInHoles": 8,
+      "color": "#1a1a2e",
+      "specs": { "VCC": "5V", "Carrier": "38kHz", "Range": "~10m", "Output": "Digital active LOW" },
+      "pins": [
+        { "id": "out", "label": "OUT", "offsetX": 0, "offsetY": 0, "direction": "output", "description": "Demodulated IR signal output (active LOW)" },
+        { "id": "vcc", "label": "VCC", "offsetX": 1, "offsetY": 0, "direction": "power",  "description": "Power supply 5V" },
+        { "id": "gnd", "label": "GND", "offsetX": 2, "offsetY": 0, "direction": "ground", "description": "Ground" }
+      ]
+    },
+
+    {
+      "id": "ir-transmitter-38k",
+      "name": "IR Transmitter Module 38kHz",
+      "description": "Infrared transmitting module, 38KHz carrier, 5V, digital modulated input",
+      "category": "sensor",
+      "widthInHoles": 9,
+      "heightInHoles": 8,
+      "color": "#1a1a2e",
+      "specs": { "VCC": "5V", "Carrier": "38kHz", "Input": "Digital modulated signal" },
+      "pins": [
+        { "id": "dat", "label": "DAT", "offsetX": 0, "offsetY": 0, "direction": "input",  "description": "Modulated signal input from MCU GPIO" },
+        { "id": "vcc", "label": "VCC", "offsetX": 1, "offsetY": 0, "direction": "power",  "description": "Power supply 5V" },
+        { "id": "gnd", "label": "GND", "offsetX": 2, "offsetY": 0, "direction": "ground", "description": "Ground" }
+      ]
+    },
+
+    {
+      "id": "ir-obstacle",
+      "name": "IR Obstacle Avoidance Sensor",
+      "description": "3-wire IR obstacle avoidance sensor, 3.3-5V, digital output, adjustable range",
+      "category": "sensor",
+      "widthInHoles": 13,
+      "heightInHoles": 6,
+      "color": "#2d6a4f",
+      "specs": { "VCC": "3.3-5V", "Output": "Digital LOW when obstacle", "Range": "2-30cm adjustable" },
+      "pins": [
+        { "id": "vcc", "label": "VCC", "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Power supply 3.3-5V" },
+        { "id": "gnd", "label": "GND", "offsetX": 1, "offsetY": 0, "direction": "ground", "description": "Ground" },
+        { "id": "out", "label": "OUT", "offsetX": 2, "offsetY": 0, "direction": "output", "description": "Digital output, LOW when obstacle detected" }
+      ]
+    },
+
+    {
+      "id": "ir-slotted-speed",
+      "name": "IR Slotted Optical Speed Sensor",
+      "description": "IR slotted opto-interrupter for speed/position measurement, 3.3-5V",
+      "category": "sensor",
+      "widthInHoles": 10,
+      "heightInHoles": 5,
+      "color": "#2d6a4f",
+      "specs": { "VCC": "3.3-5V", "Output": "Digital (HIGH=clear, LOW=blocked)" },
+      "pins": [
+        { "id": "out", "label": "OUT", "offsetX": 0, "offsetY": 0, "direction": "output", "description": "Digital output, LOW when slot blocked" },
+        { "id": "vcc", "label": "VCC", "offsetX": 1, "offsetY": 0, "direction": "power",  "description": "Power supply 3.3-5V" },
+        { "id": "gnd", "label": "GND", "offsetX": 2, "offsetY": 0, "direction": "ground", "description": "Ground" }
+      ]
+    },
+
+    {
+      "id": "soil-moisture",
+      "name": "Soil Moisture Hygrometer Sensor",
+      "description": "Resistive soil moisture sensor with analog and digital outputs, 3.3-5V",
+      "category": "sensor",
+      "widthInHoles": 12,
+      "heightInHoles": 6,
+      "color": "#2d6a4f",
+      "specs": { "VCC": "3.3-5V", "Digital": "DO: LOW=wet, HIGH=dry", "Analog": "AO: raw voltage" },
+      "pins": [
+        { "id": "vcc", "label": "VCC", "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Power supply 3.3-5V" },
+        { "id": "gnd", "label": "GND", "offsetX": 1, "offsetY": 0, "direction": "ground", "description": "Ground" },
+        { "id": "do",  "label": "DO",  "offsetX": 2, "offsetY": 0, "direction": "output", "description": "Digital output (LOW=wet, HIGH=dry)" },
+        { "id": "ao",  "label": "AO",  "offsetX": 3, "offsetY": 0, "direction": "output", "description": "Analog output (raw moisture voltage)" }
+      ]
+    },
+
+    {
+      "id": "tcrt5000",
+      "name": "TCRT5000 Reflective IR Sensor",
+      "description": "Reflective IR sensor for line following / proximity, analog + digital outputs, 3.3-5V",
+      "category": "sensor",
+      "widthInHoles": 13,
+      "heightInHoles": 6,
+      "color": "#2d6a4f",
+      "specs": { "VCC": "3.3-5V", "Range": "0.2-15mm", "Digital": "LOW=object detected" },
+      "pins": [
+        { "id": "vcc", "label": "VCC", "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Power supply 3.3-5V" },
+        { "id": "gnd", "label": "GND", "offsetX": 1, "offsetY": 0, "direction": "ground", "description": "Ground" },
+        { "id": "do",  "label": "DO",  "offsetX": 2, "offsetY": 0, "direction": "output", "description": "Digital output, LOW when object detected" },
+        { "id": "ao",  "label": "AO",  "offsetX": 3, "offsetY": 0, "direction": "output", "description": "Analog output (raw phototransistor signal)" }
+      ]
+    },
+
+    {
+      "id": "vl53l0x",
+      "name": "VL53L0X ToF Laser Ranging Sensor",
+      "description": "Time-of-flight laser distance sensor, I2C, up to 2m, 3-5V",
+      "category": "sensor",
+      "widthInHoles": 8,
+      "heightInHoles": 4,
+      "color": "#2d6a4f",
+      "specs": { "Interface": "I2C (0x29)", "VCC": "3.0-5V", "Range": "3-2000mm", "Accuracy": "±3%" },
+      "pins": [
+        { "id": "vin",   "label": "VIN",   "offsetX": 0, "offsetY": 0, "direction": "power",        "description": "Power supply 3.0-5V" },
+        { "id": "gnd",   "label": "GND",   "offsetX": 1, "offsetY": 0, "direction": "ground",       "description": "Ground" },
+        { "id": "scl",   "label": "SCL",   "offsetX": 2, "offsetY": 0, "direction": "input",        "description": "I2C clock" },
+        { "id": "sda",   "label": "SDA",   "offsetX": 3, "offsetY": 0, "direction": "bidirectional","description": "I2C data" },
+        { "id": "gpio1", "label": "GPIO1", "offsetX": 4, "offsetY": 0, "direction": "output",       "description": "Interrupt output (active LOW)" },
+        { "id": "xshut", "label": "XSHUT", "offsetX": 5, "offsetY": 0, "direction": "input",        "description": "Shutdown pin, LOW=off, HIGH=active" },
+        { "id": "gnd2",  "label": "GND",   "offsetX": 6, "offsetY": 0, "direction": "ground",       "description": "Ground" }
+      ]
+    },
+
+    {
+      "id": "vl6180x",
+      "name": "VL6180X ToF Distance + Ambient Sensor",
+      "description": "ToF proximity/distance + ambient light sensor, I2C, 0-100mm, 3.3-5V",
+      "category": "sensor",
+      "widthInHoles": 7,
+      "heightInHoles": 7,
+      "color": "#2d6a4f",
+      "specs": { "Interface": "I2C (0x29)", "VCC": "3.3-5V", "Range": "0-100mm", "ALS": "Yes" },
+      "pins": [
+        { "id": "vin",   "label": "VIN",   "offsetX": 0, "offsetY": 0, "direction": "power",        "description": "Power supply 3.3-5V" },
+        { "id": "gnd",   "label": "GND",   "offsetX": 1, "offsetY": 0, "direction": "ground",       "description": "Ground" },
+        { "id": "sda",   "label": "SDA",   "offsetX": 2, "offsetY": 0, "direction": "bidirectional","description": "I2C data" },
+        { "id": "scl",   "label": "SCL",   "offsetX": 3, "offsetY": 0, "direction": "input",        "description": "I2C clock" },
+        { "id": "gpio0", "label": "GPIO0", "offsetX": 4, "offsetY": 0, "direction": "output",       "description": "Interrupt output 0 (optional)" },
+        { "id": "gpio1", "label": "GPIO1", "offsetX": 5, "offsetY": 0, "direction": "output",       "description": "Interrupt output 1 (optional)" }
+      ]
+    },
+
+    {
+      "id": "voltage-divider-25v",
+      "name": "Voltage Divider Sensor 0-25V",
+      "description": "Voltage divider module for measuring 0-25V, 5V logic output (0-5V analog)",
+      "category": "sensor",
+      "widthInHoles": 9,
+      "heightInHoles": 6,
+      "color": "#2d6a4f",
+      "specs": { "Input": "0-25V DC", "Output": "0-5V analog", "Ratio": "1:5" },
+      "pins": [
+        { "id": "vin",  "label": "VIN",  "offsetX": 0, "offsetY": 0, "direction": "input",  "description": "Voltage to measure (0-25V)" },
+        { "id": "gnd",  "label": "GND",  "offsetX": 1, "offsetY": 0, "direction": "ground", "description": "Ground (common with MCU)" },
+        { "id": "sig",  "label": "S",    "offsetX": 2, "offsetY": 0, "direction": "output", "description": "Analog signal output to MCU ADC (0-5V)" },
+        { "id": "vcc",  "label": "VCC",  "offsetX": 3, "offsetY": 0, "direction": "power",  "description": "Module power 5V" },
+        { "id": "gnd2", "label": "GND-", "offsetX": 4, "offsetY": 0, "direction": "ground", "description": "Ground reference" }
+      ]
+    },
+
+    {
+      "id": "gc9a01-round",
+      "name": "GC9A01 Round TFT Display 1.28\"",
+      "description": "1.28 inch round TFT LCD 240×240 RGB, SPI interface, 3.3V",
+      "category": "display",
+      "widthInHoles": 14,
+      "heightInHoles": 14,
+      "color": "#7b2d8b",
+      "specs": { "Size": "1.28\"", "Resolution": "240×240 RGB", "Interface": "SPI", "VCC": "3.3V" },
+      "pins": [
+        { "id": "gnd", "label": "GND", "offsetX": 0, "offsetY": 0, "direction": "ground",       "description": "Ground" },
+        { "id": "vcc", "label": "VCC", "offsetX": 1, "offsetY": 0, "direction": "power",        "description": "Power supply 3.3V" },
+        { "id": "scl", "label": "SCL", "offsetX": 2, "offsetY": 0, "direction": "input",        "description": "SPI clock (SCK)" },
+        { "id": "sda", "label": "SDA", "offsetX": 3, "offsetY": 0, "direction": "input",        "description": "SPI data in (MOSI)" },
+        { "id": "res", "label": "RES", "offsetX": 4, "offsetY": 0, "direction": "input",        "description": "Reset (active low)" },
+        { "id": "dc",  "label": "DC",  "offsetX": 5, "offsetY": 0, "direction": "input",        "description": "Data/Command select (HIGH=data, LOW=cmd)" },
+        { "id": "cs",  "label": "CS",  "offsetX": 6, "offsetY": 0, "direction": "input",        "description": "Chip select (active low)" }
+      ]
+    },
+
+    {
+      "id": "sh1107-oled",
+      "name": "SH1107 OLED 128×128 1.5\"",
+      "description": "1.5 inch OLED display 128×128 monochrome, I2C/SPI, 2.8-3.3V",
+      "category": "display",
+      "widthInHoles": 18,
+      "heightInHoles": 13,
+      "color": "#7b2d8b",
+      "specs": { "Size": "1.5\"", "Resolution": "128×128", "Interface": "I2C/SPI", "VCC": "2.8-3.3V" },
+      "pins": [
+        { "id": "gnd", "label": "GND", "offsetX": 0, "offsetY": 0, "direction": "ground",       "description": "Ground" },
+        { "id": "vcc", "label": "VCC", "offsetX": 1, "offsetY": 0, "direction": "power",        "description": "Power supply 2.8-3.3V" },
+        { "id": "scl", "label": "SCL", "offsetX": 2, "offsetY": 0, "direction": "input",        "description": "I2C clock / SPI clock" },
+        { "id": "sda", "label": "SDA", "offsetX": 3, "offsetY": 0, "direction": "bidirectional","description": "I2C data / SPI MOSI" },
+        { "id": "res", "label": "RES", "offsetX": 4, "offsetY": 0, "direction": "input",        "description": "Reset (active low)" },
+        { "id": "dc",  "label": "DC",  "offsetX": 5, "offsetY": 0, "direction": "input",        "description": "Data/Command select (SPI mode)" },
+        { "id": "cs",  "label": "CS",  "offsetX": 6, "offsetY": 0, "direction": "input",        "description": "Chip select (SPI mode, active low)" }
+      ]
+    },
+
+    {
+      "id": "ssd1309-oled",
+      "name": "SSD1309 OLED 128×64 2.42\"",
+      "description": "2.42 inch OLED display 128×64 monochrome, I2C/SPI, 3.3-5V",
+      "category": "display",
+      "widthInHoles": 28,
+      "heightInHoles": 14,
+      "color": "#7b2d8b",
+      "specs": { "Size": "2.42\"", "Resolution": "128×64", "Interface": "I2C/SPI", "VCC": "3.3-5V" },
+      "pins": [
+        { "id": "gnd", "label": "GND", "offsetX": 0, "offsetY": 0, "direction": "ground",       "description": "Ground" },
+        { "id": "vcc", "label": "VCC", "offsetX": 1, "offsetY": 0, "direction": "power",        "description": "Power supply 3.3-5V" },
+        { "id": "sck", "label": "SCK", "offsetX": 2, "offsetY": 0, "direction": "input",        "description": "I2C clock / SPI clock" },
+        { "id": "sda", "label": "SDA", "offsetX": 3, "offsetY": 0, "direction": "bidirectional","description": "I2C data / SPI MOSI" },
+        { "id": "res", "label": "RES", "offsetX": 4, "offsetY": 0, "direction": "input",        "description": "Reset (active low)" },
+        { "id": "dc",  "label": "DC",  "offsetX": 5, "offsetY": 0, "direction": "input",        "description": "Data/Command select (SPI mode)" },
+        { "id": "cs",  "label": "CS",  "offsetX": 6, "offsetY": 0, "direction": "input",        "description": "Chip select (SPI mode, active low)" }
+      ]
+    },
+
+    {
+      "id": "dfplayer-mini",
+      "name": "DFPlayer Mini MP3 Module",
+      "description": "MP3/WAV player module with microSD, UART control, speaker output, 3.3-5V",
+      "category": "control",
+      "widthInHoles": 7,
+      "heightInHoles": 8,
+      "color": "#6b4f3d",
+      "specs": { "VCC": "3.3-5V", "Interface": "UART 9600bps", "Storage": "microSD up to 32GB", "Output": "3W amplifier" },
+      "pins": [
+        { "id": "vcc",    "label": "VCC",    "offsetX": 0, "offsetY": 0, "direction": "power",        "description": "Power supply 3.3-5V" },
+        { "id": "rx",     "label": "RX",     "offsetX": 0, "offsetY": 1, "direction": "input",        "description": "UART receive (connect to MCU TX, 1kΩ series recommended)" },
+        { "id": "tx",     "label": "TX",     "offsetX": 0, "offsetY": 2, "direction": "output",       "description": "UART transmit (connect to MCU RX)" },
+        { "id": "dac_r",  "label": "DAC_R",  "offsetX": 0, "offsetY": 3, "direction": "output",       "description": "Right channel DAC output (audio)" },
+        { "id": "dac_l",  "label": "DAC_L",  "offsetX": 0, "offsetY": 4, "direction": "output",       "description": "Left channel DAC output (audio)" },
+        { "id": "spk1",   "label": "SPK1",   "offsetX": 0, "offsetY": 5, "direction": "output",       "description": "Speaker positive output" },
+        { "id": "gnd",    "label": "GND",    "offsetX": 0, "offsetY": 6, "direction": "ground",       "description": "Ground" },
+        { "id": "spk2",   "label": "SPK2",   "offsetX": 0, "offsetY": 7, "direction": "output",       "description": "Speaker negative output" },
+        { "id": "io1",    "label": "IO1",    "offsetX": 6, "offsetY": 0, "direction": "input",        "description": "Trigger port 1 (short=previous track)" },
+        { "id": "gnd2",   "label": "GND",    "offsetX": 6, "offsetY": 1, "direction": "ground",       "description": "Ground" },
+        { "id": "io2",    "label": "IO2",    "offsetX": 6, "offsetY": 2, "direction": "input",        "description": "Trigger port 2 (short=next track)" },
+        { "id": "adkey1", "label": "ADKEY1", "offsetX": 6, "offsetY": 3, "direction": "input",        "description": "Resistor ladder input 1 (multiple buttons)" },
+        { "id": "adkey2", "label": "ADKEY2", "offsetX": 6, "offsetY": 4, "direction": "input",        "description": "Resistor ladder input 2 (multiple buttons)" },
+        { "id": "usb_p",  "label": "USB+",   "offsetX": 6, "offsetY": 5, "direction": "bidirectional","description": "USB data positive (for USB audio)" },
+        { "id": "usb_n",  "label": "USB-",   "offsetX": 6, "offsetY": 6, "direction": "bidirectional","description": "USB data negative (for USB audio)" },
+        { "id": "busy",   "label": "BUSY",   "offsetX": 6, "offsetY": 7, "direction": "output",       "description": "Busy signal, LOW when playing" }
+      ]
+    },
+
+    {
+      "id": "ky040-encoder",
+      "name": "KY-040 Rotary Encoder",
+      "description": "Incremental rotary encoder with push button, 3.3-5V, 20 pulses/revolution",
+      "category": "control",
+      "widthInHoles": 10,
+      "heightInHoles": 7,
+      "color": "#6b4f3d",
+      "specs": { "VCC": "3.3-5V", "Resolution": "20 pulses/rev", "Button": "Integrated push switch" },
+      "pins": [
+        { "id": "clk", "label": "CLK", "offsetX": 0, "offsetY": 0, "direction": "output", "description": "Encoder output A (with 10kΩ pull-up)" },
+        { "id": "dt",  "label": "DT",  "offsetX": 1, "offsetY": 0, "direction": "output", "description": "Encoder output B (with 10kΩ pull-up)" },
+        { "id": "sw",  "label": "SW",  "offsetX": 2, "offsetY": 0, "direction": "output", "description": "Push button, active LOW when pressed" },
+        { "id": "vcc", "label": "+",   "offsetX": 3, "offsetY": 0, "direction": "power",  "description": "Power supply 3.3-5V" },
+        { "id": "gnd", "label": "GND", "offsetX": 4, "offsetY": 0, "direction": "ground", "description": "Ground" }
+      ]
+    },
+
+    {
+      "id": "ttp223-touch",
+      "name": "TTP223 Capacitive Touch Button",
+      "description": "Single capacitive touch sensor button, 2.0-5.5V, digital output",
+      "category": "control",
+      "widthInHoles": 6,
+      "heightInHoles": 4,
+      "color": "#6b4f3d",
+      "specs": { "VCC": "2.0-5.5V", "Output": "Digital HIGH when touched", "Response": "<60ms" },
+      "pins": [
+        { "id": "vcc", "label": "VCC", "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Power supply 2.0-5.5V" },
+        { "id": "io",  "label": "I/O", "offsetX": 1, "offsetY": 0, "direction": "output", "description": "Touch output, HIGH when touched" },
+        { "id": "gnd", "label": "GND", "offsetX": 2, "offsetY": 0, "direction": "ground", "description": "Ground" }
+      ]
+    },
+
+    {
+      "id": "rf-rx-mx05v",
+      "name": "MX-05V 433MHz RF Receiver",
+      "description": "433MHz ASK/OOK super-regenerative RF receiver module, 5V",
+      "category": "wireless",
+      "widthInHoles": 12,
+      "heightInHoles": 6,
+      "color": "#1565c0",
+      "specs": { "Frequency": "433MHz", "VCC": "5V", "Sensitivity": "-105dBm", "Modulation": "ASK/OOK" },
+      "pins": [
+        { "id": "vcc",   "label": "VCC",   "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Power supply 5V" },
+        { "id": "data1", "label": "DATA",  "offsetX": 1, "offsetY": 0, "direction": "output", "description": "Data output 1 (use either DATA pin)" },
+        { "id": "data2", "label": "DATA",  "offsetX": 2, "offsetY": 0, "direction": "output", "description": "Data output 2 (both pins same signal)" },
+        { "id": "gnd",   "label": "GND",   "offsetX": 3, "offsetY": 0, "direction": "ground", "description": "Ground" }
+      ]
+    },
+
+    {
+      "id": "rf-tx-mxfs03v",
+      "name": "MX-FS-03V 433MHz RF Transmitter",
+      "description": "433MHz ASK/OOK RF transmitter module, 3.5-12V, SAW resonator",
+      "category": "wireless",
+      "widthInHoles": 7,
+      "heightInHoles": 7,
+      "color": "#1565c0",
+      "specs": { "Frequency": "433MHz", "VCC": "3.5-12V", "Power": "10mW max", "Modulation": "ASK/OOK" },
+      "pins": [
+        { "id": "dat", "label": "DATA", "offsetX": 0, "offsetY": 0, "direction": "input",  "description": "Data input from MCU GPIO" },
+        { "id": "vcc", "label": "VCC",  "offsetX": 1, "offsetY": 0, "direction": "power",  "description": "Power supply 3.5-12V" },
+        { "id": "gnd", "label": "GND",  "offsetX": 2, "offsetY": 0, "direction": "ground", "description": "Ground" }
+      ]
+    },
+
+    {
+      "id": "rxb6-rx",
+      "name": "RXB6 433MHz Superheterodyne Receiver",
+      "description": "High sensitivity 433MHz superheterodyne receiver, -114dBm, 3.0-5.5V",
+      "category": "wireless",
+      "widthInHoles": 17,
+      "heightInHoles": 5,
+      "color": "#1565c0",
+      "specs": { "Frequency": "433.92MHz", "VCC": "3.0-5.5V", "Sensitivity": "-114dBm", "Current": "6mA" },
+      "pins": [
+        { "id": "gnd",   "label": "GND",  "offsetX": 0, "offsetY": 0, "direction": "ground", "description": "Ground" },
+        { "id": "data1", "label": "DATA", "offsetX": 1, "offsetY": 0, "direction": "output", "description": "Data output (use either pin)" },
+        { "id": "data2", "label": "DATA", "offsetX": 2, "offsetY": 0, "direction": "output", "description": "Data output (both pins same signal)" },
+        { "id": "vcc",   "label": "VCC",  "offsetX": 3, "offsetY": 0, "direction": "power",  "description": "Power supply 3.0-5.5V" },
+        { "id": "ant",   "label": "ANT",  "offsetX": 4, "offsetY": 0, "direction": "input",  "description": "Antenna (17.3cm wire for 433MHz)" }
+      ]
+    },
+
+    {
+      "id": "syn480r-rx",
+      "name": "SYN480R 433MHz Superheterodyne Receiver",
+      "description": "Low-voltage 433MHz superheterodyne receiver, 1.8-3.6V, compact SMD module",
+      "category": "wireless",
+      "widthInHoles": 7,
+      "heightInHoles": 5,
+      "color": "#1565c0",
+      "specs": { "Frequency": "433MHz", "VCC": "1.8-3.6V", "Sensitivity": "-106dBm", "Rate": "10kbps" },
+      "pins": [
+        { "id": "gnd",  "label": "GND",  "offsetX": 0, "offsetY": 0, "direction": "ground", "description": "Ground" },
+        { "id": "data", "label": "DATA", "offsetX": 1, "offsetY": 0, "direction": "output", "description": "Digital data output" },
+        { "id": "vcc",  "label": "VCC",  "offsetX": 2, "offsetY": 0, "direction": "power",  "description": "Power supply 1.8-3.6V" },
+        { "id": "ant",  "label": "ANT",  "offsetX": 3, "offsetY": 0, "direction": "input",  "description": "Antenna connection" }
+      ]
+    },
+
+    {
+      "id": "drv8833",
+      "name": "DRV8833 Dual Motor Driver",
+      "description": "Dual H-bridge motor driver, 2.7-10.8V, 1.5A/channel, PWM, sleep mode",
+      "category": "motor-driver",
+      "widthInHoles": 7,
+      "heightInHoles": 6,
+      "color": "#c62828",
+      "specs": { "VCC": "2.7-10.8V", "Current": "1.5A cont / 2A peak per ch", "PWM": "up to 250kHz", "Protection": "OCP, thermal, UVLO" },
+      "pins": [
+        { "id": "in1",  "label": "IN1",  "offsetX": 0, "offsetY": 0, "direction": "input",  "description": "Motor A input 1 (PWM capable)" },
+        { "id": "in2",  "label": "IN2",  "offsetX": 0, "offsetY": 1, "direction": "input",  "description": "Motor A input 2 (PWM capable)" },
+        { "id": "in3",  "label": "IN3",  "offsetX": 0, "offsetY": 2, "direction": "input",  "description": "Motor B input 1 (PWM capable)" },
+        { "id": "in4",  "label": "IN4",  "offsetX": 0, "offsetY": 3, "direction": "input",  "description": "Motor B input 2 (PWM capable)" },
+        { "id": "eep",  "label": "EEP",  "offsetX": 0, "offsetY": 4, "direction": "output", "description": "Fault output, active LOW on error" },
+        { "id": "ult",  "label": "ULT",  "offsetX": 0, "offsetY": 5, "direction": "input",  "description": "Undervoltage lockout threshold" },
+        { "id": "vcc",  "label": "VCC",  "offsetX": 6, "offsetY": 0, "direction": "power",  "description": "Motor power supply 2.7-10.8V" },
+        { "id": "gnd",  "label": "GND",  "offsetX": 6, "offsetY": 1, "direction": "ground", "description": "Ground" },
+        { "id": "out1", "label": "OUT1", "offsetX": 6, "offsetY": 2, "direction": "output", "description": "Motor A output 1" },
+        { "id": "out2", "label": "OUT2", "offsetX": 6, "offsetY": 3, "direction": "output", "description": "Motor A output 2" },
+        { "id": "out3", "label": "OUT3", "offsetX": 6, "offsetY": 4, "direction": "output", "description": "Motor B output 1" },
+        { "id": "out4", "label": "OUT4", "offsetX": 6, "offsetY": 5, "direction": "output", "description": "Motor B output 2" }
+      ]
+    },
+
+    {
+      "id": "drv8837",
+      "name": "DRV8837 H-Bridge Motor Driver 1.8A",
+      "description": "Single H-bridge motor driver, 1.8-11V motor / 1.8-7V logic, 1.8A, PWM speed control",
+      "category": "motor-driver",
+      "widthInHoles": 8,
+      "heightInHoles": 5,
+      "color": "#c62828",
+      "specs": { "Logic VCC": "1.8-7V", "Motor VM": "1.8-11V", "Current": "1.8A", "Control": "IN1/IN2 PWM" },
+      "pins": [
+        { "id": "vcc",   "label": "VCC",   "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Logic power supply 1.8-7V" },
+        { "id": "gnd",   "label": "GND",   "offsetX": 0, "offsetY": 1, "direction": "ground", "description": "Ground" },
+        { "id": "sleep", "label": "SLEEP", "offsetX": 0, "offsetY": 2, "direction": "input",  "description": "Sleep control, HIGH=active, LOW=sleep (internal pull-down)" },
+        { "id": "in1",   "label": "IN1",   "offsetX": 0, "offsetY": 3, "direction": "input",  "description": "H-bridge control input 1 (PWM)" },
+        { "id": "in2",   "label": "IN2",   "offsetX": 0, "offsetY": 4, "direction": "input",  "description": "H-bridge control input 2 (PWM)" },
+        { "id": "vm",    "label": "VM",    "offsetX": 7, "offsetY": 0, "direction": "power",  "description": "Motor power supply 1.8-11V" },
+        { "id": "gnd2",  "label": "GND",   "offsetX": 7, "offsetY": 1, "direction": "ground", "description": "Ground" },
+        { "id": "out1",  "label": "OUT1",  "offsetX": 7, "offsetY": 2, "direction": "output", "description": "Motor output 1" },
+        { "id": "out2",  "label": "OUT2",  "offsetX": 7, "offsetY": 3, "direction": "output", "description": "Motor output 2" },
+        { "id": "gnd3",  "label": "GND",   "offsetX": 7, "offsetY": 4, "direction": "ground", "description": "Ground" }
+      ]
+    },
+
+    {
+      "id": "l298n",
+      "name": "L298N Dual H-Bridge Driver Module",
+      "description": "Classic dual H-bridge motor driver, 5-35V, 2A/channel, onboard 5V regulator",
+      "category": "motor-driver",
+      "widthInHoles": 17,
+      "heightInHoles": 17,
+      "color": "#c62828",
+      "specs": { "Motor VCC": "5-35V", "Current": "2A peak per ch", "Logic": "5V (onboard reg)", "Modes": "DIR + PWM enable" },
+      "pins": [
+        { "id": "ena",  "label": "ENA",  "offsetX": 5,  "offsetY": 0,  "direction": "input",  "description": "Motor A speed (PWM) enable, HIGH=enabled" },
+        { "id": "in1",  "label": "IN1",  "offsetX": 6,  "offsetY": 0,  "direction": "input",  "description": "Motor A direction input 1" },
+        { "id": "in2",  "label": "IN2",  "offsetX": 7,  "offsetY": 0,  "direction": "input",  "description": "Motor A direction input 2" },
+        { "id": "in3",  "label": "IN3",  "offsetX": 8,  "offsetY": 0,  "direction": "input",  "description": "Motor B direction input 1" },
+        { "id": "in4",  "label": "IN4",  "offsetX": 9,  "offsetY": 0,  "direction": "input",  "description": "Motor B direction input 2" },
+        { "id": "enb",  "label": "ENB",  "offsetX": 10, "offsetY": 0,  "direction": "input",  "description": "Motor B speed (PWM) enable, HIGH=enabled" },
+        { "id": "vms",  "label": "VMS",  "offsetX": 0,  "offsetY": 8,  "direction": "power",  "description": "Motor power supply 5-35V" },
+        { "id": "gnd",  "label": "GND",  "offsetX": 0,  "offsetY": 9,  "direction": "ground", "description": "Ground" },
+        { "id": "reg5", "label": "5V",   "offsetX": 0,  "offsetY": 10, "direction": "power",  "description": "5V output (when VMS>7V) or input (jumper removed)" },
+        { "id": "out1", "label": "OUT1", "offsetX": 5,  "offsetY": 16, "direction": "output", "description": "Motor A output 1" },
+        { "id": "out2", "label": "OUT2", "offsetX": 6,  "offsetY": 16, "direction": "output", "description": "Motor A output 2" },
+        { "id": "out3", "label": "OUT3", "offsetX": 10, "offsetY": 16, "direction": "output", "description": "Motor B output 1" },
+        { "id": "out4", "label": "OUT4", "offsetX": 11, "offsetY": 16, "direction": "output", "description": "Motor B output 2" }
+      ]
+    },
+
+    {
+      "id": "mx1919",
+      "name": "MX1919 Dual H-Bridge Driver 2.5A",
+      "description": "Dual H-bridge motor driver using 2× MX1919 chips, 2-10V, 2.5A/channel",
+      "category": "motor-driver",
+      "widthInHoles": 14,
+      "heightInHoles": 10,
+      "color": "#c62828",
+      "specs": { "Motor VCC": "2-10V", "Current": "2.5A per channel", "Logic": "2-7V (3.3V/5V compatible)", "Control": "PWM" },
+      "pins": [
+        { "id": "gnd_c", "label": "GND", "offsetX": 0, "offsetY": 0, "direction": "ground", "description": "Control ground" },
+        { "id": "in2",   "label": "IN2", "offsetX": 1, "offsetY": 0, "direction": "input",  "description": "Motor A input 2 (PWM)" },
+        { "id": "in1",   "label": "IN1", "offsetX": 2, "offsetY": 0, "direction": "input",  "description": "Motor A input 1 (PWM)" },
+        { "id": "in4",   "label": "IN4", "offsetX": 3, "offsetY": 0, "direction": "input",  "description": "Motor B input 2 (PWM)" },
+        { "id": "in3",   "label": "IN3", "offsetX": 4, "offsetY": 0, "direction": "input",  "description": "Motor B input 1 (PWM)" },
+        { "id": "vcc",   "label": "VCC", "offsetX": 5, "offsetY": 0, "direction": "power",  "description": "Logic power supply 2-7V" },
+        { "id": "vin",   "label": "VIN", "offsetX": 0, "offsetY": 9, "direction": "power",  "description": "Motor power supply 2-10V" },
+        { "id": "gnd_p", "label": "GND", "offsetX": 1, "offsetY": 9, "direction": "ground", "description": "Motor power ground" }
+      ]
+    },
+
     {
       "id": "ams1117-3.3",
-      "name": "AMS1117-3.3 LDO регулятор",
-      "description": "LDO voltage regulator 3.3V 800mA, вход 4.75-12V, выход 3.3V",
+      "name": "AMS1117-3.3 LDO Regulator",
+      "description": "LDO voltage regulator 3.3V 800mA, input 4.75-12V, SOT-223 package",
       "category": "power",
       "widthInHoles": 1,
       "heightInHoles": 3,
       "color": "#1a6b3a",
-      "specs": {
-        "Выход": "3.3V",
-        "Ток": "800mA",
-        "Вход": "4.75–12V",
-        "Чип": "AMS1117-3.3"
-      },
+      "specs": { "Output": "3.3V", "Current": "800mA", "Input": "4.75-12V", "Chip": "AMS1117-3.3" },
       "pins": [
-        { "id": "gnd", "label": "GND", "offsetX": 0, "offsetY": 0 },
-        { "id": "out", "label": "OUT", "offsetX": 0, "offsetY": 1 },
-        { "id": "in",  "label": "IN",  "offsetX": 0, "offsetY": 2 }
+        { "id": "gnd", "label": "GND", "offsetX": 0, "offsetY": 0, "direction": "ground", "description": "Ground" },
+        { "id": "out", "label": "OUT", "offsetX": 0, "offsetY": 1, "direction": "output", "description": "3.3V regulated output" },
+        { "id": "in",  "label": "IN",  "offsetX": 0, "offsetY": 2, "direction": "input",  "description": "Input voltage 4.75-12V" }
       ]
     },
+
     {
       "id": "ams1117-5.0",
-      "name": "AMS1117-5.0 LDO регулятор",
-      "description": "LDO voltage regulator 5.0V 800mA, вход 4.75-12V, выход 5.0V",
+      "name": "AMS1117-5.0 LDO Regulator",
+      "description": "LDO voltage regulator 5.0V 800mA, input 6.5-12V, SOT-223 package",
       "category": "power",
       "widthInHoles": 1,
       "heightInHoles": 3,
       "color": "#1a5b8a",
-      "specs": {
-        "Выход": "5.0V",
-        "Ток": "800mA",
-        "Вход": "4.75–12V",
-        "Чип": "AMS1117-5.0"
-      },
+      "specs": { "Output": "5.0V", "Current": "800mA", "Input": "6.5-12V", "Chip": "AMS1117-5.0" },
       "pins": [
-        { "id": "gnd", "label": "GND", "offsetX": 0, "offsetY": 0 },
-        { "id": "out", "label": "OUT", "offsetX": 0, "offsetY": 1 },
-        { "id": "in",  "label": "IN",  "offsetX": 0, "offsetY": 2 }
+        { "id": "gnd", "label": "GND", "offsetX": 0, "offsetY": 0, "direction": "ground", "description": "Ground" },
+        { "id": "out", "label": "OUT", "offsetX": 0, "offsetY": 1, "direction": "output", "description": "5.0V regulated output" },
+        { "id": "in",  "label": "IN",  "offsetX": 0, "offsetY": 2, "direction": "input",  "description": "Input voltage 6.5-12V" }
       ]
     },
+
+    {
+      "id": "ams1117-module",
+      "name": "AMS1117 LDO Regulator Module",
+      "description": "AMS1117 LDO voltage regulator PCB module with caps, 3.3V or 5V output",
+      "category": "power",
+      "widthInHoles": 5,
+      "heightInHoles": 4,
+      "color": "#1a6b3a",
+      "specs": { "Input": "4.75-12V", "Output": "3.3V or 5V", "Current": "800mA" },
+      "pins": [
+        { "id": "vin", "label": "VIN", "offsetX": 0, "offsetY": 0, "direction": "input",  "description": "Input voltage 4.75-12V" },
+        { "id": "out", "label": "OUT", "offsetX": 1, "offsetY": 0, "direction": "output", "description": "Regulated output voltage" },
+        { "id": "gnd", "label": "GND", "offsetX": 2, "offsetY": 0, "direction": "ground", "description": "Ground" }
+      ]
+    },
+
     {
       "id": "battery-18650",
-      "name": "Холдер 18650 (3.7V Li-Ion)",
+      "name": "Holder 18650 (3.7V Li-Ion)",
       "description": "Battery holder for 18650 Li-Ion cell",
       "category": "power",
       "widthInHoles": 3,
       "heightInHoles": 2,
       "color": "#8b5cf6",
-      "specs": {
-        "Тип": "Li-Ion 18650",
-        "Напряжение": "3.7V (4.2V заряж.)",
-        "Ёмкость": "1800–3500 mAh",
-        "Пины": "+ (левый верх), − (правый низ)"
-      },
+      "specs": { "Type": "Li-Ion 18650", "Voltage": "3.7V (4.2V charged)", "Capacity": "1800-3500mAh" },
       "pins": [
-        { "id": "plus",  "label": "+", "offsetX": 0, "offsetY": 0 },
-        { "id": "minus", "label": "-", "offsetX": 2, "offsetY": 1 }
+        { "id": "plus",  "label": "+", "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Battery positive output" },
+        { "id": "minus", "label": "-", "offsetX": 2, "offsetY": 1, "direction": "ground", "description": "Battery negative output" }
       ]
     },
+
     {
       "id": "battery-aa",
-      "name": "Холдер AA (1.5V)",
+      "name": "Holder AA (1.5V)",
       "description": "Battery holder for AA (LR6) cell",
       "category": "power",
       "widthInHoles": 2,
       "heightInHoles": 2,
       "color": "#8b5cf6",
-      "specs": {
-        "Тип": "AA / LR6",
-        "Напряжение": "1.5V (алкалин)",
-        "Ёмкость": "~2700 mAh",
-        "Пины": "+ (левый верх), − (правый низ)"
-      },
+      "specs": { "Type": "AA / LR6", "Voltage": "1.5V alkaline", "Capacity": "~2700mAh" },
       "pins": [
-        { "id": "plus",  "label": "+", "offsetX": 0, "offsetY": 0 },
-        { "id": "minus", "label": "-", "offsetX": 1, "offsetY": 1 }
+        { "id": "plus",  "label": "+", "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Battery positive output" },
+        { "id": "minus", "label": "-", "offsetX": 1, "offsetY": 1, "direction": "ground", "description": "Battery negative output" }
       ]
     },
+
     {
       "id": "battery-aaa",
-      "name": "Холдер AAA (1.5V)",
+      "name": "Holder AAA (1.5V)",
       "description": "Battery holder for AAA (LR03) cell",
       "category": "power",
       "widthInHoles": 2,
       "heightInHoles": 2,
       "color": "#8b5cf6",
-      "specs": {
-        "Тип": "AAA / LR03",
-        "Напряжение": "1.5V (алкалин)",
-        "Ёмкость": "~1200 mAh",
-        "Пины": "+ (левый верх), − (правый низ)"
-      },
+      "specs": { "Type": "AAA / LR03", "Voltage": "1.5V alkaline", "Capacity": "~1200mAh" },
       "pins": [
-        { "id": "plus",  "label": "+", "offsetX": 0, "offsetY": 0 },
-        { "id": "minus", "label": "-", "offsetX": 1, "offsetY": 1 }
+        { "id": "plus",  "label": "+", "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Battery positive output" },
+        { "id": "minus", "label": "-", "offsetX": 1, "offsetY": 1, "direction": "ground", "description": "Battery negative output" }
       ]
     },
+
     {
-      "id": "ir-receiver",
-      "name": "IR Receiver Module",
-      "description": "Infrared receiving module, 38KHz carrier, 5V, digital output, ~10m range",
-      "category": "sensor",
-      "widthInHoles": 3,
-      "heightInHoles": 2,
-      "color": "#1a1a2e",
-      "specs": {
-        "Питание": "5V",
-        "Частота": "38KHz",
-        "Дальность": "~10м",
-        "Выход": "Digital",
-        "Пины": "OUT, VCC, GND"
-      },
+      "id": "dc-dc-aideepen",
+      "name": "Aideepen DC-DC Buck-Boost 3A",
+      "description": "DC-DC buck-boost converter, 1.8-5.5V input, 3.3/4.2/5V fixed output, 3A",
+      "category": "power",
+      "widthInHoles": 10,
+      "heightInHoles": 6,
+      "color": "#1a6b3a",
+      "specs": { "Input": "1.8-5.5V", "Output": "3.3/4.2/5V", "Current": "3A", "Topology": "Buck-boost" },
       "pins": [
-        { "id": "out", "label": "OUT", "offsetX": 0, "offsetY": 0 },
-        { "id": "vcc", "label": "VCC", "offsetX": 1, "offsetY": 0 },
-        { "id": "gnd", "label": "GND", "offsetX": 2, "offsetY": 0 }
+        { "id": "vin", "label": "VIN", "offsetX": 0, "offsetY": 0, "direction": "input",  "description": "DC input positive 1.8-5.5V" },
+        { "id": "gnd", "label": "GND", "offsetX": 1, "offsetY": 0, "direction": "ground", "description": "Common ground" },
+        { "id": "out", "label": "OUT", "offsetX": 2, "offsetY": 0, "direction": "output", "description": "DC output positive" },
+        { "id": "ps",  "label": "PS",  "offsetX": 3, "offsetY": 0, "direction": "input",  "description": "Power save mode (short to enable, optional)" },
+        { "id": "en",  "label": "EN",  "offsetX": 4, "offsetY": 0, "direction": "input",  "description": "Enable pin, LOW=disable (optional)" }
       ]
     },
+
+    {
+      "id": "bms-hx-2s",
+      "name": "HX-2S BMS 2S Li-ion Protection Board",
+      "description": "2S Li-ion battery protection board, 7.4-8.4V, with balance and protection",
+      "category": "power",
+      "widthInHoles": 18,
+      "heightInHoles": 9,
+      "color": "#1a6b3a",
+      "specs": { "Cells": "2S 18650", "Voltage": "7.4-8.4V", "Protection": "OVP, UVP, OCP, SCP, balance" },
+      "pins": [
+        { "id": "bp",  "label": "B+",  "offsetX": 0, "offsetY": 0, "direction": "input",  "description": "Battery positive (2nd cell positive)" },
+        { "id": "bm",  "label": "BM",  "offsetX": 1, "offsetY": 0, "direction": "input",  "description": "Balance middle (cell 1+ to cell 2-)" },
+        { "id": "bn",  "label": "B-",  "offsetX": 2, "offsetY": 0, "direction": "input",  "description": "Battery negative (1st cell negative)" },
+        { "id": "pp",  "label": "P+",  "offsetX": 3, "offsetY": 0, "direction": "output", "description": "Output/charge positive" },
+        { "id": "pn",  "label": "P-",  "offsetX": 4, "offsetY": 0, "direction": "output", "description": "Output/charge negative" }
+      ]
+    },
+
+    {
+      "id": "lm2596s-buck",
+      "name": "LM2596S DC-DC Buck Converter",
+      "description": "Adjustable step-down buck converter, 7-35V input, 1.25-30V output, 3A",
+      "category": "power",
+      "widthInHoles": 17,
+      "heightInHoles": 8,
+      "color": "#1a6b3a",
+      "specs": { "Input": "7-35V", "Output": "1.25-30V adjustable", "Current": "3A", "Chip": "LM2596S" },
+      "pins": [
+        { "id": "in_p",  "label": "IN+",  "offsetX": 0, "offsetY": 0, "direction": "input",  "description": "Input positive 7-35V" },
+        { "id": "in_n",  "label": "IN-",  "offsetX": 0, "offsetY": 1, "direction": "ground", "description": "Input ground" },
+        { "id": "out_p", "label": "OUT+", "offsetX": 16, "offsetY": 0, "direction": "output", "description": "Output positive 1.25-30V (adjustable)" },
+        { "id": "out_n", "label": "OUT-", "offsetX": 16, "offsetY": 1, "direction": "ground", "description": "Output ground" }
+      ]
+    },
+
+    {
+      "id": "mt3608-boost",
+      "name": "MT3608 DC-DC Boost Converter Type-C",
+      "description": "Step-up boost converter, 2-24V input (or USB-C), 5-28V output, 2A",
+      "category": "power",
+      "widthInHoles": 14,
+      "heightInHoles": 7,
+      "color": "#1a6b3a",
+      "specs": { "Input": "2-24V or USB-C", "Output": "5-28V adjustable", "Current": "2A", "Chip": "MT3608" },
+      "pins": [
+        { "id": "in_p",  "label": "IN+",  "offsetX": 0, "offsetY": 0, "direction": "input",  "description": "Input positive 2-24V (or via USB-C)" },
+        { "id": "in_n",  "label": "IN-",  "offsetX": 0, "offsetY": 1, "direction": "ground", "description": "Input ground" },
+        { "id": "out_p", "label": "OUT+", "offsetX": 13, "offsetY": 0, "direction": "output", "description": "Output positive 5-28V (adjustable)" },
+        { "id": "out_n", "label": "OUT-", "offsetX": 13, "offsetY": 1, "direction": "ground", "description": "Output ground" }
+      ]
+    },
+
+    {
+      "id": "pb0a-charger",
+      "name": "PB0A Type-C 1S LiPo Charger 2A",
+      "description": "1S LiPo charger/UPS module, 5V/2A Type-C input, USB-A 5V output, I2C status",
+      "category": "power",
+      "widthInHoles": 9,
+      "heightInHoles": 8,
+      "color": "#1a6b3a",
+      "specs": { "Input": "USB-C 5V 2A", "Battery": "1S LiPo 3.7V", "Output": "USB-A 5V", "Interface": "I2C (IP5306)" },
+      "pins": [
+        { "id": "bp",   "label": "B+",   "offsetX": 0, "offsetY": 0, "direction": "bidirectional", "description": "Battery positive (charge and discharge)" },
+        { "id": "bn",   "label": "B-",   "offsetX": 1, "offsetY": 0, "direction": "ground",        "description": "Battery negative" },
+        { "id": "key",  "label": "K",    "offsetX": 2, "offsetY": 0, "direction": "input",         "description": "External button (short press: toggle 5V output)" },
+        { "id": "data", "label": "DATA", "offsetX": 3, "offsetY": 0, "direction": "bidirectional", "description": "I2C SDA to IP5306 (address 0x75)" }
+      ]
+    },
+
+    {
+      "id": "quason-solar",
+      "name": "Quason Solar Charge Controller",
+      "description": "Solar battery charge controller with LED/load output and overcharge protection",
+      "category": "power",
+      "widthInHoles": 12,
+      "heightInHoles": 8,
+      "color": "#1a6b3a",
+      "specs": { "Solar": "up to 5V panels", "Battery": "Li-ion / LiPo", "Load": "Switched LED/load output" },
+      "pins": [
+        { "id": "sp",  "label": "S+",  "offsetX": 0, "offsetY": 0, "direction": "input",  "description": "Solar panel positive" },
+        { "id": "sn",  "label": "S-",  "offsetX": 1, "offsetY": 0, "direction": "ground", "description": "Solar panel negative" },
+        { "id": "bp",  "label": "B+",  "offsetX": 4, "offsetY": 0, "direction": "bidirectional", "description": "Battery positive" },
+        { "id": "bn",  "label": "B-",  "offsetX": 5, "offsetY": 0, "direction": "ground", "description": "Battery negative" },
+        { "id": "lp",  "label": "L+",  "offsetX": 8, "offsetY": 0, "direction": "output", "description": "LED/load output positive" },
+        { "id": "ln",  "label": "L-",  "offsetX": 9, "offsetY": 0, "direction": "ground", "description": "LED/load output negative" }
+      ]
+    },
+
+    {
+      "id": "rixite-pd",
+      "name": "RIXITE USB-C PD/QC Trigger Module",
+      "description": "USB PD / QC trigger module, select 5-20V via DIP switches, Type-C connector",
+      "category": "power",
+      "widthInHoles": 5,
+      "heightInHoles": 4,
+      "color": "#1a6b3a",
+      "specs": { "Voltage": "5/9/12/15/20V (DIP selectable)", "Protocol": "USB PD / QC 3.0", "Current": "3A max" },
+      "pins": [
+        { "id": "vcc", "label": "VCC",   "offsetX": 0, "offsetY": 0, "direction": "output", "description": "Output voltage (5/9/12/15/20V per DIP setting)" },
+        { "id": "gnd", "label": "GND",   "offsetX": 1, "offsetY": 0, "direction": "ground", "description": "Ground" },
+        { "id": "usb", "label": "USB-P", "offsetX": 2, "offsetY": 0, "direction": "bidirectional", "description": "USB data positive (optional)" },
+        { "id": "sig", "label": "SIG",   "offsetX": 3, "offsetY": 0, "direction": "output", "description": "Status indicator" }
+      ]
+    },
+
+    {
+      "id": "tp4056-charger",
+      "name": "TP4056 Li-ion Charger Module Type-C",
+      "description": "1A Li-ion charger with over-discharge protection, Type-C input, LED indicators",
+      "category": "power",
+      "widthInHoles": 10,
+      "heightInHoles": 7,
+      "color": "#1a6b3a",
+      "specs": { "Input": "USB-C 5V", "Charge": "1A (adjustable)", "Protection": "OVP, UVP, OCP via DW01A" },
+      "pins": [
+        { "id": "in_p",  "label": "IN+",  "offsetX": 0, "offsetY": 0, "direction": "input",        "description": "Input positive from USB-C 5V" },
+        { "id": "out_p", "label": "OUT+", "offsetX": 0, "offsetY": 3, "direction": "output",       "description": "Protected output positive" },
+        { "id": "bat_p", "label": "B+",   "offsetX": 0, "offsetY": 6, "direction": "bidirectional","description": "Battery positive terminal" },
+        { "id": "in_n",  "label": "IN-",  "offsetX": 9, "offsetY": 0, "direction": "ground",       "description": "Input ground" },
+        { "id": "out_n", "label": "OUT-", "offsetX": 9, "offsetY": 3, "direction": "ground",       "description": "Protected output negative" },
+        { "id": "bat_n", "label": "B-",   "offsetX": 9, "offsetY": 6, "direction": "ground",       "description": "Battery negative terminal" }
+      ]
+    },
+
+    {
+      "id": "tzt-bms-2s",
+      "name": "TZT 2S 20A BMS Protection Board",
+      "description": "2S 20A Li-ion BMS protection board for 18650, long narrow form factor",
+      "category": "power",
+      "widthInHoles": 15,
+      "heightInHoles": 3,
+      "color": "#1a6b3a",
+      "specs": { "Cells": "2S 18650", "Current": "20A max", "Protection": "OVP, UVP, OCP, balance" },
+      "pins": [
+        { "id": "bp",  "label": "B+",  "offsetX": 0, "offsetY": 0, "direction": "input",  "description": "Battery positive (2nd cell positive)" },
+        { "id": "bm",  "label": "BM",  "offsetX": 1, "offsetY": 0, "direction": "input",  "description": "Balance middle (cell 1+ to cell 2-)" },
+        { "id": "bn",  "label": "B-",  "offsetX": 2, "offsetY": 0, "direction": "input",  "description": "Battery negative (1st cell negative)" },
+        { "id": "pp",  "label": "P+",  "offsetX": 3, "offsetY": 0, "direction": "output", "description": "Protected output/charge positive" },
+        { "id": "pn",  "label": "P-",  "offsetX": 4, "offsetY": 0, "direction": "output", "description": "Protected output/charge negative" }
+      ]
+    },
+
+    {
+      "id": "wavgat-5v-buck",
+      "name": "WAVGAT Mini Buck DC-DC 5V",
+      "description": "Miniature step-down converter, 4.5-24V input, 5V/1A fixed output",
+      "category": "power",
+      "widthInHoles": 9,
+      "heightInHoles": 7,
+      "color": "#1a6b3a",
+      "specs": { "Input": "4.5-24V", "Output": "5V fixed", "Current": "1A" },
+      "pins": [
+        { "id": "in_p",  "label": "IN+",  "offsetX": 0, "offsetY": 0, "direction": "input",  "description": "Input positive 4.5-24V" },
+        { "id": "in_n",  "label": "IN-",  "offsetX": 0, "offsetY": 1, "direction": "ground", "description": "Input ground" },
+        { "id": "out_p", "label": "OUT+", "offsetX": 8, "offsetY": 0, "direction": "output", "description": "Output 5V" },
+        { "id": "out_n", "label": "OUT-", "offsetX": 8, "offsetY": 1, "direction": "ground", "description": "Output ground" }
+      ]
+    },
+
+    {
+      "id": "microsd-spi",
+      "name": "Micro SD Card Module SPI",
+      "description": "Micro SD card adapter with SPI interface and 3.3V level shifting, 3.3-5V",
+      "category": "memory",
+      "widthInHoles": 16,
+      "heightInHoles": 9,
+      "color": "#37474f",
+      "specs": { "Interface": "SPI", "VCC": "3.3-5V", "Capacity": "up to 32GB (FAT32)" },
+      "pins": [
+        { "id": "gnd",  "label": "GND",  "offsetX": 0, "offsetY": 0, "direction": "ground", "description": "Ground" },
+        { "id": "vcc",  "label": "VCC",  "offsetX": 1, "offsetY": 0, "direction": "power",  "description": "Power supply 3.3-5V" },
+        { "id": "miso", "label": "MISO", "offsetX": 2, "offsetY": 0, "direction": "output", "description": "SPI data out (Master In Slave Out)" },
+        { "id": "mosi", "label": "MOSI", "offsetX": 3, "offsetY": 0, "direction": "input",  "description": "SPI data in (Master Out Slave In)" },
+        { "id": "sck",  "label": "SCK",  "offsetX": 4, "offsetY": 0, "direction": "input",  "description": "SPI clock" },
+        { "id": "cs",   "label": "CS",   "offsetX": 5, "offsetY": 0, "direction": "input",  "description": "Chip select (active LOW)" }
+      ]
+    },
+
+    {
+      "id": "w25q128-spi",
+      "name": "W25Q128 SPI Flash 128Mbit",
+      "description": "W25Q128 16MB SPI NOR flash memory module, 2.7-3.6V",
+      "category": "memory",
+      "widthInHoles": 6,
+      "heightInHoles": 5,
+      "color": "#37474f",
+      "specs": { "Interface": "SPI", "VCC": "2.7-3.6V", "Capacity": "128Mbit (16MB)", "Speed": "up to 133MHz" },
+      "pins": [
+        { "id": "vcc", "label": "VCC", "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Power supply 2.7-3.6V" },
+        { "id": "cs",  "label": "CS",  "offsetX": 1, "offsetY": 0, "direction": "input",  "description": "Chip select (active LOW)" },
+        { "id": "do",  "label": "DO",  "offsetX": 2, "offsetY": 0, "direction": "output", "description": "SPI data out (MISO)" },
+        { "id": "gnd", "label": "GND", "offsetX": 3, "offsetY": 0, "direction": "ground", "description": "Ground" },
+        { "id": "clk", "label": "CLK", "offsetX": 4, "offsetY": 0, "direction": "input",  "description": "SPI clock" },
+        { "id": "di",  "label": "DI",  "offsetX": 5, "offsetY": 0, "direction": "input",  "description": "SPI data in (MOSI)" }
+      ]
+    },
+
+    {
+      "id": "bss138-shifter",
+      "name": "BSS138 4-Ch I2C Level Shifter",
+      "description": "4-channel bidirectional I2C logic level shifter, LV 1.8-3.3V ↔ HV 3.3-5.5V",
+      "category": "logic",
+      "widthInHoles": 6,
+      "heightInHoles": 6,
+      "color": "#00695c",
+      "specs": { "Low Side": "1.8-3.3V", "High Side": "3.3-5.5V", "Channels": "4", "Interface": "I2C / general" },
+      "pins": [
+        { "id": "lv",   "label": "LV",  "offsetX": 0, "offsetY": 0, "direction": "power",        "description": "Low voltage power input (1.8-3.3V)" },
+        { "id": "lv1",  "label": "LV1", "offsetX": 0, "offsetY": 1, "direction": "bidirectional","description": "Channel 1 low side" },
+        { "id": "lv2",  "label": "LV2", "offsetX": 0, "offsetY": 2, "direction": "bidirectional","description": "Channel 2 low side" },
+        { "id": "lv3",  "label": "LV3", "offsetX": 0, "offsetY": 3, "direction": "bidirectional","description": "Channel 3 low side" },
+        { "id": "lv4",  "label": "LV4", "offsetX": 0, "offsetY": 4, "direction": "bidirectional","description": "Channel 4 low side" },
+        { "id": "gndl", "label": "GND", "offsetX": 0, "offsetY": 5, "direction": "ground",       "description": "Ground (low side)" },
+        { "id": "hv",   "label": "HV",  "offsetX": 5, "offsetY": 0, "direction": "power",        "description": "High voltage power input (3.3-5.5V)" },
+        { "id": "hv1",  "label": "HV1", "offsetX": 5, "offsetY": 1, "direction": "bidirectional","description": "Channel 1 high side" },
+        { "id": "hv2",  "label": "HV2", "offsetX": 5, "offsetY": 2, "direction": "bidirectional","description": "Channel 2 high side" },
+        { "id": "hv3",  "label": "HV3", "offsetX": 5, "offsetY": 3, "direction": "bidirectional","description": "Channel 3 high side" },
+        { "id": "hv4",  "label": "HV4", "offsetX": 5, "offsetY": 4, "direction": "bidirectional","description": "Channel 4 high side" },
+        { "id": "gndh", "label": "GND", "offsetX": 5, "offsetY": 5, "direction": "ground",       "description": "Ground (high side, must connect to low side GND)" }
+      ]
+    },
+
     {
       "id": "jst-2pin",
       "name": "JST XH 2-pin (2.5mm)",
@@ -183,10 +991,11 @@
       "heightInHoles": 2,
       "color": "#e8a838",
       "pins": [
-        { "id": "plus",  "label": "+", "offsetX": 0, "offsetY": 0 },
-        { "id": "minus", "label": "-", "offsetX": 0, "offsetY": 1 }
+        { "id": "plus",  "label": "+", "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Positive / VCC" },
+        { "id": "minus", "label": "-", "offsetX": 0, "offsetY": 1, "direction": "ground", "description": "Negative / GND" }
       ]
     },
+
     {
       "id": "jst-3pin",
       "name": "JST XH 3-pin (2.5mm)",
@@ -201,6 +1010,7 @@
         { "id": "pin3", "label": "3", "offsetX": 0, "offsetY": 2 }
       ]
     },
+
     {
       "id": "jst-4pin",
       "name": "JST XH 4-pin (2.5mm)",
@@ -216,17 +1026,33 @@
         { "id": "pin4", "label": "4", "offsetX": 0, "offsetY": 3 }
       ]
     },
+
     {
       "id": "led",
       "name": "LED",
-      "description": "Светодиод, 2 вывода: анод (VCC) и катод (GND)",
+      "description": "LED, 2 leads: anode (VCC) and cathode (GND)",
       "category": "passive",
       "widthInHoles": 1,
       "heightInHoles": 2,
       "color": "#e63946",
       "pins": [
-        { "id": "vcc", "label": "VCC", "offsetX": 0, "offsetY": 0 },
-        { "id": "gnd", "label": "GND", "offsetX": 0, "offsetY": 1 }
+        { "id": "vcc", "label": "VCC", "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Anode (+)" },
+        { "id": "gnd", "label": "GND", "offsetX": 0, "offsetY": 1, "direction": "ground", "description": "Cathode (-)" }
+      ]
+    },
+
+    {
+      "id": "lilypad-led",
+      "name": "LilyPad LED Module (Sewable)",
+      "description": "Sewable LED module for e-textiles, 20mm diameter, 2.7-5.5V",
+      "category": "passive",
+      "widthInHoles": 8,
+      "heightInHoles": 8,
+      "color": "#e63946",
+      "specs": { "VCC": "2.7-5.5V", "Current": "20mA max", "Diameter": "20mm" },
+      "pins": [
+        { "id": "plus",  "label": "+", "offsetX": 0, "offsetY": 0, "direction": "power",  "description": "Positive / anode" },
+        { "id": "minus", "label": "-", "offsetX": 7, "offsetY": 7, "direction": "ground", "description": "Negative / cathode" }
       ]
     }
   ]
