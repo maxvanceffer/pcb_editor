@@ -35,6 +35,16 @@
         <!-- Built-in label -->
         <span class="text-xs text-muted-foreground w-8 shrink-0 font-mono">{{ pin.label }}</span>
 
+        <!-- Hardware function badges -->
+        <div v-if="pin.functions?.length" class="flex flex-wrap gap-0.5 shrink-0">
+          <span
+            v-for="fn in pin.functions"
+            :key="fn"
+            class="text-[9px] leading-tight px-1 py-0.5 rounded font-mono"
+            :class="fnBadgeClass(fn)"
+          >{{ fn }}</span>
+        </div>
+
         <!-- Editable input (only when pinLabelsEditable) -->
         <div v-if="comp.pinLabelsEditable" class="flex-1 relative">
           <input
@@ -123,6 +133,18 @@ const conflicts = computed(() => {
   }
   return result
 })
+
+function fnBadgeClass(fn: string): string {
+  if (fn === 'SDA' || fn === 'SCL') return 'bg-blue-500/20 text-blue-400'
+  if (fn === 'UART0' || fn === 'TX' || fn === 'RX') return 'bg-green-500/20 text-green-400'
+  if (fn.startsWith('ADC')) return 'bg-orange-500/20 text-orange-400'
+  if (fn === 'TOUCH') return 'bg-purple-500/20 text-purple-400'
+  if (fn === 'JTAG') return 'bg-yellow-500/20 text-yellow-500'
+  if (fn === 'BOOT' || fn === 'STRAP') return 'bg-red-500/20 text-red-400'
+  if (fn === 'RGB LED') return 'bg-pink-500/20 text-pink-400'
+  if (fn.startsWith('USB')) return 'bg-cyan-500/20 text-cyan-400'
+  return 'bg-muted text-muted-foreground'
+}
 
 function findPinAtPos(x: number, y: number) {
   for (const comp of projectStore.placedComponents) {

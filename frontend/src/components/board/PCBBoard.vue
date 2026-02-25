@@ -490,7 +490,9 @@
                             >
                                 {{
                                     editorStore.getPinLabel(comp.id, pin.id) ||
-                                    pin.label
+                                    (pin.functions?.length
+                                        ? `${pin.label}, ${pin.functions.join(', ')}`
+                                        : pin.label)
                                 }}
                             </text>
                         </template>
@@ -619,10 +621,10 @@
                             >
                             <span class="text-foreground truncate text-right">
                                 {{
-                                    editorStore.getPinLabel(
-                                        hoveredComp.id,
-                                        pin.id,
-                                    ) || pin.label
+                                    editorStore.getPinLabel(hoveredComp.id, pin.id) ||
+                                    (pin.functions?.length
+                                        ? `${pin.label}, ${pin.functions.join(', ')}`
+                                        : pin.label)
                                 }}
                             </span>
                         </div>
@@ -791,28 +793,28 @@ const activeTool = computed(() => editorStore.activeTool);
 const selectedId = computed(() => editorStore.selectedElementId);
 const showPinLabels = computed(() => editorStore.showPinLabels);
 
-// Определяем, с какой стороны пин относительно центра компонента
+// Determines which side the pin is on after rotation using actual rotated x position
 function pinIsOnRightSide(
     comp: BaseComponent,
-    pin: { offsetX: number },
+    pin: { x: number },
 ): boolean {
-    return pin.offsetX >= comp.widthInHoles / 2;
+    return (pin.x - comp.position.x) >= comp.effectiveWidth / 2;
 }
 
 // X-координата текста метки: внутрь от дырки
 function pinLabelX(
     comp: BaseComponent,
-    pin: { x: number; offsetX: number },
+    pin: { x: number },
 ): number {
     const cx = holeX(pin.x);
     if (pinIsOnRightSide(comp, pin)) {
-        return cx - 7; // правая колонка → текст левее (внутрь)
+        return cx - 7; // right column → label to the left (inward)
     }
-    return cx + 7; // левая колонка → текст правее (внутрь)
+    return cx + 7; // left column → label to the right (inward)
 }
 
 // text-anchor для метки
-function pinLabelAnchor(comp: BaseComponent, pin: { offsetX: number }): string {
+function pinLabelAnchor(comp: BaseComponent, pin: { x: number }): string {
     return pinIsOnRightSide(comp, pin) ? "end" : "start";
 }
 

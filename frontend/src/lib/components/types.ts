@@ -9,6 +9,8 @@ export interface Pin {
   offsetX: number
   offsetY: number
   connectedWireIds: string[]
+  /** Secondary hardware functions (e.g. ['SDA', 'ADC1', 'TOUCH']) */
+  functions?: string[]
 }
 
 export interface SerializedElement {
@@ -35,7 +37,7 @@ export interface ComponentDefinition {
   heightInHoles: number
   color: string
   specs?: Record<string, string>
-  pins: Array<{ id: string; label: string; offsetX: number; offsetY: number }>
+  pins: Array<{ id: string; label: string; offsetX: number; offsetY: number; functions?: string[] }>
 }
 
 export type WireColor = '#ff0000' | '#0000ff' | '#000000' | '#ffff00' | '#00ff00' | '#ff8800'
