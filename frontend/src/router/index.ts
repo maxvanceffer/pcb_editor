@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { useAppUpdate } from '@/lib/useAppUpdate'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -48,6 +49,21 @@ router.beforeEach(async (to) => {
     if (!to.query.token && !to.query.link_required) {
       return '/'
     }
+  }
+})
+
+// Vue Router catches dynamic import errors internally, so unhandledrejection
+// and app.config.errorHandler don't fire — router.onError is the right place.
+router.onError((err) => {
+  const msg = String(err?.message ?? err ?? '')
+  if (
+    msg.includes('Failed to fetch dynamically imported module') ||
+    msg.includes('Importing a module script failed') ||
+    msg.includes('error loading dynamically imported module') ||
+    msg.includes('Unable to preload CSS') ||
+    msg.includes('ChunkLoadError')
+  ) {
+    useAppUpdate().markUpdateAvailable()
   }
 })
 
