@@ -3,7 +3,7 @@ import { BaseComponent } from './BaseComponent'
 import type { GridPosition, Pin, SerializedElement } from './types'
 
 const ESP32S3_PINS: Omit<Pin, 'connectedWireIds'>[] = [
-  // Левая колонка (offsetX=0), сверху вниз
+  // Left column (offsetX=0), top to bottom
   { id: 'L3V3_1', label: '3.3V', offsetX: 0, offsetY: 0  },
   { id: 'L3V3_2', label: '3.3V', offsetX: 0, offsetY: 1  },
   { id: 'RST',    label: 'RST',  offsetX: 0, offsetY: 2  },
@@ -27,35 +27,35 @@ const ESP32S3_PINS: Omit<Pin, 'connectedWireIds'>[] = [
   { id: 'L5V',    label: '5V',   offsetX: 0, offsetY: 20 },
   { id: 'LGND',   label: 'GND',  offsetX: 0, offsetY: 21 },
 
-  // Правая колонка (offsetX=9), сверху вниз
-  { id: 'RGND1',  label: 'GND',  offsetX: 9, offsetY: 0  },
-  { id: 'TX',     label: 'TX',   offsetX: 9, offsetY: 1  },
-  { id: 'RX',     label: 'RX',   offsetX: 9, offsetY: 2  },
-  { id: 'IO1',    label: 'IO1',  offsetX: 9, offsetY: 3  },
-  { id: 'IO2',    label: 'IO2',  offsetX: 9, offsetY: 4  },
-  { id: 'IO42',   label: 'IO42', offsetX: 9, offsetY: 5  },
-  { id: 'IO41',   label: 'IO41', offsetX: 9, offsetY: 6  },
-  { id: 'IO40',   label: 'IO40', offsetX: 9, offsetY: 7  },
-  { id: 'IO39',   label: 'IO39', offsetX: 9, offsetY: 8  },
-  { id: 'IO38',   label: 'IO38', offsetX: 9, offsetY: 9  },
-  { id: 'IO37',   label: 'IO37', offsetX: 9, offsetY: 10 },
-  { id: 'IO36',   label: 'IO36', offsetX: 9, offsetY: 11 },
-  { id: 'IO35',   label: 'IO35', offsetX: 9, offsetY: 12 },
-  { id: 'IO0',    label: 'IO0',  offsetX: 9, offsetY: 13 },
-  { id: 'IO45',   label: 'IO45', offsetX: 9, offsetY: 14 },
-  { id: 'IO48',   label: 'IO48', offsetX: 9, offsetY: 15 },
-  { id: 'IO47',   label: 'IO47', offsetX: 9, offsetY: 16 },
-  { id: 'IO21',   label: 'IO21', offsetX: 9, offsetY: 17 },
-  { id: 'IO20',   label: 'IO20', offsetX: 9, offsetY: 18 },
-  { id: 'IO19',   label: 'IO19', offsetX: 9, offsetY: 19 },
-  { id: 'RGND2',  label: 'GND',  offsetX: 9, offsetY: 20 },
-  { id: 'RGND3',  label: 'GND',  offsetX: 9, offsetY: 21 },
+  // Right column (offsetX=10), top to bottom
+  { id: 'RGND1',  label: 'GND',  offsetX: 10, offsetY: 0  },
+  { id: 'TX',     label: 'TX',   offsetX: 10, offsetY: 1  },
+  { id: 'RX',     label: 'RX',   offsetX: 10, offsetY: 2  },
+  { id: 'IO1',    label: 'IO1',  offsetX: 10, offsetY: 3  },
+  { id: 'IO2',    label: 'IO2',  offsetX: 10, offsetY: 4  },
+  { id: 'IO42',   label: 'IO42', offsetX: 10, offsetY: 5  },
+  { id: 'IO41',   label: 'IO41', offsetX: 10, offsetY: 6  },
+  { id: 'IO40',   label: 'IO40', offsetX: 10, offsetY: 7  },
+  { id: 'IO39',   label: 'IO39', offsetX: 10, offsetY: 8  },
+  { id: 'IO38',   label: 'IO38', offsetX: 10, offsetY: 9  },
+  { id: 'IO37',   label: 'IO37', offsetX: 10, offsetY: 10 },
+  { id: 'IO36',   label: 'IO36', offsetX: 10, offsetY: 11 },
+  { id: 'IO35',   label: 'IO35', offsetX: 10, offsetY: 12 },
+  { id: 'IO0',    label: 'IO0',  offsetX: 10, offsetY: 13 },
+  { id: 'IO45',   label: 'IO45', offsetX: 10, offsetY: 14 },
+  { id: 'IO48',   label: 'IO48', offsetX: 10, offsetY: 15 },
+  { id: 'IO47',   label: 'IO47', offsetX: 10, offsetY: 16 },
+  { id: 'IO21',   label: 'IO21', offsetX: 10, offsetY: 17 },
+  { id: 'IO20',   label: 'IO20', offsetX: 10, offsetY: 18 },
+  { id: 'IO19',   label: 'IO19', offsetX: 10, offsetY: 19 },
+  { id: 'RGND2',  label: 'GND',  offsetX: 10, offsetY: 20 },
+  { id: 'RGND3',  label: 'GND',  offsetX: 10, offsetY: 21 },
 ]
 
 export class ESP32S3Component extends BaseComponent {
   readonly type = 'esp32s3'
   readonly name = 'ESP32-S3 (44-pin Dual USB)'
-  readonly widthInHoles = 10
+  readonly widthInHoles = 11
   readonly heightInHoles = 22
   readonly color = '#4a90d9'
   readonly pins: Pin[]
