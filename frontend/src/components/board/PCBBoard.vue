@@ -2100,6 +2100,7 @@ function onDragOver(e: DragEvent) {
 function onDrop(e: DragEvent) {
     const typeId = e.dataTransfer?.getData("componentType");
     if (!typeId || !editorStore.dragGridPos || !canvasWrap.value) {
+        console.log('[drop] early exit — typeId:', typeId, 'dragGridPos:', editorStore.dragGridPos);
         editorStore.endDrag();
         return;
     }
@@ -2109,7 +2110,7 @@ function onDrop(e: DragEvent) {
 
     const newEl = ComponentFactory.fromDefinition(def!, pos);
     if (newEl instanceof BaseComponent) {
-        // Проверка коллизий только если хоть один пин попадает на плату
+        // Check collisions only for holes that land on the board
         const occupied = projectStore.occupiedHoles;
         const pinsOnBoard = newEl
             .getOccupiedHoles()
@@ -2120,9 +2121,11 @@ function onDrop(e: DragEvent) {
                     h.x < boardCols.value &&
                     h.y < boardRows.value,
             );
-        const hasCollision = pinsOnBoard.some((h) =>
-            occupied.has(`${h.x},${h.y}`),
-        );
+        const firstConflict = pinsOnBoard.find((h) => occupied.has(`${h.x},${h.y}`));
+        const hasCollision = !!firstConflict;
+        console.log('[drop]', typeId, 'pos:', pos, 'pinsOnBoard:', pinsOnBoard.length,
+            'occupied total:', occupied.size, 'hasCollision:', hasCollision,
+            firstConflict ? `first conflict at ${firstConflict.x},${firstConflict.y} by ${occupied.get(`${firstConflict.x},${firstConflict.y}`)}` : '');
         if (!hasCollision) {
             projectStore.addElement(newEl);
             historyStore.push({ type: "add", element: newEl.serialize() });

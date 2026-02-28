@@ -8,6 +8,7 @@ import { BatteryHolder } from './BatteryHolder'
 import { IRReceiverComponent } from './IRReceiver'
 import { LEDComponent } from './LED'
 import { WireTrace } from './WireTrace'
+import { GenericComponent } from './GenericComponent'
 
 export type AnyElement = BaseComponent | WireTrace
 
@@ -61,17 +62,45 @@ export class ComponentFactory {
           (serialized.side as 'front' | 'back') ?? 'front',
         )
 
-      default:
+      default: {
+        // Reconstruct from embedded definition data saved by GenericComponent.serialize()
+        if (serialized._widthInHoles !== undefined) {
+          type RawPin = Omit<import('./types').Pin, 'connectedWireIds'>
+          return new GenericComponent(
+            type,
+            serialized._name as string,
+            serialized._widthInHoles as number,
+            serialized._heightInHoles as number,
+            serialized._color as string,
+            serialized._pins as RawPin[],
+            position,
+            rot,
+            id,
+          )
+        }
         throw new Error(`Unknown component type: ${type}`)
+      }
     }
   }
 
   static fromDefinition(def: ComponentDefinition, position: GridPosition): AnyElement {
-    return ComponentFactory.create({
-      id: undefined as unknown as string,
-      type: def.id,
-      position,
-      rotation: 0,
-    })
+    // Use dedicated class if available, otherwise fall back to GenericComponent
+    const knownTypes = new Set([
+      'esp32s3',
+      'jst-2pin', 'jst-3pin', 'jst-4pin', 'jst-5pin', 'jst-6pin',
+      'ams1117-3.3', 'ams1117-5.0',
+      'battery-18650', 'battery-aa', 'battery-aaa',
+      'ir-receiver',
+      'led',
+    ])
+    if (knownTypes.has(def.id)) {
+      return ComponentFactory.create({
+        id: undefined as unknown as string,
+        type: def.id,
+        position,
+        rotation: 0,
+      })
+    }
+    return GenericComponent.fromDefinition(def, position)
   }
 }
