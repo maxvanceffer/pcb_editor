@@ -158,6 +158,9 @@
       "zoomReset": "Сбросить масштаб",
       "zoomIn": "Увеличить"
     },
+    "wire": {
+      "configDescription": "Настройка цвета провода"
+    },
     "board": {
       "rotate90cw": "Повернуть +90°",
       "rotate90ccw": "Повернуть −90°",

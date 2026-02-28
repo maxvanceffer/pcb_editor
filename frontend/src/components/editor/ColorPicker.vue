@@ -33,7 +33,20 @@ const props = withDefaults(
   defineProps<{
     colors?: string[];
   }>(),
-  { colors: () => ["#A8D8C8", "#A8C4E8", "#D4A8E8", "#E8A8C4", "#E8D4A8"] },
+  {
+    colors: () => [
+      "#A8D8C8",
+      "#A8C4E8",
+      "#D4A8E8",
+      "#E8A8C4",
+      "#E8D4A8",
+      "#C00707",
+      "#134E8E",
+      "#280905",
+      "#FFEF5F",
+      "#FFF8DE",
+    ],
+  },
 );
 
 const model = defineModel<string | null>({ default: null });

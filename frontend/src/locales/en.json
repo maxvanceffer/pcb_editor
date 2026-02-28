@@ -158,6 +158,9 @@
       "zoomReset": "Reset zoom",
       "zoomIn": "Zoom in"
     },
+    "wire": {
+      "configDescription": "Configure wire color"
+    },
     "board": {
       "rotate90cw": "Rotate +90°",
       "rotate90ccw": "Rotate −90°",

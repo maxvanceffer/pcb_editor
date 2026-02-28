@@ -6,40 +6,36 @@
         <DialogDescription>{{ t("editor.pins.configDescription") }}</DialogDescription>
       </DialogHeader>
 
-      <form v-if="comp" class="space-y-4">
-        <!-- Description -->
-        <FormField v-slot="{ componentField }" name="description">
-          <FormItem>
-            <FormLabel>{{ t("editor.pins.description") }}</FormLabel>
-            <FormControl>
+      <form v-if="comp" @submit.prevent="handleSave">
+        <FieldGroup>
+          <!-- Description -->
+          <Field>
+            <FieldLabel>{{ t("editor.pins.description") }}</FieldLabel>
+            <FieldContent>
               <Input
-                v-bind="componentField"
+                v-model="description"
                 :placeholder="t('editor.pins.descriptionPlaceholder')"
               />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
+              <FieldError :errors="descErrors.map((m) => ({ message: m }))" />
+            </FieldContent>
+          </Field>
 
-        <!-- Color -->
-        <FormField v-slot="{ componentField }" name="color">
-          <FormItem>
-            <FormLabel>{{ t("editor.pins.color") }}</FormLabel>
-            <FormControl>
-              <ColorPicker v-bind="componentField" />
-            </FormControl>
-          </FormItem>
-        </FormField>
+          <!-- Color -->
+          <Field>
+            <FieldLabel>{{ t("editor.pins.color") }}</FieldLabel>
+            <FieldContent>
+              <ColorPicker v-model="color" />
+            </FieldContent>
+          </Field>
 
-        <!-- Pin Labels -->
-        <template v-if="pins.length">
-          <div class="space-y-2">
-            <Label>{{ t("editor.pins.section") }}</Label>
+          <!-- Pin Labels -->
+          <FieldSet v-if="pins.length">
+            <FieldLegend variant="label">{{ t("editor.pins.section") }}</FieldLegend>
 
             <div class="space-y-1.5 max-h-56 overflow-y-auto pr-1">
               <div v-for="pin in pins" :key="pin.id" class="flex items-center gap-2">
                 <!-- Pin built-in label -->
-                <span class="font-mono text-xs text-muted-foreground w-6">
+                <span class="font-mono text-xs text-muted-foreground w-8">
                   {{ pin.label }}
                 </span>
 
@@ -80,13 +76,13 @@
             <p v-if="!comp.pinLabelsEditable" class="text-xs text-muted-foreground">
               {{ t("editor.pins.fixedPins") }}
             </p>
-          </div>
-        </template>
+          </FieldSet>
+        </FieldGroup>
 
         <!-- Power conflict warnings -->
         <div
           v-if="conflicts.length"
-          class="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2"
+          class="mt-4 rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2"
         >
           <p class="text-xs font-medium text-destructive mb-1">
             {{ t("editor.pins.conflicts") }}
@@ -96,11 +92,11 @@
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter class="mt-4">
           <Button type="button" variant="outline" @click="onOpenChange(false)">
             {{ t("editor.pins.cancel") }}
           </Button>
-          <Button type="submit" @click.prevent="handleSave">
+          <Button type="submit">
             {{ t("editor.pins.save") }}
           </Button>
         </DialogFooter>
@@ -112,7 +108,7 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { useForm } from "vee-validate";
+import { useForm, useField } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
 import { useEditorStore } from "@/stores/editorStore";
@@ -128,10 +124,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Field,
+  FieldContent,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -172,6 +175,9 @@ const formSchema = toTypedSchema(
 const { handleSubmit, resetForm } = useForm({
   validationSchema: formSchema,
 });
+
+const { value: description, errors: descErrors } = useField<string>("description");
+const { value: color } = useField<string | null>("color");
 
 // Pin label values are stored separately from vee-validate to avoid
 // issues with schema-stripping unknown fields during handleSubmit.

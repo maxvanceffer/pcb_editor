@@ -39,6 +39,9 @@
                     <DropdownMenuSeparator />
                 </template>
                 <template v-else>
+                    <DropdownMenuItem @select="openWireConfig()">
+                        <SlidersHorizontal /> {{ t("editor.board.configure") }}
+                    </DropdownMenuItem>
                     <DropdownMenuItem @select="ctxCheckCrossings()">
                         <Network /> {{ t("editor.board.wireCheckCrossings") }}
                     </DropdownMenuItem>
@@ -58,6 +61,13 @@
             :open="configDialogOpen"
             :comp="configDialogComp"
             @update:open="configDialogOpen = $event"
+        />
+
+        <!-- Wire config dialog -->
+        <WireConfigDialog
+            :open="wireConfigDialogOpen"
+            :wire="wireConfigDialogWire"
+            @update:open="wireConfigDialogOpen = $event"
         />
 
         <!-- Wire conflict warning -->
@@ -633,6 +643,7 @@ import { WireTrace } from "@/lib/components/WireTrace";
 import { BaseComponent } from "@/lib/components/BaseComponent";
 import type { GridPosition } from "@/lib/components/types";
 import ComponentConfigDialog from "@/components/editor/ComponentConfigDialog.vue";
+import WireConfigDialog from "@/components/editor/WireConfigDialog.vue";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { getComponentImage } from "@/lib/components/componentImages";
 import WireConflictDialog from "@/components/board/WireConflictDialog.vue";
@@ -889,6 +900,8 @@ const ctxMenu = ref<{
 } | null>(null);
 const configDialogOpen = ref(false);
 const configDialogComp = ref<BaseComponent | null>(null);
+const wireConfigDialogOpen = ref(false);
+const wireConfigDialogWire = ref<WireTrace | null>(null);
 
 function openCtxMenu(
     e: MouseEvent,
@@ -937,6 +950,16 @@ function openPinLabels() {
     if (!(el instanceof BaseComponent)) return;
     configDialogComp.value = el;
     configDialogOpen.value = true;
+}
+
+function openWireConfig() {
+    const id = ctxMenu.value?.id;
+    closeCtxMenu();
+    if (!id) return;
+    const el = projectStore.getElementById(id);
+    if (!(el instanceof WireTrace)) return;
+    wireConfigDialogWire.value = el;
+    wireConfigDialogOpen.value = true;
 }
 
 function ctxDelete() {

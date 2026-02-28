@@ -25,7 +25,7 @@ export class JSTConnector extends BaseComponent {
     this.name = `JST XH ${pinCount}-pin (2.5mm)`
     this.pins = Array.from({ length: pinCount }, (_, i) => ({
       id: `pin${i + 1}`,
-      label: i === 0 ? '+' : i === pinCount - 1 ? '-' : `P${i + 1}`,
+      label: `PIN${i + 1}`,
       offsetX: 0,
       offsetY: i,
       connectedWireIds: [],
