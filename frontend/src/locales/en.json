@@ -172,7 +172,12 @@
       "delete": "Delete",
       "chess": "Chess",
       "solid": "Solid",
-      "wireConflict": "Conflict: {start} → {end}"
+      "wireConflict": "Conflict: {start} → {end}",
+      "flipBoard": "Flip to bottom",
+      "backView": "Flip to top",
+      "frontView": "Front view",
+      "topSide": "Top",
+      "bottomSide": "Bottom"
     },
     "pins": {
       "title": "Pin labels — {type}",

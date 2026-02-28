@@ -140,6 +140,25 @@
             </div>
         </button>
 
+        <!-- Flip board -->
+        <button
+            class="relative group flex items-center justify-center w-9 h-9 rounded-lg transition-colors"
+            :class="
+                editorStore.boardFlipped
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+            "
+            @click="editorStore.boardFlipped = !editorStore.boardFlipped"
+        >
+            <FlipHorizontal class="w-4 h-4" />
+            <div
+                class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover text-popover-foreground border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5"
+            >
+                {{ editorStore.boardFlipped ? t("editor.board.frontView") : t("editor.board.flipBoard") }}
+                <kbd class="text-muted-foreground text-[10px]">F</kbd>
+            </div>
+        </button>
+
         <!-- Keyboard shortcuts -->
         <button
             class="relative group flex items-center justify-center w-9 h-9 rounded-lg transition-colors text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -228,6 +247,7 @@ import {
     Eye,
     EyeOff,
     Keyboard,
+    FlipHorizontal,
 } from "lucide-vue-next";
 import { useEditorStore, type Tool } from "@/stores/editorStore";
 import { useProjectStore } from "@/stores/projectStore";

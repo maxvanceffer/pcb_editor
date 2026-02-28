@@ -38,6 +38,9 @@ export const useEditorStore = defineStore('editor', () => {
   const segmentCutPoints = ref<GridPosition[]>([])
   const segmentCutWireId = ref<string | null>(null)
 
+  // Board flip: view from the back/solder side
+  const boardFlipped = ref(false)
+
   watch(activeTool, () => {
     segmentCutPoints.value = []
     segmentCutWireId.value = null
@@ -211,6 +214,7 @@ export const useEditorStore = defineStore('editor', () => {
     componentDescriptions, setComponentDescription, getComponentDescription,
     componentColors, setComponentColor, getComponentColor,
     segmentCutPoints, segmentCutWireId,
+    boardFlipped,
     setZoom, pan, startDrag, updateDragPreview, endDrag,
     pixelToGrid, gridToPixelCenter, setPinLabel, getPinLabel,
   }

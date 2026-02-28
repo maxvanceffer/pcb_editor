@@ -90,21 +90,35 @@
             </div>
         </Transition>
 
-        <!-- Background toggle -->
-        <button
-            class="absolute top-2 right-2 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-md border bg-background/80 backdrop-blur-sm text-xs text-muted-foreground hover:text-foreground hover:bg-background transition-colors"
-            @click.stop="bgMode = bgMode === 'solid' ? 'chess' : 'solid'"
-            :title="bgMode === 'solid' ? 'Включить шашки' : 'Выключить шашки'"
-        >
-            <span class="text-[10px] leading-none">{{
-                bgMode === "solid" ? "⬜" : "▪"
-            }}</span>
-            {{
-                bgMode === "solid"
-                    ? t("editor.board.chess")
-                    : t("editor.board.solid")
-            }}
-        </button>
+        <!-- Top-right toolbar: board side + background toggle -->
+        <div class="absolute top-2 right-2 z-10 flex items-center gap-1 bg-background/80 backdrop-blur-sm border rounded-md px-1 py-0.5">
+            <!-- Board side indicator -->
+            <div
+                class="flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium transition-colors"
+                :class="editorStore.boardFlipped
+                    ? 'text-amber-600 dark:text-amber-400'
+                    : 'text-muted-foreground'"
+            >
+                <span class="text-[10px] leading-none">{{ editorStore.boardFlipped ? '▼' : '▲' }}</span>
+                {{ editorStore.boardFlipped ? t('editor.board.bottomSide') : t('editor.board.topSide') }}
+            </div>
+            <div class="w-px h-3.5 bg-border" />
+            <!-- Background toggle -->
+            <button
+                class="flex items-center gap-1.5 px-1.5 py-0.5 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                @click.stop="bgMode = bgMode === 'solid' ? 'chess' : 'solid'"
+                :title="bgMode === 'solid' ? 'Включить шашки' : 'Выключить шашки'"
+            >
+                <span class="text-[10px] leading-none">{{
+                    bgMode === "solid" ? "⬜" : "▪"
+                }}</span>
+                {{
+                    bgMode === "solid"
+                        ? t("editor.board.chess")
+                        : t("editor.board.solid")
+                }}
+            </button>
+        </div>
         <!-- Трансформируемый контейнер -->
         <div
             :style="{
@@ -159,24 +173,39 @@
 
                 <!-- Метки колонок (буквы A, B, C...) — внутри платы, в верхнем отступе -->
                 <text
-                    v-for="(label, i) in columnLabels"
+                    v-for="(label, i) in displayColumnLabels"
                     :key="`col-${i}`"
                     :x="boardOffsetX + i * HOLE_SPACING + HOLE_SPACING / 2"
                     :y="boardOffsetY - BOARD_PAD * 0.3"
                     :fill="
-                        wireHoverPos && wireHoverPos.x === i
+                        wireHoverPos && wireHoverPos.x === gridColForLabelIndex(i)
                             ? '#c8f07a'
                             : '#7ab648'
                     "
-                    :font-size="wireHoverPos && wireHoverPos.x === i ? 11 : 9"
+                    :font-size="wireHoverPos && wireHoverPos.x === gridColForLabelIndex(i) ? 11 : 9"
                     :font-weight="
-                        wireHoverPos && wireHoverPos.x === i ? 'bold' : 'normal'
+                        wireHoverPos && wireHoverPos.x === gridColForLabelIndex(i) ? 'bold' : 'normal'
                     "
                     text-anchor="middle"
                     dominant-baseline="middle"
                     font-family="monospace"
                 >
                     {{ label }}
+                </text>
+
+                <!-- Back view indicator -->
+                <text
+                    v-if="editorStore.boardFlipped"
+                    :x="boardOffsetX + (boardCols * HOLE_SPACING) / 2"
+                    :y="boardOffsetY + boardRows * HOLE_SPACING + BOARD_PAD * 0.6"
+                    fill="#7ab648"
+                    font-size="9"
+                    text-anchor="middle"
+                    dominant-baseline="middle"
+                    font-family="monospace"
+                    opacity="0.7"
+                >
+                    {{ t('editor.board.backView') }}
                 </text>
 
                 <!-- Метки строк (цифры 1, 2, 3...) — внутри платы, в левом отступе -->
@@ -236,17 +265,11 @@
                 </g>
 
                 <!-- Wire traces -->
-                <template v-for="wire in wires" :key="wire.id">
-                    <!-- Обычный провод без jump-over арок -->
+                <template v-for="wire in visibleWires" :key="wire.id">
+                    <!-- Simple wire or flipped view (arc crossings use stale px coords when flipped) -->
                     <polyline
-                        v-if="!wire.crossings.some((c) => c.jumpOver)"
-                        :points="
-                            wire.toSVGPoints(
-                                HOLE_SPACING,
-                                MARGIN_LEFT + CANVAS_PADDING * HOLE_SPACING,
-                                MARGIN_TOP + CANVAS_PADDING * HOLE_SPACING,
-                            )
-                        "
+                        v-if="!wire.crossings.some((c) => c.jumpOver) || editorStore.boardFlipped"
+                        :points="wirePoints(wire)"
                         :stroke="wire.color"
                         stroke-width="2.5"
                         fill="none"
@@ -348,20 +371,20 @@
                 >
                     <!-- Тело компонента -->
                     <rect
-                        :x="gridToSvgX(comp.position.x) + 1"
+                        :x="compRectX(comp)"
                         :y="gridToSvgY(comp.position.y) + 1"
                         :width="comp.effectiveWidth * HOLE_SPACING - 2"
                         :height="comp.effectiveHeight * HOLE_SPACING - 2"
                         :fill="compColor(comp.id, comp.color)"
-                        fill-opacity="0.7"
+                        :fill-opacity="editorStore.boardFlipped ? 0.35 : 0.7"
                         rx="3"
                         :stroke="
                             selectedId === comp.id ? '#fff' : 'transparent'
                         "
                         stroke-width="2"
                     />
-                    <!-- JST front tab (cable entry side, perpendicular to pin row) -->
-                    <template v-if="comp.type.startsWith('jst-')">
+                    <!-- JST front tab (cable entry side, not shown in back view) -->
+                    <template v-if="comp.type.startsWith('jst-') && !editorStore.boardFlipped">
                         <!-- rotation=0: pins vertical, tab on the right -->
                         <rect
                             v-if="comp.rotation === 0"
@@ -438,10 +461,7 @@
                     <!-- Название компонента (скрывается в режиме меток пинов) -->
                     <text
                         v-if="!showPinLabels"
-                        :x="
-                            gridToSvgX(comp.position.x) +
-                            (comp.effectiveWidth * HOLE_SPACING) / 2
-                        "
+                        :x="compCenterX(comp)"
                         :y="
                             gridToSvgY(comp.position.y) +
                             (comp.effectiveHeight * HOLE_SPACING) / 2
@@ -857,7 +877,8 @@ const boardOffsetY = computed(() => MARGIN_TOP + CANVAS_PADDING * HOLE_SPACING);
 
 // Перевод grid-координаты (может быть отрицательной) в pixel
 function gridToSvgX(col: number): number {
-    return MARGIN_LEFT + (col + CANVAS_PADDING) * HOLE_SPACING;
+    const c = editorStore.boardFlipped ? boardCols.value - 1 - col : col;
+    return MARGIN_LEFT + (c + CANVAS_PADDING) * HOLE_SPACING;
 }
 function gridToSvgY(row: number): number {
     return MARGIN_TOP + (row + CANVAS_PADDING) * HOLE_SPACING;
@@ -865,6 +886,12 @@ function gridToSvgY(row: number): number {
 
 const placedComponents = computed(() => projectStore.placedComponents);
 const wires = computed(() => projectStore.wires);
+// Show only wires from the currently viewed side
+const visibleWires = computed(() =>
+    projectStore.wires.filter(
+        (w) => w.side === (editorStore.boardFlipped ? "back" : "front"),
+    ),
+);
 
 const activeTool = computed(() => editorStore.activeTool);
 const selectedId = computed(() => editorStore.selectedElementId);
@@ -940,15 +967,45 @@ const columnLabels = computed(() => {
     });
 });
 
+// When flipped, reverse labels so column A appears on the right (correct for back view)
+const displayColumnLabels = computed(() =>
+    editorStore.boardFlipped ? [...columnLabels.value].reverse() : columnLabels.value,
+);
+
+// Returns the grid column that corresponds to visual label position i
+function gridColForLabelIndex(i: number): number {
+    return editorStore.boardFlipped ? boardCols.value - 1 - i : i;
+}
+
 function holeX(col: number): number {
-    return (
-        MARGIN_LEFT + (col + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
-    );
+    const c = editorStore.boardFlipped ? boardCols.value - 1 - col : col;
+    return MARGIN_LEFT + (c + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2;
 }
 function holeY(row: number): number {
     return (
         MARGIN_TOP + (row + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2
     );
+}
+
+// Left edge of a component rect, accounting for flip mirroring the component width
+function compRectX(comp: BaseComponent): number {
+    const base = gridToSvgX(comp.position.x);
+    return editorStore.boardFlipped
+        ? base - (comp.effectiveWidth - 1) * HOLE_SPACING + 1
+        : base + 1;
+}
+
+// Horizontal center of a component body
+function compCenterX(comp: BaseComponent): number {
+    return compRectX(comp) - 1 + (comp.effectiveWidth * HOLE_SPACING) / 2;
+}
+
+// Builds SVG points string using flip-aware holeX
+function wirePoints(wire: WireTrace): string {
+    return wire
+        .getAllPoints()
+        .map((p) => `${holeX(p.x)},${holeY(p.y)}`)
+        .join(" ");
 }
 
 function holeHighlightColor(col: number, row: number): string {
@@ -1193,6 +1250,7 @@ async function ctxMergeWires() {
             currentEl.id,
             currentEl.crossings,
             currentEl.sharedHoles,
+            currentEl.side,
         );
         historyStore.push({ type: "remove", element: currentEl.serialize() });
         historyStore.push({ type: "remove", element: other.serialize() });
@@ -1605,6 +1663,7 @@ function onMouseUp(_e?: MouseEvent) {
 function onComponentMouseDown(e: MouseEvent, id: string) {
     if (activeTool.value !== "select") return;
     if (ctxMenu.value) return;
+    if (editorStore.boardFlipped) return; // component moving not available in back view
     e.preventDefault();
     editorStore.movingElementId = id;
     editorStore.selectedElementId = id;
@@ -1629,12 +1688,15 @@ function svgCoordsToGrid(e: MouseEvent): GridPosition | null {
     const rect = canvasWrap.value.getBoundingClientRect();
     const rawX = (e.clientX - rect.left - editorStore.panX) / editorStore.zoom;
     const rawY = (e.clientY - rect.top - editorStore.panY) / editorStore.zoom;
-    return editorStore.pixelToGrid(
+    const grid = editorStore.pixelToGrid(
         rawX,
         rawY,
         boardCols.value,
         boardRows.value,
     );
+    // When board is flipped, mirror the X axis to get the correct board grid column
+    if (editorStore.boardFlipped) return { x: boardCols.value - 1 - grid.x, y: grid.y };
+    return grid;
 }
 
 // ─── Click на плату/отверстие ────────────────────────────────────────────────
@@ -1677,7 +1739,16 @@ async function onHoleClick(e: MouseEvent, col: number, row: number) {
             return;
         }
 
-        const newWire = new WireTrace(wireStart.value, pos);
+        const newWire = new WireTrace(
+            wireStart.value,
+            pos,
+            '#ff0000',
+            [],
+            undefined,
+            [],
+            [],
+            editorStore.boardFlipped ? 'back' : 'front',
+        );
 
         const junctions = findJunctions(
             newWire,
@@ -1837,6 +1908,7 @@ async function onHoleClick(e: MouseEvent, col: number, row: number) {
                     wireA.id,
                     mergedCrossings,
                     [...wireA.sharedHoles, ...wireB.sharedHoles],
+                    wireA.side,
                 );
                 // Add crossings from the new wire portion (skipped by early return below)
                 for (let ci = 0; ci < uniqueCrossings.length; ci++) {
@@ -1920,6 +1992,7 @@ async function onHoleClick(e: MouseEvent, col: number, row: number) {
                     existing.id,
                     existing.crossings,
                     existing.sharedHoles,
+                    existing.side,
                 );
                 // Add crossings from the new wire portion (skipped by early return below)
                 for (let ci = 0; ci < uniqueCrossings.length; ci++) {
@@ -2011,6 +2084,7 @@ function selectElement(id: string) {
 // ─── Drag & Drop ─────────────────────────────────────────────────────────────
 function onDragOver(e: DragEvent) {
     if (!editorStore.isDragging || !canvasWrap.value) return;
+    if (editorStore.boardFlipped) return; // component placement not available in back view
     const rect = canvasWrap.value.getBoundingClientRect();
     const rawX = (e.clientX - rect.left - editorStore.panX) / editorStore.zoom;
     const rawY = (e.clientY - rect.top - editorStore.panY) / editorStore.zoom;

@@ -258,6 +258,9 @@ function onKeyDown(e: KeyboardEvent) {
   if (e.key === '?') {
     shortcutsDialogOpen.value = true
     return
+  } else if (e.key === 'f' || e.key === 'F') {
+    editorStore.boardFlipped = !editorStore.boardFlipped
+    return
   } else if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
     e.preventDefault()
     editorStore.activeTool = 'select'

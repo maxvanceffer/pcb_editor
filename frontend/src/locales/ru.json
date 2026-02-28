@@ -172,7 +172,12 @@
       "delete": "Удалить",
       "chess": "Chess",
       "solid": "Solid",
-      "wireConflict": "Конфликт: {start} → {end}"
+      "wireConflict": "Конфликт: {start} → {end}",
+      "flipBoard": "Перевернуть (Bottom)",
+      "backView": "Перевернуть (Top)",
+      "frontView": "Вид спереди",
+      "topSide": "Top",
+      "bottomSide": "Bottom"
     },
     "pins": {
       "title": "Метки пинов — {type}",
