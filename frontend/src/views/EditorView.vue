@@ -9,6 +9,7 @@
       <span class="font-semibold text-sm truncate flex-1">{{ projectStore.projectName }}</span>
       <div class="flex items-center gap-2 shrink-0">
         <span v-if="saving" class="text-xs text-muted-foreground">{{ t('editor.saving') }}</span>
+        <span v-else-if="projectStore.isDirty" class="text-xs text-amber-400">{{ t('editor.unsaved') }}</span>
         <span v-else-if="savedAt" class="text-xs text-muted-foreground">{{ t('editor.saved', { time: savedAt }) }}</span>
         <button
           class="text-xs border rounded px-3 py-1.5 hover:bg-accent transition-colors"
@@ -133,7 +134,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, type ComponentPublicInstance } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import { useTitle } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import { LogOut, Languages, UserRound, Sun, Moon, MonitorCheck, Settings } from 'lucide-vue-next'
@@ -207,6 +208,19 @@ const userInitials = computed(() => {
     .join('')
 })
 
+function handleBeforeUnload(e: BeforeUnloadEvent) {
+  if (projectStore.isDirty) {
+    e.preventDefault()
+    e.returnValue = ''
+  }
+}
+
+onBeforeRouteLeave(() => {
+  if (projectStore.isDirty) {
+    return window.confirm(t('editor.unsavedConfirm'))
+  }
+})
+
 onMounted(async () => {
   const id = Number(route.params.projectId)
   projectStore.reset()
@@ -216,11 +230,13 @@ onMounted(async () => {
   editorStore.zoom = 1
   editorStore.panX = 0
   editorStore.panY = 0
+  window.addEventListener('beforeunload', handleBeforeUnload)
 })
 
 onUnmounted(() => {
   editorStore.selectedElementId = null
   editorStore.wireStart = null
+  window.removeEventListener('beforeunload', handleBeforeUnload)
 })
 
 async function save() {

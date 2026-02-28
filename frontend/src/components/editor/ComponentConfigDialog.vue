@@ -225,12 +225,19 @@ const conflicts = computed(() => {
       (POWER_POSITIVE.has(startLabel) && POWER_NEGATIVE.has(endLabel))
     ) {
       result.push(
-        `${startPin.compId.slice(0, 6)}… ${startLabel} → ${endPin.compId.slice(0, 6)}… ${endLabel}`,
+        `${describeComp(startPin.compId)} · ${startLabel} → ${describeComp(endPin.compId)} · ${endLabel}`,
       );
     }
   }
   return result;
 });
+
+function describeComp(compId: string): string {
+  const comp = projectStore.placedComponents.find((c) => c.id === compId);
+  if (!comp) return compId.slice(0, 8) + "…";
+  const desc = editorStore.getComponentDescription(compId);
+  return desc ? `${comp.name} (${desc})` : comp.name;
+}
 
 function findPinAtPos(x: number, y: number) {
   for (const comp of projectStore.placedComponents) {

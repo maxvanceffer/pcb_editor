@@ -257,6 +257,8 @@
                         @contextmenu.prevent.stop="
                             openCtxMenu($event, wire.id, 'Провод', false)
                         "
+                        @mousemove="onWireMouseMove($event, wire.id)"
+                        @mouseleave="hoveredWireId = null"
                     />
                     <!-- Провод с jump-over арками -->
                     <path
@@ -272,6 +274,8 @@
                         @contextmenu.prevent.stop="
                             openCtxMenu($event, wire.id, 'Провод', false)
                         "
+                        @mousemove="onWireMouseMove($event, wire.id)"
+                        @mouseleave="hoveredWireId = null"
                     />
                 </template>
 
@@ -555,6 +559,48 @@
             @confirm="onConflictConfirm"
         />
 
+        <!-- Wire hover tooltip -->
+        <Transition name="tooltip-fade">
+            <div
+                v-if="showWireTooltip && hoveredWireLabel"
+                class="absolute z-30 pointer-events-none"
+                :style="{
+                    left: wireTooltipPos.x + 'px',
+                    top: wireTooltipPos.y + 'px',
+                    transform: 'translate(-50%, calc(-100% - 10px))',
+                }"
+            >
+                <div
+                    class="bg-popover border border-border rounded-lg shadow-xl px-3 py-2 text-xs whitespace-nowrap border-l-[3px]"
+                    :style="{ borderLeftColor: hoveredWireLabel.color }"
+                >
+                    <div class="flex gap-2.5 items-stretch">
+                        <!-- Vertical connector track — always neutral color for visibility -->
+                        <div class="flex flex-col items-center py-0.5">
+                            <template v-for="(_, i) in hoveredWireLabel.stops" :key="i">
+                                <div class="w-2 h-2 rounded-full border border-foreground/40 bg-background flex-shrink-0" />
+                                <div
+                                    v-if="i < hoveredWireLabel.stops.length - 1"
+                                    class="w-px flex-1 min-h-[14px] bg-foreground/20"
+                                />
+                            </template>
+                        </div>
+                        <!-- Stop labels -->
+                        <div class="flex flex-col justify-between">
+                            <div v-for="(stop, i) in hoveredWireLabel.stops" :key="i">
+                                <template v-if="stop.type === 'pin'">
+                                    <span class="font-medium">{{ stop.module }}</span>
+                                    <span v-if="stop.description" class="text-muted-foreground"> ⚬ {{ stop.description }}</span>
+                                    <span class="text-muted-foreground"> ⚬ {{ stop.pinLabel }}</span>
+                                </template>
+                                <span v-else class="font-mono text-muted-foreground">{{ stop.coord }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Transition>
+
         <!-- Component hover tooltip -->
         <Transition name="tooltip-fade">
             <div
@@ -646,6 +692,7 @@ import ComponentConfigDialog from "@/components/editor/ComponentConfigDialog.vue
 import WireConfigDialog from "@/components/editor/WireConfigDialog.vue";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { getComponentImage } from "@/lib/components/componentImages";
+import { useWireEndpointInfo } from "@/composables/useWireEndpointInfo";
 import WireConflictDialog from "@/components/board/WireConflictDialog.vue";
 import type { ConflictItem } from "@/components/board/WireConflictDialog.vue";
 import {
@@ -747,6 +794,35 @@ const showTooltip = computed(
         !ctxMenu.value,
 );
 
+// ─── Wire hover tooltip ───────────────────────────────────────────────────────
+const { getWireLabel } = useWireEndpointInfo();
+const hoveredWireId = ref<string | null>(null);
+const wireTooltipPos = ref({ x: 0, y: 0 });
+
+const hoveredWireLabel = computed(() => {
+    if (!hoveredWireId.value) return null;
+    const wire = projectStore.getElementById(hoveredWireId.value);
+    if (!(wire instanceof WireTrace)) return null;
+    return getWireLabel(wire);
+});
+
+const showWireTooltip = computed(
+    () =>
+        !!hoveredWireLabel.value &&
+        !movingId.value &&
+        !ctxMenu.value &&
+        editorStore.activeTool !== "wire",
+);
+
+function onWireMouseMove(e: MouseEvent, wireId: string) {
+    hoveredWireId.value = wireId;
+    const wrap = canvasWrap.value!.getBoundingClientRect();
+    wireTooltipPos.value = {
+        x: e.clientX - wrap.left,
+        y: e.clientY - wrap.top,
+    };
+}
+
 const boardConfig = computed(() => projectStore.boardConfig);
 const boardCols = computed(() =>
     Math.max(
@@ -802,12 +878,14 @@ function pinIsOnRightSide(
     return (pin.x - comp.position.x) >= comp.effectiveWidth / 2;
 }
 
-// X-координата текста метки: внутрь от дырки
+// X-координата текста метки: наружу от компонента
 function pinLabelX(
     comp: BaseComponent,
     pin: { x: number },
 ): number {
     const cx = holeX(pin.x);
+    // Single-column component (e.g. JST): label goes to the left, outside the body
+    if (comp.effectiveWidth === 1) return cx - 7;
     if (pinIsOnRightSide(comp, pin)) {
         return cx - 7; // right column → label to the left (inward)
     }
@@ -816,23 +894,18 @@ function pinLabelX(
 
 // text-anchor для метки
 function pinLabelAnchor(comp: BaseComponent, pin: { x: number }): string {
+    if (comp.effectiveWidth === 1) return "end";
     return pinIsOnRightSide(comp, pin) ? "end" : "start";
 }
 
-// Цвет метки: пользовательская — белая, встроенная — зеленоватая, пустая у JST — оранжевая
+// Цвет метки: пользовательская — белая, встроенная — зеленоватая
 function pinLabelColor(
     compId: string,
     pinId: string,
     builtinLabel: string,
 ): string {
     if (editorStore.getPinLabel(compId, pinId)) return "#ffffff";
-    if (
-        builtinLabel &&
-        builtinLabel !== "+" &&
-        builtinLabel !== "-" &&
-        !builtinLabel.startsWith("P")
-    )
-        return "#a8e6a0";
+    if (builtinLabel && builtinLabel !== "+" && builtinLabel !== "-") return "#a8e6a0";
     return "#ffd09e";
 }
 const wireStart = computed(() => editorStore.wireStart);

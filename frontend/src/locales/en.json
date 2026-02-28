@@ -97,6 +97,8 @@
   "editor": {
     "saving": "Saving...",
     "saved": "Saved {time}",
+    "unsaved": "Unsaved changes",
+    "unsavedConfirm": "You have unsaved changes. Leave without saving?",
     "save": "Save",
     "logout": "Log out",
     "language": "Language",

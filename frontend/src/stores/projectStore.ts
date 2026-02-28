@@ -21,6 +21,8 @@ export const useProjectStore = defineStore('project', () => {
   // shallowRef: Vue не проксирует содержимое объектов — классы сохраняют prototype
   const elements = shallowRef<AnyElement[]>([])
 
+  const isDirty = ref(false)
+
   const placedComponents = computed(() =>
     elements.value.filter((e): e is BaseComponent => e instanceof BaseComponent),
   )
@@ -40,10 +42,12 @@ export const useProjectStore = defineStore('project', () => {
 
   function addElement(el: AnyElement) {
     elements.value = [...elements.value, el]
+    isDirty.value = true
   }
 
   function removeElement(id: string) {
     elements.value = elements.value.filter((e) => e.id !== id)
+    isDirty.value = true
   }
 
   function getElementById(id: string): AnyElement | undefined {
@@ -53,6 +57,7 @@ export const useProjectStore = defineStore('project', () => {
   // Вызывать после мутации позиции/ротации элемента для обновления reactivity
   function notifyElementChanged() {
     triggerRef(elements)
+    isDirty.value = true
   }
 
   async function loadProject(id: number) {
@@ -67,6 +72,7 @@ export const useProjectStore = defineStore('project', () => {
     editorStore.pinUserLabels = (data.pinUserLabels as Record<string, string>) ?? {}
     editorStore.componentDescriptions = (data.componentDescriptions as Record<string, string>) ?? {}
     editorStore.componentColors = (data.componentColors as Record<string, string>) ?? {}
+    isDirty.value = false
   }
 
   async function saveProject() {
@@ -81,6 +87,7 @@ export const useProjectStore = defineStore('project', () => {
       componentDescriptions: editorStore.componentDescriptions,
       componentColors: editorStore.componentColors,
     })
+    isDirty.value = false
   }
 
   async function createProject(name: string, description: string, config: BoardConfig): Promise<number> {
@@ -99,11 +106,12 @@ export const useProjectStore = defineStore('project', () => {
     projectDescription.value = ''
     boardConfig.value = { widthMm: 100, heightMm: 100, holePitchMm: 2.54, boardType: 'perfboard' }
     elements.value = []
+    isDirty.value = false
   }
 
   return {
     projectId, projectName, projectDescription, boardConfig,
-    elements, placedComponents, wires, occupiedHoles,
+    elements, placedComponents, wires, occupiedHoles, isDirty,
     addElement, removeElement, getElementById, notifyElementChanged,
     loadProject, saveProject, createProject, reset,
   }
