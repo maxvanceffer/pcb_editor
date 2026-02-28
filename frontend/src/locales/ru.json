@@ -173,8 +173,8 @@
       "chess": "Chess",
       "solid": "Solid",
       "wireConflict": "Конфликт: {start} → {end}",
-      "flipBoard": "Перевернуть (Bottom)",
-      "backView": "Перевернуть (Top)",
+      "flipBoard": "Верхняя сторона (Top)",
+      "backView": "Нижняя сторона (Bottom)",
       "frontView": "Вид спереди",
       "topSide": "Top",
       "bottomSide": "Bottom"

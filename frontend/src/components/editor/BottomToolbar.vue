@@ -154,7 +154,7 @@
             <div
                 class="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-popover text-popover-foreground border px-2 py-1 text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5"
             >
-                {{ editorStore.boardFlipped ? t("editor.board.frontView") : t("editor.board.flipBoard") }}
+                {{ editorStore.boardFlipped ? t("editor.board.backView") : t("editor.board.flipBoard") }}
                 <kbd class="text-muted-foreground text-[10px]">F</kbd>
             </div>
         </button>

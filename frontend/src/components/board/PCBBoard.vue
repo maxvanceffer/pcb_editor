@@ -266,9 +266,9 @@
 
                 <!-- Wire traces -->
                 <template v-for="wire in visibleWires" :key="wire.id">
-                    <!-- Simple wire or flipped view (arc crossings use stale px coords when flipped) -->
+                    <!-- Simple wire (no jump-over crossings) -->
                     <polyline
-                        v-if="!wire.crossings.some((c) => c.jumpOver) || editorStore.boardFlipped"
+                        v-if="!wire.crossings.some((c) => c.jumpOver)"
                         :points="wirePoints(wire)"
                         :stroke="wire.color"
                         stroke-width="2.5"
@@ -1125,7 +1125,8 @@ async function ctxCheckCrossings() {
     const el = projectStore.getElementById(id);
     if (!(el instanceof WireTrace)) return;
 
-    const otherWires = wires.value.filter((w) => w.id !== id);
+    // Only check wires on the same board side
+    const otherWires = wires.value.filter((w) => w.id !== id && w.side === el.side);
     const crossings = findCrossings(el, otherWires, GEOMETRY_CONSTANTS);
 
     // Фильтруем уже известные jump-over пересечения
@@ -1176,7 +1177,8 @@ async function ctxMergeWires() {
     const el = projectStore.getElementById(id);
     if (!(el instanceof WireTrace)) return;
 
-    const otherWires = wires.value.filter((w) => w.id !== id);
+    // Only merge wires on the same board side
+    const otherWires = wires.value.filter((w) => w.id !== id && w.side === el.side);
     const junctions = findJunctions(el, otherWires, GEOMETRY_CONSTANTS);
 
     if (junctions.length === 0) {
@@ -1366,72 +1368,81 @@ const junctionHoles = computed(() => {
 
 // ─── Wire path builder (для проводов с jump-over арками) ─────────────────────
 function buildWirePath(wire: WireTrace): string {
-    const pts = wire
-        .getAllPoints()
-        .map((p) => ({ x: holeX(p.x), y: holeY(p.y) }));
+    // Logical (non-flip) coords — same formula as toSvgPoint in wireGeometry.ts.
+    // Crossing points were stored using toSvgPoint, so matching must use the same space.
+    const ptsLogical = wire.getAllPoints().map((p) => ({
+        x: MARGIN_LEFT + (p.x + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2,
+        y: MARGIN_TOP + (p.y + CANVAS_PADDING) * HOLE_SPACING + HOLE_SPACING / 2,
+    }));
+    // Display coords (flip-aware) for actual SVG path generation
+    const ptsDisplay = wire.getAllPoints().map((p) => ({ x: holeX(p.x), y: holeY(p.y) }));
+
     const jumpOvers = wire.crossings.filter((c) => c.jumpOver);
     if (jumpOvers.length === 0) return "";
 
     const ARC_HALF = 10;
     const ARC_HEIGHT = 18;
 
-    let d = `M ${pts[0].x},${pts[0].y}`;
+    let d = `M ${ptsDisplay[0].x},${ptsDisplay[0].y}`;
 
-    for (let i = 0; i < pts.length - 1; i++) {
-        const segStart = pts[i];
-        const segEnd = pts[i + 1];
-        const dx = segEnd.x - segStart.x;
-        const dy = segEnd.y - segStart.y;
-        const len2 = dx * dx + dy * dy;
+    for (let i = 0; i < ptsLogical.length - 1; i++) {
+        const segStartL = ptsLogical[i];
+        const segEndL = ptsLogical[i + 1];
+        const segStartD = ptsDisplay[i];
+        const segEndD = ptsDisplay[i + 1];
 
+        // Logical deltas — used for crossing detection (coordinate-system-invariant)
+        const dxL = segEndL.x - segStartL.x;
+        const dyL = segEndL.y - segStartL.y;
+        const len2L = dxL * dxL + dyL * dyL;
+
+        // Display deltas — used for arc placement in screen space
+        const dxD = segEndD.x - segStartD.x;
+        const dyD = segEndD.y - segStartD.y;
+        const len2D = dxD * dxD + dyD * dyD;
+
+        // Find crossings on this segment using logical coords (matches stored jo.point space)
         const segJumps = jumpOvers
             .filter((jo) => {
-                if (len2 < 1) return false;
-                const t =
-                    ((jo.point.x - segStart.x) * dx +
-                        (jo.point.y - segStart.y) * dy) /
-                    len2;
+                if (len2L < 1) return false;
+                const t = ((jo.point.x - segStartL.x) * dxL + (jo.point.y - segStartL.y) * dyL) / len2L;
                 if (t < 0.05 || t > 0.95) return false;
-                // Check the crossing is actually on this segment (perpendicular distance < 2px)
-                const projX = segStart.x + t * dx;
-                const projY = segStart.y + t * dy;
-                const dist2 =
-                    (jo.point.x - projX) ** 2 + (jo.point.y - projY) ** 2;
+                const projX = segStartL.x + t * dxL;
+                const projY = segStartL.y + t * dyL;
+                const dist2 = (jo.point.x - projX) ** 2 + (jo.point.y - projY) ** 2;
                 return dist2 < 4;
             })
-            .sort((a, b) => {
-                const tA =
-                    ((a.point.x - segStart.x) * dx +
-                        (a.point.y - segStart.y) * dy) /
-                    len2;
-                const tB =
-                    ((b.point.x - segStart.x) * dx +
-                        (b.point.y - segStart.y) * dy) /
-                    len2;
-                return tA - tB;
-            });
+            .map((jo) => ({
+                t: ((jo.point.x - segStartL.x) * dxL + (jo.point.y - segStartL.y) * dyL) / len2L,
+            }))
+            .sort((a, b) => a.t - b.t);
 
-        for (const jo of segJumps) {
-            const len = Math.sqrt(len2);
-            const ux = dx / len;
-            const uy = dy / len;
+        for (const { t } of segJumps) {
+            // Arc center in display coords (same parametric t works for both spaces)
+            const arcX = segStartD.x + t * dxD;
+            const arcY = segStartD.y + t * dyD;
+
+            // Direction unit vector in display space (accounts for board flip)
+            const dlen = len2D > 0 ? Math.sqrt(len2D) : 1;
+            const ux = len2D > 0 ? dxD / dlen : 1;
+            const uy = len2D > 0 ? dyD / dlen : 0;
             let px = -uy;
             let py = ux;
-            // Always arc upward (negative y = toward screen top); for vertical wires — leftward
+            // Always arc upward (negative screen Y); for vertical wires — leftward
             if (py > 0 || (py === 0 && px > 0)) { px = -px; py = -py; }
 
-            const arcStartX = jo.point.x - ux * ARC_HALF;
-            const arcStartY = jo.point.y - uy * ARC_HALF;
-            const arcEndX = jo.point.x + ux * ARC_HALF;
-            const arcEndY = jo.point.y + uy * ARC_HALF;
-            const ctrlX = jo.point.x + px * ARC_HEIGHT;
-            const ctrlY = jo.point.y + py * ARC_HEIGHT;
+            const arcStartX = arcX - ux * ARC_HALF;
+            const arcStartY = arcY - uy * ARC_HALF;
+            const arcEndX = arcX + ux * ARC_HALF;
+            const arcEndY = arcY + uy * ARC_HALF;
+            const ctrlX = arcX + px * ARC_HEIGHT;
+            const ctrlY = arcY + py * ARC_HEIGHT;
 
             d += ` L ${arcStartX},${arcStartY}`;
             d += ` Q ${ctrlX},${ctrlY} ${arcEndX},${arcEndY}`;
         }
 
-        d += ` L ${segEnd.x},${segEnd.y}`;
+        d += ` L ${segEndD.x},${segEndD.y}`;
     }
 
     return d;
@@ -1750,14 +1761,17 @@ async function onHoleClick(e: MouseEvent, col: number, row: number) {
             editorStore.boardFlipped ? 'back' : 'front',
         );
 
+        // Only consider wires on the same board side — opposite-side wires are separated by the PCB
+        const sameSideWires = wires.value.filter((w) => w.side === newWire.side);
+
         const junctions = findJunctions(
             newWire,
-            wires.value,
+            sameSideWires,
             GEOMETRY_CONSTANTS,
         );
         const crossings = findCrossings(
             newWire,
-            wires.value,
+            sameSideWires,
             GEOMETRY_CONSTANTS,
         );
 
@@ -2099,42 +2113,38 @@ function onDragOver(e: DragEvent) {
 
 function onDrop(e: DragEvent) {
     const typeId = e.dataTransfer?.getData("componentType");
-    if (!typeId || !editorStore.dragGridPos || !canvasWrap.value) {
-        console.log('[drop] early exit — typeId:', typeId, 'dragGridPos:', editorStore.dragGridPos);
-        editorStore.endDrag();
-        return;
-    }
+    try {
+        if (!typeId || !editorStore.dragGridPos || !canvasWrap.value) return;
 
-    const pos = editorStore.dragGridPos;
-    const def = editorStore.draggingDef;
+        const pos = editorStore.dragGridPos;
+        const def = editorStore.draggingDef;
 
-    const newEl = ComponentFactory.fromDefinition(def!, pos);
-    if (newEl instanceof BaseComponent) {
-        // Check collisions only for holes that land on the board
-        const occupied = projectStore.occupiedHoles;
-        const pinsOnBoard = newEl
-            .getOccupiedHoles()
-            .filter(
-                (h) =>
-                    h.x >= 0 &&
-                    h.y >= 0 &&
-                    h.x < boardCols.value &&
-                    h.y < boardRows.value,
+        const newEl = ComponentFactory.fromDefinition(def!, pos);
+        if (newEl instanceof BaseComponent) {
+            // Check collisions only for holes that land on the board
+            const occupied = projectStore.occupiedHoles;
+            const pinsOnBoard = newEl
+                .getOccupiedHoles()
+                .filter(
+                    (h) =>
+                        h.x >= 0 &&
+                        h.y >= 0 &&
+                        h.x < boardCols.value &&
+                        h.y < boardRows.value,
+                );
+            const hasCollision = pinsOnBoard.some((h) =>
+                occupied.has(`${h.x},${h.y}`),
             );
-        const firstConflict = pinsOnBoard.find((h) => occupied.has(`${h.x},${h.y}`));
-        const hasCollision = !!firstConflict;
-        console.log('[drop]', typeId, 'pos:', pos, 'pinsOnBoard:', pinsOnBoard.length,
-            'occupied total:', occupied.size, 'hasCollision:', hasCollision,
-            firstConflict ? `first conflict at ${firstConflict.x},${firstConflict.y} by ${occupied.get(`${firstConflict.x},${firstConflict.y}`)}` : '');
-        if (!hasCollision) {
-            projectStore.addElement(newEl);
-            historyStore.push({ type: "add", element: newEl.serialize() });
-            editorStore.addProjectComponent(typeId);
-            editorStore.selectedElementId = newEl.id;
+            if (!hasCollision) {
+                projectStore.addElement(newEl);
+                historyStore.push({ type: "add", element: newEl.serialize() });
+                editorStore.addProjectComponent(typeId);
+                editorStore.selectedElementId = newEl.id;
+            }
         }
+    } finally {
+        editorStore.endDrag();
     }
-
-    editorStore.endDrag();
 }
 
 defineExpose({ cutWireSegment });
