@@ -905,24 +905,31 @@ function pinIsOnRightSide(
     return (pin.x - comp.position.x) >= comp.effectiveWidth / 2;
 }
 
-// X-координата текста метки: наружу от компонента
+// X-coordinate of pin label. Single-row components (rotated connectors) get
+// outward placement to avoid overlap. Multi-row components get inward placement.
 function pinLabelX(
     comp: BaseComponent,
     pin: { x: number },
 ): number {
     const cx = holeX(pin.x);
-    // Single-column component (e.g. JST): label goes to the left, outside the body
     if (comp.effectiveWidth === 1) return cx - 7;
-    if (pinIsOnRightSide(comp, pin)) {
-        return cx - 7; // right column → label to the left (inward)
+    const onRight = pinIsOnRightSide(comp, pin);
+    if (comp.effectiveHeight === 1) {
+        // Single row (rotated connector): labels go outward to avoid overlap
+        return onRight ? cx + 7 : cx - 7;
     }
-    return cx + 7; // left column → label to the right (inward)
+    // Multi-row: labels go inward toward the component body center
+    return onRight ? cx - 7 : cx + 7;
 }
 
-// text-anchor для метки
+// text-anchor for pin label
 function pinLabelAnchor(comp: BaseComponent, pin: { x: number }): string {
     if (comp.effectiveWidth === 1) return "end";
-    return pinIsOnRightSide(comp, pin) ? "end" : "start";
+    const onRight = pinIsOnRightSide(comp, pin);
+    if (comp.effectiveHeight === 1) {
+        return onRight ? "start" : "end";
+    }
+    return onRight ? "end" : "start";
 }
 
 // Цвет метки: пользовательская — белая, встроенная — зеленоватая
